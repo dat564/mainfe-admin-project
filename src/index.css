@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply font-inter;
+  }
+}
+button.ant-btn.css-dev-only-do-not-override-2i2tap.ant-btn-primary,
+button.ant-btn.css-dev-only-do-not-override-xu9wm8.ant-btn-primary,
+:where(.css-dev-only-do-not-override-pr0fja).ant-btn-primary {
+  background-color: #1677ff;
+}
+
+.ant-input,
+.ant-input-number,
+.ant-select-selection-search {
+  padding: 4px !important;
+}
+
+.ant-select {
+  height: 40px;
+}
+
+.ant-picker {
+  width: 100%;
+  padding: 8px;
+}
+
+.ant-col.ant-form-item-label {
+  flex: 0 0 0 !important;
+  margin-top: 30px;
+}
+
+.css-dev-only-do-not-override-pu1j5u.ant-pro-card.ant-pro-table-search.ant-pro-table-search-query-filter {
+  margin-bottom: 60px;
+}
+
+.ant-form-item,
+.ant-form-item {
+  margin: 0;
+}
+
+.ant-checkbox-inner {
+  width: 16px;
+  height: 16px;
+}
+
+.ant-form-item {
+  margin-bottom: 0;
+}

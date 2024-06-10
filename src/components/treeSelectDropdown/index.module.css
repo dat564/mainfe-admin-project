@@ -1,0 +1,14 @@
+.active {
+  border-bottom: 4px;
+  border-color: rgb(96 165 250);
+  animation: scaleAnimation 0.5s 1;
+}
+
+@keyframes scaleAnimation {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
