@@ -1,13 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { getUserList } from 'services';
-import { ProTable } from '@ant-design/pro-components';
-import {
-  DeleteOutlined,
-  ExportOutlined,
-  ImportOutlined,
-  QuestionCircleOutlined,
-  SettingOutlined
-} from '@ant-design/icons';
+import { ProFormText, ProTable } from '@ant-design/pro-components';
+import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import AddAccountModal from './components/AddAccountModal';
 import { ROLES } from 'constants';
 import { Dropdown, Modal, Popconfirm } from 'antd';
@@ -103,17 +97,20 @@ const AccountPage = () => {
       title: 'Họ và tên',
       dataIndex: 'name',
       key: 'name',
-      fieldProps: {
-        placeholder: 'Search by name...'
+      renderFormItem: (item, { type, defaultRender, ...rest }) => {
+        console.log({ item, defaultRender, rest });
+        return (
+          <div>
+            {item.title}
+            {defaultRender()}
+          </div>
+        );
       }
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      key: 'email',
-      fieldProps: {
-        placeholder: 'Search by email...'
-      }
+      key: 'email'
     },
     {
       title: 'Giới tính',
@@ -125,10 +122,7 @@ const AccountPage = () => {
     {
       title: 'Di động',
       dataIndex: 'phone',
-      key: 'phone',
-      fieldProps: {
-        placeholder: 'Search by phone...'
-      }
+      key: 'phone'
     },
     {
       title: 'Ngày sinh',
@@ -149,10 +143,7 @@ const AccountPage = () => {
       key: 'role',
       render: (_, record) => (
         <span>{ROLES_OBJ.find((role) => role.value === record.role)?.label || 'Không xác định'}</span>
-      ),
-      fieldProps: {
-        placeholder: 'Select by role...'
-      }
+      )
     }
   ];
 
@@ -185,6 +176,7 @@ const AccountPage = () => {
         actionRef={tableRef}
         columns={columns}
         bordered
+        search={true}
         dataSource={dataSource || []}
         rowKey={(e) => e.id}
         request={async (params) => {
@@ -220,12 +212,6 @@ const AccountPage = () => {
                   <DeleteOutlined />
                 </span>
               </Popconfirm>
-              <span className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200">
-                <ImportOutlined />
-              </span>
-              <span className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200">
-                <ExportOutlined />
-              </span>
             </div>
           </div>
         }
@@ -239,7 +225,10 @@ const AccountPage = () => {
             }, 1000);
           }
         }}
-        pagination={false}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: false
+        }}
         rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
       />
       {showEditModal && (

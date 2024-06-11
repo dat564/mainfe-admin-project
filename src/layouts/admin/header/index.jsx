@@ -1,11 +1,11 @@
-import { Avatar, Dropdown, Input } from "antd";
-import Bar from "components/icons/Bar";
-import { BellOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "redux/slices/authSlice";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Avatar, Dropdown } from 'antd';
+import Bar from 'components/icons/Bar';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from 'redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Header = ({ toggleSideBar }) => {
   const dispatch = useDispatch();
@@ -14,30 +14,30 @@ const Header = ({ toggleSideBar }) => {
 
   const items = [
     {
-      label: "Profile",
-      key: "1",
+      label: 'Profile',
+      key: '1',
       icon: <UserOutlined />,
-      onClick: () => navigate("/profile"),
+      onClick: () => navigate('/profile')
     },
     {
-      label: "Logout",
-      key: "2",
+      label: 'Logout',
+      key: '2',
       icon: <LogoutOutlined />,
       onClick: () => {
         dispatch(logout());
-        toast.success("Logout success!", {
-          position: "top-center",
+        toast.success('Logout success!', {
+          position: 'top-center',
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "light",
+          theme: 'light'
         });
-        navigate("/auth/login");
-      },
-    },
+        navigate('/auth/login');
+      }
+    }
   ];
 
   return (
@@ -49,12 +49,8 @@ const Header = ({ toggleSideBar }) => {
         <Bar onClick={toggleSideBar}></Bar>
       </div>
       <div className="flex items-center gap-3">
-        <Dropdown menu={{ items }} trigger={["click"]}>
-          <Avatar
-            size="large"
-            icon={<UserOutlined />}
-            src={userInfo?.img_url || null}
-          />
+        <Dropdown menu={{ items }} trigger={['click']}>
+          <Avatar size="large" icon={<UserOutlined />} src={userInfo?.img_url || null} />
         </Dropdown>
       </div>
     </div>

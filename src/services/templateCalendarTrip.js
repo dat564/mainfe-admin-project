@@ -1,28 +1,28 @@
 import request from 'configs/request';
 
 export function getTemplateCalendarTripList(params) {
-  return request('/templateCalendarTrip', {
+  return request('/templateTrip', {
     method: 'GET',
     params
   });
 }
 
 export function createTemplateCalendarTrip(data) {
-  return request('/templateCalendarTrip/store', {
+  return request('/templateTrip/store', {
     method: 'POST',
     data
   });
 }
 
 export function updateTemplateCalendarTrip(data) {
-  return request('/templateCalendarTrip/update', {
+  return request('/templateTrip/update', {
     method: 'POST',
     data
   });
 }
 
 export function multiDeleteTemplateCalendarTrip(data) {
-  return request('/templateCalendarTrip/destroy', {
+  return request('/templateTrip/destroy', {
     method: 'POST',
     data
   });

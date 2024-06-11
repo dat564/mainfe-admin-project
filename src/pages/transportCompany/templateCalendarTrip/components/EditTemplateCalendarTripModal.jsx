@@ -3,7 +3,7 @@ import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getUserList } from 'services';
+import { getTripList } from 'services';
 import { createCompanyPayment } from 'services/companyPayment';
 
 const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose }) => {
@@ -18,7 +18,7 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
 
   useEffect(() => {
     if (!data?.id) return;
-    getUserList({ id: data.id })
+    getTripList({ template_id: data.id })
       .then((res) => {
         const [_data] = res.data.data;
         formRef.current.setFieldsValue({

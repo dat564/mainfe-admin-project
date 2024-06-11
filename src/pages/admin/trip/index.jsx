@@ -99,14 +99,6 @@ const TripPage = () => {
       )
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      fieldProps: {
-        placeholder: 'Search by name...'
-      }
-    },
-    {
       title: 'Thời gian khởi hành',
       dataIndex: 'departure_time',
       hideInSearch: true,

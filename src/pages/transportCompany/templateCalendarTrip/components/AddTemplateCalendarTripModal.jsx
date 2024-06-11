@@ -4,8 +4,10 @@ import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { updateTrip } from 'services';
 import { getTripList } from 'services';
 import { createCompanyPayment } from 'services/companyPayment';
+import { createTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import { formatTime } from 'utils';
 
 const AddTemplateCalendarTripModal = ({ handleReload }) => {
@@ -44,7 +46,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
 
   return (
     <ModalForm
-      title="Sửa mẫu lịch trình"
+      title="Thêm mẫu lịch trình"
       width="70%"
       autoFocusFirstInput
       trigger={
@@ -53,18 +55,26 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
         </span>
       }
       modalProps={{
-        onCancel: () => true,
+        onCancel: () => {
+          setSelectedRowKeys([]);
+          return true;
+        },
         destroyOnClose: true
       }}
       onFinish={async (values) => {
         try {
-          await createCompanyPayment([
+          const calendarTripRes = await createTemplateCalendarTrip([
             {
               ...values
             }
           ]);
+          const templateTripId = calendarTripRes?.data?.data?.[0]?.id;
+          if (templateTripId) {
+            await updateTrip(dataSource.map((item) => ({ id: item.id, template_id: templateTripId })));
+          }
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           handleReload();
+          setSelectedRowKeys([]);
           return true;
         } catch (err) {
           toast.error(err.response.data.message);

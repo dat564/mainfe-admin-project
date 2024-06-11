@@ -13,6 +13,7 @@ import PaymentPage from 'pages/admin/payment';
 import Dashboard from 'pages/admin/dashboard';
 import CalendarTripPage from 'pages/transportCompany/calendarTrip';
 import TemplateCalendarTripPage from 'pages/transportCompany/templateCalendarTrip';
+import TestPage from 'pages/admin/test';
 
 const routes = [
   {
@@ -67,6 +68,10 @@ const routes = [
       {
         path: '/template_calendar_trip',
         element: <TemplateCalendarTripPage />
+      },
+      {
+        path: '/test',
+        element: <TestPage />
       }
     ]
   },

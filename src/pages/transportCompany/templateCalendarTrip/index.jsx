@@ -11,6 +11,7 @@ import Setting from 'components/svgs/Setting';
 import { getCompanyPaymentList } from 'services/companyPayment';
 import EditCalendarTripModal from 'pages/transportCompany/calendarTrip/components/EditCalendarTripModal';
 import AddTemplateCalendarTripModal from 'pages/transportCompany/templateCalendarTrip/components/AddTemplateCalendarTripModal';
+import { getTemplateCalendarTripList } from 'services/templateCalendarTrip';
 
 const TemplateCalendarTripPage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -55,7 +56,6 @@ const TemplateCalendarTripPage = () => {
       width: 100,
       hideInSearch: true,
       key: 'settings',
-      search: false,
       align: 'center',
       render: (text, record) => (
         <div className="flex items-center justify-center">
@@ -94,7 +94,8 @@ const TemplateCalendarTripPage = () => {
     {
       title: 'Tên mẫu',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      search: true
     }
   ];
 
@@ -124,7 +125,7 @@ const TemplateCalendarTripPage = () => {
           const cloneParams = {
             ...params
           };
-          const res = await getCompanyPaymentList(cloneParams);
+          const res = await getTemplateCalendarTripList(cloneParams);
           setDataSource(res.data?.data);
           setLoading(false);
           return {
