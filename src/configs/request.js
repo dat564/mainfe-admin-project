@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { logout } from 'redux/slices/authSlice';
 import { dispatch } from 'redux/store';
 
@@ -65,15 +66,14 @@ request.interceptors.response.use(
         error.config.headers['Authorization'] = `Bearer ${newToken}`;
         return axios(error.config);
       } catch (refreshError) {
-        // If token refresh fails, you can handle it here
-        // For example, logout the user and redirect to the login page
-        // localStorage.removeItem("jwtToken");
-        // redirect to login
         dispatch(logout);
         return Promise.reject(refreshError);
       }
     }
-    return Promise.reject(error);
+    if (error.response && error.response.status >= 500) {
+      toast.error(error.response.data.message);
+      return Promise.reject(error);
+    }
   }
 );
 

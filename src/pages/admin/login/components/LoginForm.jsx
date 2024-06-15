@@ -33,7 +33,7 @@ const LoginForm = () => {
         return;
       }
       const {
-        authorisation: { access_token, refresh_token },
+        authorization: { access_token, refresh_token },
         user
       } = res.data;
       const payload = { access_token, refresh_token, user };
@@ -78,7 +78,7 @@ const LoginForm = () => {
             layout="vertical"
             onFinish={handleSubmit}
             initialValues={{
-              username: 'phanhuygioan815@gmail.com',
+              username: 'daothithien663@gmail.com',
               password: '123456'
             }}
           >

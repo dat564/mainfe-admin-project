@@ -1,9 +1,12 @@
 import { FolderAddOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDigit, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
+import { NOTIFY_MESSAGE } from 'constants';
 import React from 'react';
+import { toast } from 'react-toastify';
+import { createCar } from 'services';
 
-const AddCarModal = ({ handleCreateCar }) => {
+const AddCarModal = ({ companyId, handleReload }) => {
   return (
     <ModalForm
       title="Thêm xe"
@@ -17,7 +20,16 @@ const AddCarModal = ({ handleCreateCar }) => {
         onCancel: () => true,
         destroyOnClose: true
       }}
-      onFinish={handleCreateCar}
+      onFinish={async (values) => {
+        try {
+          await createCar({ ...values, transport_company_id: companyId });
+          handleReload();
+          toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }}
     >
       <Row gutter={[30, 20]} className="mb-5">
         <Col span={12}>

@@ -147,7 +147,7 @@ const PaymentPage = () => {
         }}
         headerTitle={
           <div>
-            <h1 className="mt-10 mb-2 text-xl font-medium">Quản lý phương thức thanh toán</h1>
+            <h1 className="mb-2 text-xl font-medium">Quản lý phương thức thanh toán</h1>
             <div className="flex items-center w-full gap-4">
               <AddPaymentModal handleReload={handleReload} />
               <Popconfirm
@@ -155,11 +155,11 @@ const PaymentPage = () => {
                 description="Bạn có chắc chấn muốn xóa?"
                 icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                 onConfirm={handleMultiDelete}
-                disabled={selectedRowKeys.length <= 0}
+                disabled={selectedRowKeys?.length <= 0}
               >
                 <span
                   className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                    selectedRowKeys.length <= 0 ? 'cursor-not-allowed' : ''
+                    selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
                   }`}
                 >
                   <DeleteOutlined />
@@ -169,6 +169,7 @@ const PaymentPage = () => {
           </div>
         }
         loading={loading}
+        scroll={{ y: 500 }}
         options={{
           reload: () => {
             setLoading(true);
@@ -183,7 +184,7 @@ const PaymentPage = () => {
       />
       {showEditModal && (
         <EditPaymentModal
-          show={showEditModal}
+          visible={showEditModal}
           data={selectedRow}
           onClose={onCloseEditModal}
           handleReload={handleReload}

@@ -13,7 +13,6 @@ import PaymentPage from 'pages/admin/payment';
 import Dashboard from 'pages/admin/dashboard';
 import CalendarTripPage from 'pages/transportCompany/calendarTrip';
 import TemplateCalendarTripPage from 'pages/transportCompany/templateCalendarTrip';
-import TestPage from 'pages/admin/test';
 
 const routes = [
   {
@@ -30,19 +29,19 @@ const routes = [
         element: <AccountPage />
       },
       {
-        path: '/transport_company',
+        path: '/transport-company',
         element: <TransportCompanyPage />
       },
       {
-        path: '/car',
+        path: '/cars',
         element: <CarPage />
       },
       {
-        path: '/trip',
+        path: '/trips',
         element: <TripPage />
       },
       {
-        path: '/ticket',
+        path: '/tickets',
         element: <TicketPage />
       },
       {
@@ -50,29 +49,25 @@ const routes = [
         element: <ProfilePage />
       },
       {
-        path: '/payment_method',
+        path: '/payment-method',
         element: <PaymentPage />
       },
       {
-        path: '/transport_company_payment',
+        path: '/transport-company-payment',
         element: <TransportCompanyPaymentPage />
       },
       {
-        path: '/transport_company_payment',
+        path: '/transport-company-payment',
         element: <TransportCompanyPaymentPage />
       },
       {
-        path: '/calendar_trip',
+        path: '/calendar-trip',
         element: <CalendarTripPage />
       },
       {
-        path: '/template_calendar_trip',
+        path: '/template-calendar-trip',
         element: <TemplateCalendarTripPage />
       },
-      {
-        path: '/test',
-        element: <TestPage />
-      }
     ]
   },
   {

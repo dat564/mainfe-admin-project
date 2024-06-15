@@ -230,4 +230,4 @@ const DashBoard = () => {
   );
 };
 
-export default requireAuthentication(DashBoard, [ROLES.ADMIN, ROLES.ACCOUNTANT]);
+export default requireAuthentication(DashBoard, [ROLES.ADMIN]);

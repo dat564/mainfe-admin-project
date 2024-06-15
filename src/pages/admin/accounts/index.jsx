@@ -4,7 +4,7 @@ import { ProFormText, ProTable } from '@ant-design/pro-components';
 import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import AddAccountModal from './components/AddAccountModal';
 import { ROLES } from 'constants';
-import { Dropdown, Modal, Popconfirm } from 'antd';
+import { Dropdown, Modal, Popconfirm, Space } from 'antd';
 import { toast } from 'react-toastify';
 import EditAccountModal from './components/EditAccountModal';
 import { multipleDeleteUserById } from 'services';
@@ -13,6 +13,7 @@ import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
 import Setting from 'components/svgs/Setting';
 import { ROLES_OBJ } from 'constants';
+import { renderFormCol } from 'utils';
 
 const AccountPage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -97,20 +98,13 @@ const AccountPage = () => {
       title: 'Họ và tên',
       dataIndex: 'name',
       key: 'name',
-      renderFormItem: (item, { type, defaultRender, ...rest }) => {
-        console.log({ item, defaultRender, rest });
-        return (
-          <div>
-            {item.title}
-            {defaultRender()}
-          </div>
-        );
-      }
+      renderFormItem: renderFormCol
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      key: 'email'
+      key: 'email',
+      renderFormItem: renderFormCol
     },
     {
       title: 'Giới tính',
@@ -122,7 +116,8 @@ const AccountPage = () => {
     {
       title: 'Di động',
       dataIndex: 'phone',
-      key: 'phone'
+      key: 'phone',
+      renderFormItem: renderFormCol
     },
     {
       title: 'Ngày sinh',
@@ -141,6 +136,7 @@ const AccountPage = () => {
       dataIndex: 'role',
       valueType: 'select',
       key: 'role',
+      renderFormItem: renderFormCol,
       render: (_, record) => (
         <span>{ROLES_OBJ.find((role) => role.value === record.role)?.label || 'Không xác định'}</span>
       )
@@ -176,43 +172,45 @@ const AccountPage = () => {
         actionRef={tableRef}
         columns={columns}
         bordered
+        scroll={{ y: 520 }}
         search={true}
         dataSource={dataSource || []}
         rowKey={(e) => e.id}
         request={async (params) => {
           setLoading(true);
           const cloneParams = {
-            ...params
+            ...params,
+            page: params.current,
+            per_size: params.pageSize
           };
           const res = await getUserList(cloneParams);
           setDataSource(res.data?.data);
           setLoading(false);
           return {
             data: res.data.data,
-            success: true
+            success: true,
+            total: res.data.total
           };
         }}
         headerTitle={
-          <div>
-            <h1 className="mt-10 mb-2 text-xl font-medium">Quản lý tài khoản</h1>
-            <div className="flex items-center w-full gap-4">
-              <AddAccountModal handleReload={handleReload} />
-              <Popconfirm
-                title="Xóa"
-                description="Bạn có chắc chấn muốn xóa?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={handleMultiDelete}
-                disabled={selectedRowKeys.length <= 0}
+          <div className="flex items-center gap-2">
+            <h1 className="mb-2 text-xl font-medium">Quản lý tài khoản</h1>
+            <AddAccountModal handleReload={handleReload} />
+            <Popconfirm
+              title="Xóa"
+              description="Bạn có chắc chấn muốn xóa?"
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              onConfirm={handleMultiDelete}
+              disabled={selectedRowKeys.length <= 0}
+            >
+              <span
+                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
+                  selectedRowKeys.length <= 0 ? 'cursor-not-allowed' : ''
+                }`}
               >
-                <span
-                  className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                    selectedRowKeys.length <= 0 ? 'cursor-not-allowed' : ''
-                  }`}
-                >
-                  <DeleteOutlined />
-                </span>
-              </Popconfirm>
-            </div>
+                <DeleteOutlined />
+              </span>
+            </Popconfirm>
           </div>
         }
         loading={loading}

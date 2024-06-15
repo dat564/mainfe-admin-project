@@ -1,6 +1,6 @@
 import { FolderAddOutlined, PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { Button, Col, Modal, Row, Upload } from 'antd';
+import { Col, Modal, Row, Upload } from 'antd';
 import { NOTIFY_MESSAGE, GENDER_OPTIONS, ROLES, ROLES_OBJ } from 'constants';
 import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';

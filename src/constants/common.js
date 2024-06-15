@@ -6,14 +6,9 @@ export const STATUS_ARR = [
 ];
 
 export const NOTIFY_MESSAGE = {
-  ADD_SUCCESS: 'New record added successfully',
-  UPDATE_SUCCESS: 'Update was successful.',
-  DELETE_SUCCESS: 'Record has been removed successfully.',
-  GENERAL_SUCCESS: 'Your request was successful',
-  ADD_ERROR: 'Error occurred while adding a new record.',
-  UPDATE_ERROR: 'Update failed. Please check your input.',
-  DELETE_ERROR: 'Deletion was unsuccessful. Please try again.',
-  GENERAL_ERROR: 'Sorry, something went wrong. Please try again.'
+  ADD_SUCCESS: 'Thêm mới thành công',
+  UPDATE_SUCCESS: 'Cập nhật thành công',
+  DELETE_SUCCESS: 'Xóa thành công'
 };
 
 export const GENDER_OPTIONS = [

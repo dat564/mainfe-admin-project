@@ -21,7 +21,7 @@ export function updateTicket(data) {
   });
 }
 
-export function deleteTicket(data) {
+export function multiDeleteTicket(data) {
   return request(`/ticket/delete`, {
     method: 'POST',
     data

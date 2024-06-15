@@ -3,15 +3,15 @@ import { ModalForm, ProFormDateTimeRangePicker, ProFormSelect, ProFormSwitch } f
 import { Col, Row } from 'antd';
 import { CITIES } from 'constants';
 import { ROLES } from 'constants';
-import { TripModalContext } from 'pages/admin/trip/context';
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getUserList } from 'services';
 import { getCompanyPaymentList } from 'services/companyPayment';
 
 const AddTrip = ({ handleCreateTrip }) => {
   const formRef = useRef();
-  const { valuesRef } = useContext(TripModalContext);
+  const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
 
   const handleGetDriver = async () => {
     try {
@@ -28,7 +28,7 @@ const AddTrip = ({ handleCreateTrip }) => {
   const handleGetCompanyPaymentList = async () => {
     try {
       const res = await getCompanyPaymentList({
-        transport_company_id: valuesRef.current?.transportCompanyId
+        transport_company_id: transport_company?.id
       });
       const { data } = res?.data;
       return data.map((item) => ({ label: item.name_bank, value: item.id }));

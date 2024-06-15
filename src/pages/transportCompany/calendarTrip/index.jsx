@@ -1,132 +1,74 @@
 import React, { useRef, useState } from 'react';
-import { ProTable } from '@ant-design/pro-components';
-import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
-// import AddAccountModal from './components/AddAccountModal';
+import { DeleteOutlined, FolderAddOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { ROLES } from 'constants';
-import { Dropdown, Modal, Popconfirm } from 'antd';
+import { Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
-// import EditAccountModal from './components/EditAccountModal';
 import { multipleDeleteUserById } from 'services';
 import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
-import Setting from 'components/svgs/Setting';
-import { getCompanyPaymentList } from 'services/companyPayment';
-import AddCalendarTripModal from 'pages/transportCompany/calendarTrip/components/AddCalendarTripModal';
-import EditCalendarTripModal from 'pages/transportCompany/calendarTrip/components/EditCalendarTripModal';
+import EditCalendarTripModal from './components/EditCalendarTripModal';
+import { getCalendarTripList } from 'services';
+import Tabular from 'components/Tabular';
+import { renderFormCol } from 'utils';
+import StepsFormModal from './components/StepsFormModal';
 
 const CalendarTripPage = () => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [configModal, setConfigModal] = useState({
+    visible: false,
+    selectedRow: null
+  });
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
 
   const tableRef = useRef();
+
+  const { selectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
       setLoading(true);
       await multipleDeleteUserById({ ids: [recordId] });
       toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
-      tableRef.current.reload();
+      setSelectedRowKeys([]);
+      reloadTable();
     } catch (error) {
       toast.error(error.response.data.message);
     }
     setLoading(false);
   }
 
-  const items = [
-    {
-      key: '1',
-      label: 'Xóa'
-    },
-    {
-      key: '2',
-      label: 'Sửa'
-    }
-  ];
-
   const columns = [
     {
-      title: (
-        <div className="flex items-center justify-center">
-          <Setting />
-        </div>
-      ),
-      dataIndex: 'settings',
-      width: 100,
-      hideInSearch: true,
-      key: 'settings',
-      search: false,
-      align: 'center',
-      render: (text, record) => (
-        <div className="flex items-center justify-center">
-          <Dropdown
-            menu={{
-              items,
-              onClick: async (e) => {
-                switch (e.key) {
-                  case '1':
-                    Modal.confirm({
-                      title: 'Bạn có chắc chắn muốn xóa?',
-                      okText: 'Đồng ý',
-                      cancelText: 'Hủy',
-                      onOk: () => {
-                        handleDelete(record.id);
-                      }
-                    });
-                    break;
-                  case '2':
-                    setShowEditModal(true);
-                    setSelectedRow(record);
-                    break;
-                  default:
-                }
-              }
-            }}
-            trigger={['click']}
-          >
-            <div className="flex items-center justify-center w-10 h-10 font-medium transition-all bg-white border border-blue-500 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white">
-              <SettingOutlined />
-            </div>
-          </Dropdown>
-        </div>
-      )
+      title: 'Tên lịch trình',
+      dataIndex: 'name',
+      key: 'name',
+      renderFormItem: renderFormCol
     },
     {
-      title: 'Tên tài khoản',
-      dataIndex: 'name_bank',
-      key: 'name_bank'
+      title: 'Thời gian áp dụng',
+      dataIndex: 'start_time',
+      key: 'start_time',
+      renderFormItem: renderFormCol
     },
     {
-      title: 'Số tài khoản',
-      dataIndex: 'number_bank',
-      key: 'number_bank'
-    },
-    {
-      title: 'Nhà xe',
-      dataIndex: 'transport_company',
-      key: 'transport_company'
+      title: 'Thời gian kết thúc',
+      dataIndex: 'end_time',
+      key: 'end_time',
+      renderFormItem: renderFormCol
     }
   ];
-
-  const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
 
   const onCloseEditModal = () => {
     setSelectedRow({});
     setShowEditModal(false);
   };
 
-  const handleReload = () => {
-    tableRef.current.reload();
-  };
-
   const handleMultiDelete = async () => {
     try {
       await multipleDeleteUserById({ ids: selectedRowKeys });
-      handleReload();
+      reloadTable();
       toast.success('Xóa thành công!');
     } catch (error) {
       toast.error(error.response.data.message);
@@ -135,19 +77,16 @@ const CalendarTripPage = () => {
 
   return (
     <div className="min-h-[100vh] px-5 mt-10">
-      <ProTable
-        actionRef={tableRef}
+      <Tabular
+        ref={tableRef}
         columns={columns}
-        bordered
-        dataSource={dataSource || []}
         rowKey={(e) => e.id}
         request={async (params) => {
           setLoading(true);
           const cloneParams = {
             ...params
           };
-          const res = await getCompanyPaymentList(cloneParams);
-          setDataSource(res.data?.data);
+          const res = await getCalendarTripList(cloneParams);
           setLoading(false);
           return {
             data: res.data.data,
@@ -155,26 +94,29 @@ const CalendarTripPage = () => {
           };
         }}
         headerTitle={
-          <div>
-            <h1 className="mt-10 mb-2 text-xl font-medium">Quản lý lịch trình</h1>
-            <div className="flex items-center w-full gap-4">
-              <AddCalendarTripModal handleReload={handleReload} />
-              <Popconfirm
-                title="Xóa"
-                description="Bạn có chắc chấn muốn xóa?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={handleMultiDelete}
-                disabled={selectedRowKeys.length <= 0}
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-medium ">Quản lý lịch trình</h1>
+            <span
+              className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200"
+              onClick={() => setShowAddModal(true)}
+            >
+              <FolderAddOutlined />
+            </span>
+            <Popconfirm
+              title="Xóa"
+              description="Bạn có chắc chấn muốn xóa?"
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              onConfirm={handleMultiDelete}
+              disabled={selectedRowKeys?.length <= 0}
+            >
+              <span
+                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
+                  selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
+                }`}
               >
-                <span
-                  className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                    selectedRowKeys.length <= 0 ? 'cursor-not-allowed' : ''
-                  }`}
-                >
-                  <DeleteOutlined />
-                </span>
-              </Popconfirm>
-            </div>
+                <DeleteOutlined />
+              </span>
+            </Popconfirm>
           </div>
         }
         loading={loading}
@@ -187,19 +129,25 @@ const CalendarTripPage = () => {
             }, 1000);
           }
         }}
-        pagination={false}
-        rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
+        handleDelete={handleDelete}
+        handleEdit={(record) => {
+          setSelectedRow(record);
+          setShowEditModal(true);
+        }}
       />
+      {showAddModal && (
+        <StepsFormModal handleReload={reloadTable} open={showAddModal} handleCancel={() => setShowAddModal(false)} />
+      )}
       {showEditModal && (
         <EditCalendarTripModal
           show={showEditModal}
           data={selectedRow}
           onClose={onCloseEditModal}
-          handleReload={handleReload}
+          handleReload={reloadTable}
         />
       )}
     </div>
   );
 };
 
-export default requireAuthentication(CalendarTripPage, [ROLES.ADMIN]);
+export default requireAuthentication(CalendarTripPage, [ROLES.TRANSPORT_COMPANY]);

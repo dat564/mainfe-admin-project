@@ -63,15 +63,12 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
       }}
       onFinish={async (values) => {
         try {
-          const calendarTripRes = await createTemplateCalendarTrip([
+          await createTemplateCalendarTrip([
             {
-              ...values
+              ...values,
+              trip_ids: selectedRowKeys
             }
           ]);
-          const templateTripId = calendarTripRes?.data?.data?.[0]?.id;
-          if (templateTripId) {
-            await updateTrip(dataSource.map((item) => ({ id: item.id, template_id: templateTripId })));
-          }
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           handleReload();
           setSelectedRowKeys([]);
@@ -108,7 +105,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
               setLoading(true);
               const _params = {
                 ...params,
-                per_side: params.pageSize,
+                per_size: params.pageSize,
                 page: params.current,
                 start_time: params?.dateRange && params.dateRange[0],
                 end_time: params?.dateRange && params.dateRange[1]

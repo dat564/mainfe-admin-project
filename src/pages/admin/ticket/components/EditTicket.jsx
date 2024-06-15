@@ -2,15 +2,15 @@ import { ModalForm, ProFormText } from '@ant-design/pro-components';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
-import { updatePayment } from 'services/payment';
+import { updateTicket } from 'services';
 
-const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
+const EditTicket = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
 
   return (
     <ModalForm
-      title="Sửa phương thức thanh toán"
-      width="50%"
+      title="Sửa vé"
+      width="70%"
       open={visible}
       initialValues={{
         name: data?.name
@@ -22,7 +22,7 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
       }}
       onFinish={async (values) => {
         try {
-          await updatePayment([
+          await updateTicket([
             {
               ...values,
               id: data.id
@@ -49,4 +49,4 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
   );
 };
 
-export default EditPaymentModal;
+export default EditTicket;

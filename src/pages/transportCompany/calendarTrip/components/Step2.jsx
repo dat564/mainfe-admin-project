@@ -12,7 +12,7 @@ import { multiDeleteTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import Tabular from 'components/Tabular';
 import { renderFormCol } from 'utils';
 
-const TemplateCalendarTripPage = () => {
+const Step2 = () => {
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
@@ -47,8 +47,7 @@ const TemplateCalendarTripPage = () => {
     {
       title: 'Tên mẫu',
       dataIndex: 'name',
-      key: 'name',
-      renderFormItem: renderFormCol
+      key: 'name'
     }
   ];
 
@@ -58,7 +57,7 @@ const TemplateCalendarTripPage = () => {
   };
 
   return (
-    <div className="min-h-[100vh] px-5 mt-10">
+    <div className="px-5 mt-10 ">
       <Tabular
         ref={tableRef}
         columns={columns}
@@ -127,4 +126,4 @@ const TemplateCalendarTripPage = () => {
   );
 };
 
-export default requireAuthentication(TemplateCalendarTripPage, [ROLES.TRANSPORT_COMPANY]);
+export default requireAuthentication(Step2, [ROLES.TRANSPORT_COMPANY]);

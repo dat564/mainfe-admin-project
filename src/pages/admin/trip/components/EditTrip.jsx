@@ -1,38 +1,73 @@
-import { ModalForm, ProFormDateTimeRangePicker, ProFormText } from '@ant-design/pro-components';
+import { FolderAddOutlined } from '@ant-design/icons';
+import { ModalForm, ProFormDateTimeRangePicker, ProFormSelect, ProFormSwitch } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
-import React, { useRef } from 'react';
+import { NOTIFY_MESSAGE } from 'constants';
+import { CITIES } from 'constants';
+import { ROLES } from 'constants';
+import { TripModalContext } from 'pages/admin/trip/context';
+import React, { useContext, useRef } from 'react';
 import { toast } from 'react-toastify';
+import { updateTrip } from 'services';
+import { getUserList } from 'services';
+import { getCompanyPaymentList } from 'services/companyPayment';
 
-const EditTrip = ({ visible, handleReload, onClose, data }) => {
+const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isUpdate = false }) => {
   const formRef = useRef();
+
+  const handleGetDriver = async () => {
+    try {
+      const res = await getUserList({
+        role: ROLES.DRIVER
+      });
+      const { data } = res?.data;
+      return data.map((item) => ({ label: item.name, value: item?.driver?.id }));
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  const handleGetCompanyPaymentList = async () => {
+    try {
+      const res = await getCompanyPaymentList({
+        // transport_company_id: valuesRef.current?.transportCompanyId
+      });
+      const { data } = res?.data;
+      return data.map((item) => ({ label: item.name_bank, value: item.id }));
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   return (
     <ModalForm
-      title="Edit batch fee"
-      width="70%"
+      title="Sửa chuyến đi"
+      width="60%"
       open={visible}
       autoFocusFirstInput
-      initialValues={{
-        name: data?.name,
-        time: [data?.start_time, data?.end_time],
-        feeId: data.fee.name
-      }}
       modalProps={{
         onCancel: () => onClose(),
         destroyOnClose: true
       }}
       onFinish={async (values) => {
         try {
-          const obj = {
-            ...data,
-            name: values.name,
-            start_time: values.time[0],
-            end_time: values.time[1]
-          };
-
-          // await updateBatchFee(obj);
-          handleReload();
-          onClose();
+          if (isUpdate) {
+            const body = {
+              ...values,
+              id: data.id
+            };
+            await updateTrip(body);
+            handleReload();
+            toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
+            return true;
+          } else {
+            const obj = {
+              ...values,
+              departure_time: values.timeRage[0],
+              scheduled_end_time: values.timeRage[1]
+            };
+            handleUpdateTrip(obj);
+            return true;
+          }
         } catch (err) {
           toast.error(err.response.data.message);
         }
@@ -40,30 +75,89 @@ const EditTrip = ({ visible, handleReload, onClose, data }) => {
       formRef={formRef}
       className="p-10"
     >
-      <Row gutter={24}>
+      <Row gutter={[30, 20]}>
         <Col span={12}>
-          <ProFormText
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: 'Please select your name!' }]}
-            className="p-4"
-            placeholder="Please enter a name"
-          ></ProFormText>
+          <ProFormSelect
+            name="start_point"
+            showSearch
+            label="Điểm xuất phát"
+            options={CITIES}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
         </Col>
         <Col span={12}>
-          <ProFormText name="feeId" label="Fee" className="p-4" disabled required />
+          <ProFormSelect
+            name="end_point"
+            showSearch
+            label="Điểm đến"
+            options={CITIES}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
         </Col>
         <Col span={12}>
           <ProFormDateTimeRangePicker
-            name="time"
-            label="Start time and End time"
+            name="timeRage"
+            label="Thời gian xuất phát và kết thúc"
             rules={[
               {
                 required: true,
-                message: 'Please select start time'
+                message: 'Vui lòng nhập trường này'
               }
             ]}
           ></ProFormDateTimeRangePicker>
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="driver_id"
+            label="Tài xế"
+            request={handleGetDriver}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="route_start"
+            showSearch
+            label="Tuyến xuất phát"
+            options={CITIES}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="route_end"
+            showSearch
+            label="Tuyến đến"
+            options={CITIES}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSwitch
+            name="static_start_point"
+            label="Điểm đón tĩnh"
+            style={{
+              backgroundColor: 'red'
+            }}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSwitch
+            name="static_end_point"
+            label="Điểm đến tĩnh"
+            style={{
+              backgroundColor: 'red'
+            }}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="transport_company_payment_id"
+            showSearch
+            request={handleGetCompanyPaymentList}
+            label="Phương thức thanh toán"
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
         </Col>
       </Row>
     </ModalForm>

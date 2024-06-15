@@ -8,6 +8,8 @@ import EditTransportCompanyModal from './components/EditTransportCompanyModal';
 import requireAuthentication from 'hoc/requireAuthentication';
 import Setting from 'components/svgs/Setting';
 import { getTransportCompany } from 'services';
+import { ROLES } from 'constants';
+import { renderFormCol } from 'utils';
 
 const TransportCompanyPage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -32,12 +34,12 @@ const TransportCompanyPage = () => {
 
   const items = [
     {
-      key: '1',
-      label: 'Delete'
+      label: 'Sửa',
+      key: '2'
     },
     {
-      label: 'Edit',
-      key: '2'
+      key: '1',
+      label: 'Xóa'
     }
   ];
 
@@ -92,6 +94,7 @@ const TransportCompanyPage = () => {
       title: 'Ảnh',
       dataIndex: 'img_url',
       key: 'img_url',
+      search: false,
       render: (_, record) => (
         <img src={record.img_url} alt={record.name} className="object-cover w-10 h-10 rounded-full" />
       )
@@ -99,21 +102,25 @@ const TransportCompanyPage = () => {
     {
       title: 'Tên nhà xe',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      renderFormItem: renderFormCol
     },
     {
       title: 'Địa chỉ',
       dataIndex: 'address',
+      renderFormItem: renderFormCol,
       key: 'address'
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
+      renderFormItem: renderFormCol,
       key: 'phone'
     },
     {
       title: 'Email',
       dataIndex: 'email',
+      renderFormItem: renderFormCol,
       key: 'email'
     }
   ];
@@ -153,7 +160,7 @@ const TransportCompanyPage = () => {
           const { pageSize, current, name } = params;
           const _params = {
             name,
-            per_side: pageSize,
+            per_size: pageSize,
             page: current
           };
 
@@ -174,22 +181,21 @@ const TransportCompanyPage = () => {
             total: res.data.total
           };
         }}
+        scroll={{ y: 520 }}
         headerTitle={
-          <div>
-            <h1 className="mt-10 mb-2 text-xl font-medium">Quản lý nhà xe</h1>
-            <div className="flex items-center w-full gap-4">
-              <AddTransportCompanyModal handleReload={handleReload} />
-              <Popconfirm
-                title="Delete"
-                description="Are you sure to delete?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={handleMultiDelete}
-              >
-                <span className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200">
-                  <DeleteOutlined />
-                </span>
-              </Popconfirm>
-            </div>
+          <div className="flex items-center gap-2">
+            <h1 className="mb-2 text-xl font-medium ">Quản lý nhà xe</h1>
+            <AddTransportCompanyModal handleReload={handleReload} />
+            <Popconfirm
+              title="Delete"
+              description="Are you sure to delete?"
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              onConfirm={handleMultiDelete}
+            >
+              <span className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200">
+                <DeleteOutlined />
+              </span>
+            </Popconfirm>
           </div>
         }
         pagination={{
@@ -221,4 +227,4 @@ const TransportCompanyPage = () => {
     </div>
   );
 };
-export default requireAuthentication(TransportCompanyPage);
+export default requireAuthentication(TransportCompanyPage, [ROLES.ADMIN]);
