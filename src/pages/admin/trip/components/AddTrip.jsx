@@ -1,5 +1,11 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormDateTimeRangePicker, ProFormSelect, ProFormSwitch } from '@ant-design/pro-components';
+import {
+  ModalForm,
+  ProFormDateTimeRangePicker,
+  ProFormMoney,
+  ProFormSelect,
+  ProFormSwitch
+} from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { CITIES } from 'constants';
 import { ROLES } from 'constants';
@@ -149,6 +155,13 @@ const AddTrip = ({ handleCreateTrip }) => {
             request={handleGetCompanyPaymentList}
             label="Phương thức thanh toán"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormMoney
+            name="price_static"
+            label="Giá mặc định"
+            // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
       </Row>
