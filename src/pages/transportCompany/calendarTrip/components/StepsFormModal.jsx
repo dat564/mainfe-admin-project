@@ -15,7 +15,7 @@ const StepsFormModal = ({ handleReload, handleCancel, open }) => {
 
   return (
     <Modal
-      title={'Thêm chuyến'}
+      title={'Thêm lịch trình'}
       width="70%"
       submitter={false}
       open={open}
@@ -30,13 +30,13 @@ const StepsFormModal = ({ handleReload, handleCancel, open }) => {
           autoFocusFirstInput
           onFinish={async (values) => {
             try {
-              const bodyData = trips.map((trip) => ({
-                ...values,
-                ...trip,
-                transport_company_car_id: values.carId
-              }));
+              // const bodyData = trips.map((trip) => ({
+              //   ...values,
+              //   ...trip,
+              //   transport_company_car_id: values.carId
+              // }));
 
-              await createTrip(bodyData);
+              // await createTrip(bodyData);
 
               toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
               handleReload();

@@ -31,7 +31,7 @@ const AddCarModal = ({ companyId, handleReload }) => {
         }
       }}
     >
-      <Row gutter={[30, 20]} className="mb-5">
+      <Row gutter={[30, 20]} className="p-5">
         <Col span={12}>
           <ProFormText
             name="name"

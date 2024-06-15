@@ -11,11 +11,13 @@ import EditPaymentModal from 'pages/transportCompany/payment/components/EditPaym
 import { getCompanyPaymentList } from 'services/companyPayment';
 import Tabular from 'components/Tabular';
 import { renderFormCol } from 'utils';
+import { useSelector } from 'react-redux';
 
 const TransportCompanyPaymentPage = () => {
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
+  const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
 
   const tableRef = useRef();
 
@@ -74,7 +76,8 @@ const TransportCompanyPaymentPage = () => {
         request={async (params) => {
           setLoading(true);
           const cloneParams = {
-            ...params
+            ...params,
+            transport_company_id: transport_company?.id
           };
           const res = await getCompanyPaymentList(cloneParams);
           setLoading(false);

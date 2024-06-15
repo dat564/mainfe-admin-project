@@ -5,6 +5,7 @@ import { ROLES } from 'constants';
 import { NOTIFY_MESSAGE } from 'constants';
 import useUploadImage from 'hooks/useUploadImage';
 import React, { useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getUserList } from 'services';
 import { createCompanyPayment } from 'services/companyPayment';
@@ -14,6 +15,7 @@ const AddPaymentModal = ({ handleReload }) => {
   const formRef = useRef();
   const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, handleImageUpload } =
     useUploadImage();
+  const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
 
   const handleGetPaymentList = async () => {
     try {
@@ -74,6 +76,7 @@ const AddPaymentModal = ({ handleReload }) => {
           await createCompanyPayment([
             {
               ...values,
+              transport_company_id: transport_company?.id,
               image_qr_code: imageRes?.data?.[0] || null
             }
           ]);
@@ -110,15 +113,6 @@ const AddPaymentModal = ({ handleReload }) => {
             showSearch
             request={handleGetPaymentList}
             label="Phương thức thanh toán"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
-        <Col span={12}>
-          <ProFormSelect
-            name="transport_company_id"
-            showSearch
-            label="Nhà xe"
-            request={handleGetTransportCompanyList}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>

@@ -37,11 +37,6 @@ const Step2Content = ({ handleSetTrips }) => {
       key: 'scheduled_end_time'
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status'
-    },
-    {
       title: 'Tài xế',
       dataIndex: 'driver_id',
       key: 'driver_id'

@@ -125,15 +125,6 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
           />
         </Col>
         <Col span={12}>
-          <ProFormSelect
-            name="transport_company_id"
-            showSearch
-            label="Nhà xe"
-            request={handleGetTransportCompanyList}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
-        <Col span={12}>
           <h1 className="mb-2">Ảnh</h1>
           <Upload
             action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"

@@ -3,12 +3,11 @@ import { Modal } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import Step1Content from './Step1Content';
 import Step2Content from './Step2Content';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { createTrip } from 'services/trip';
-import { TripModalContext } from 'pages/admin/trip/context';
 
-const AddModal = ({ handleReload, handleCancel, open, companyId, data }) => {
+const AddModal = ({ handleReload, handleCancel, open }) => {
   const formRef = useRef();
   const stepFormRef = useRef();
   const [current, setCurrent] = useState(0);
@@ -18,41 +17,9 @@ const AddModal = ({ handleReload, handleCancel, open, companyId, data }) => {
     setTrips(dataSource);
   }, []);
 
-  // useLayoutEffect(() => {
-  //   if (stepFormRef.current) {
-  //     const btns = stepFormRef.current.querySelectorAll('.ant-btn');
-  //     if (btns.length === 0) return; // Check if btns is empty
-
-  //     const parent = btns[0]?.parentNode?.parentNode;
-  //     if (parent) {
-  //       parent.classList.add('flex', 'w-full', 'justify-end');
-  //     }
-
-  //     btns.forEach((btn, index) => {
-  //       if (current === 0) {
-  //         btn.innerHTML = 'Tiếp theo';
-  //       } else if (current === 1) {
-  //         if (index === 0) {
-  //           btn.innerHTML = 'Quay lại';
-  //         } else {
-  //           btn.innerHTML = 'Hoàn thành';
-  //         }
-  //       }
-  //     });
-  //   }
-  // }, [current]);
-
-  useEffect(() => {
-    if (data) {
-      const { trips, ...rest } = data;
-      setTrips(trips);
-      formRef.current.setFieldsValue({ ...rest });
-    }
-  }, [data]);
-
   return (
     <Modal
-      title={data ? 'Sửa chuyến' : 'Thêm chuyến'}
+      title={'Thêm chuyến'}
       width="70%"
       submitter={false}
       open={open}
@@ -78,8 +45,10 @@ const AddModal = ({ handleReload, handleCancel, open, companyId, data }) => {
               toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
               handleReload();
               handleCancel();
+              return true;
             } catch (err) {
               toast.error(err.response.data.message);
+              return false;
             }
           }}
           onCurrentChange={(current) => {
@@ -91,7 +60,7 @@ const AddModal = ({ handleReload, handleCancel, open, companyId, data }) => {
           }}
         >
           <StepsForm.StepForm name="step1" title="Chọn xe">
-            <Step1Content companyId={companyId} />
+            <Step1Content />
           </StepsForm.StepForm>
           <StepsForm.StepForm name="step2" title={'Thêm chuyến'}>
             <Step2Content handleSetTrips={handleSetTrips} />

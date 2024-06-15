@@ -140,7 +140,12 @@ const CarPage = () => {
         }}
       />
       {showEditModal && (
-        <EditCarModal show={showEditModal} data={selectedRow} onClose={onCloseEditModal} handleReload={handleReload} />
+        <EditCarModal
+          visible={showEditModal}
+          data={selectedRow}
+          onClose={onCloseEditModal}
+          handleReload={handleReload}
+        />
       )}
     </div>
   );
