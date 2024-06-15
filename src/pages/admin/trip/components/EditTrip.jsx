@@ -1,5 +1,11 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormDateTimeRangePicker, ProFormSelect, ProFormSwitch } from '@ant-design/pro-components';
+import {
+  ModalForm,
+  ProFormDateTimeRangePicker,
+  ProFormMoney,
+  ProFormSelect,
+  ProFormSwitch
+} from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import { CITIES } from 'constants';
@@ -47,6 +53,10 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isUp
       modalProps={{
         onCancel: () => onClose(),
         destroyOnClose: true
+      }}
+      initialValues={{
+        ...data,
+        timeRage: [data.departure_time, data.scheduled_end_time]
       }}
       onFinish={async (values) => {
         try {
@@ -157,6 +167,13 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isUp
             request={handleGetCompanyPaymentList}
             label="Phương thức thanh toán"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormMoney
+            name="price_static"
+            label="Giá mặc định"
+            // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
       </Row>
