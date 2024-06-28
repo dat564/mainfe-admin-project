@@ -2,9 +2,9 @@ import { ModalForm, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getTripList } from 'services';
-import { getTemplateCalendarTripList } from 'services/templateCalendarTrip';
 import { updateTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import { formatTime } from 'utils';
 
@@ -34,7 +34,6 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
       render: (_, record) => formatTime(record.scheduled_end_time)
     }
   ];
-  const [dataSource, setDataSource] = React.useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -43,18 +42,8 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
   };
 
   useEffect(() => {
-    if (!data?.id) return;
-    getTemplateCalendarTripList({ id: data.id })
-      .then((res) => {
-        const [data] = res.data.data;
-        formRef.current.setFieldsValue({
-          ...data
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [data.id]);
+    if (data?.trip_ids) setSelectedRowKeys(data?.trip_ids);
+  }, [data?.trip_ids]);
 
   return (
     <ModalForm
@@ -66,14 +55,17 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
         onCancel: () => onClose(),
         destroyOnClose: true
       }}
+      initialValues={data}
       onFinish={async (values) => {
         try {
           await updateTemplateCalendarTrip([
             {
-              ...values
+              ...values,
+              id: data.id,
+              trip_ids: selectedRowKeys
             }
           ]);
-          toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+          toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
           onClose();
           handleReload();
           return true;
@@ -91,7 +83,6 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
         <Col span={24}>
           <ProTable
             columns={columns}
-            dataSource={dataSource}
             loading={loading}
             bordered
             request={async (params) => {
@@ -106,13 +97,13 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
 
               const res = await getTripList(_params);
               setLoading(false);
-              setDataSource(res.data.data);
               return {
                 data: res.data.data,
                 success: true,
                 total: res.data.total
               };
             }}
+            rowKey={(e) => e.id}
             search={true}
             rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
           />

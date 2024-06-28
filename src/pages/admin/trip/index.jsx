@@ -12,7 +12,9 @@ import { useSelector } from 'react-redux';
 import Tabular from 'components/Tabular';
 import { multiDeleteTrip } from 'services';
 import { NOTIFY_MESSAGE } from 'constants';
-import { renderFormCol } from 'utils';
+import Setting from 'components/svgs/Setting';
+import { operatorColumnRender } from 'utils/columns';
+import { getDriverList } from 'services';
 
 const TripPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -39,7 +41,36 @@ const TripPage = () => {
     setLoading(false);
   }
 
+  function handleEdit(record) {
+    setSelectedInstance(record);
+    setShowEditModal(true);
+  }
+
+  const handleGetDriverList = async () => {
+    try {
+      const res = await getDriverList({});
+      const { data } = res?.data;
+      return data.map((item) => ({ label: item.name, value: item.id }));
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   const columns = [
+    {
+      title: (
+        <div className="flex items-center justify-center">
+          <Setting />
+        </div>
+      ),
+      dataIndex: 'settings',
+      width: 100,
+      hideInSearch: true,
+      key: 'settings',
+      search: false,
+      align: 'center',
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+    },
     {
       title: 'Thời gian khởi hành',
       dataIndex: 'departure_time',
@@ -57,27 +88,25 @@ const TripPage = () => {
     {
       title: 'Điểm xuất phát',
       dataIndex: 'start_point',
-      key: 'start_point',
-      renderFormItem: renderFormCol
+      key: 'start_point'
     },
     {
       title: 'Điểm đến',
       dataIndex: 'end_point',
-      key: 'end_point',
-      renderFormItem: renderFormCol
+      key: 'end_point'
     },
 
     {
       title: 'Nhà xe',
       dataIndex: 'transport_company_car_id',
-      key: 'transport_company_car_id',
-      renderFormItem: renderFormCol
+      key: 'transport_company_car_id'
     },
     {
       title: 'Tài xế',
       dataIndex: 'driver_id',
       key: 'driver_id',
-      renderFormItem: renderFormCol
+      valueType: 'select',
+      request: handleGetDriverList
     }
   ];
 

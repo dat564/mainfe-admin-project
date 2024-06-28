@@ -136,7 +136,8 @@ const EditUserInfo = function () {
     setLoading(true);
     const _data = {
       ...user,
-      ...values
+      ...values,
+      id: user.id
     };
     try {
       let uploadedImage;
@@ -155,7 +156,7 @@ const EditUserInfo = function () {
         dispatch(updateInfo({ img_url: uploadedImage.imageUrl }));
       }
 
-      await updateUser(user.id, _data);
+      await updateUser(_data);
       toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
     } catch (error) {
       toast.error(error.response.data.message);

@@ -3,10 +3,9 @@ import { ModalForm, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { updateTrip } from 'services';
 import { getTripList } from 'services';
-import { createCompanyPayment } from 'services/companyPayment';
 import { createTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import { formatTime } from 'utils';
 
@@ -39,6 +38,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
   const [dataSource, setDataSource] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
 
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -66,7 +66,8 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
           await createTemplateCalendarTrip([
             {
               ...values,
-              trip_ids: selectedRowKeys
+              trip_ids: selectedRowKeys,
+              transport_company_id: transport_company?.id
             }
           ]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
@@ -101,6 +102,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
             rowKey={(record) => record.id}
             dataSource={dataSource}
             headerTitle={<h1 className="mt-10 mb-2 text-xl font-medium">Các chuyến hiện tại</h1>}
+            search={false}
             request={async (params) => {
               setLoading(true);
               const _params = {
@@ -121,8 +123,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
               };
             }}
             bordered
-            search={true}
-            rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
+            rowSelection={{ selectedRowKeys, onChange: onSelectChange, hideDefaultSelections: true }}
           />
         </Col>
       </Row>

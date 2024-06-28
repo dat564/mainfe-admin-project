@@ -12,7 +12,9 @@ import ErrorPage from 'pages/error';
 import PaymentPage from 'pages/admin/payment';
 import Dashboard from 'pages/admin/dashboard';
 import CalendarTripPage from 'pages/transportCompany/calendarTrip';
+import DriverPage from 'pages/transportCompany/drivers';
 import TemplateCalendarTripPage from 'pages/transportCompany/templateCalendarTrip';
+import VourcherPage from 'pages/admin/vourcher';
 
 const routes = [
   {
@@ -27,6 +29,10 @@ const routes = [
       {
         path: '/accounts',
         element: <AccountPage />
+      },
+      {
+        path: '/drivers',
+        element: <DriverPage />
       },
       {
         path: '/transport-company',
@@ -68,6 +74,10 @@ const routes = [
         path: '/template-calendar-trip',
         element: <TemplateCalendarTripPage />
       },
+      {
+        path: '/vourcher',
+        element: <VourcherPage />
+      }
     ]
   },
   {

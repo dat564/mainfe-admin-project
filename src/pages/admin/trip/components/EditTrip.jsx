@@ -10,14 +10,13 @@ import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import { CITIES } from 'constants';
 import { ROLES } from 'constants';
-import { TripModalContext } from 'pages/admin/trip/context';
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { updateTrip } from 'services';
 import { getUserList } from 'services';
 import { getCompanyPaymentList } from 'services/companyPayment';
 
-const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isUpdate = false }) => {
+const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isTempUpdate = false }) => {
   const formRef = useRef();
 
   const handleGetDriver = async () => {
@@ -60,7 +59,7 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isUp
       }}
       onFinish={async (values) => {
         try {
-          if (isUpdate) {
+          if (!isTempUpdate) {
             const body = {
               ...values,
               id: data.id
@@ -78,9 +77,7 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isUp
             handleUpdateTrip(obj);
             return true;
           }
-        } catch (err) {
-          toast.error(err.response.data.message);
-        }
+        } catch (err) {}
       }}
       formRef={formRef}
       className="p-10"
@@ -160,15 +157,17 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isUp
             }}
           />
         </Col>
-        <Col span={12}>
-          <ProFormSelect
-            name="transport_company_payment_id"
-            showSearch
-            request={handleGetCompanyPaymentList}
-            label="Phương thức thanh toán"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
+        {isTempUpdate && (
+          <Col span={12}>
+            <ProFormSelect
+              name="transport_company_payment_id"
+              showSearch
+              request={handleGetCompanyPaymentList}
+              label="Phương thức thanh toán"
+              rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            />
+          </Col>
+        )}
         <Col span={12}>
           <ProFormMoney
             name="price_static"

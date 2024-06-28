@@ -7,12 +7,12 @@ import {
   ProFormSwitch
 } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
-import { CITIES } from 'constants';
 import { ROLES } from 'constants';
 import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getUserList } from 'services';
+import { getCityList } from 'services/cities';
 import { getCompanyPaymentList } from 'services/companyPayment';
 
 const AddTrip = ({ handleCreateTrip }) => {
@@ -41,6 +41,15 @@ const AddTrip = ({ handleCreateTrip }) => {
     } catch (error) {
       console.log({ error });
     }
+  };
+
+  const handleGetCityList = async () => {
+    try {
+      const res = await getCityList();
+      console.log({ res });
+      const { results } = res?.data;
+      return results.map((item) => ({ label: item.province_name, value: item.province_name }));
+    } catch (error) {}
   };
 
   return (
@@ -76,19 +85,19 @@ const AddTrip = ({ handleCreateTrip }) => {
       <Row gutter={[30, 20]}>
         <Col span={12}>
           <ProFormSelect
-            name="start_point"
+            name="route_start"
             showSearch
-            label="Điểm xuất phát"
-            options={CITIES}
+            label="Tuyến xuất phát"
+            request={handleGetCityList}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
         <Col span={12}>
           <ProFormSelect
-            name="end_point"
+            name="route_end"
             showSearch
-            label="Điểm đến"
-            options={CITIES}
+            label="Tuyến đến"
+            request={handleGetCityList}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
@@ -112,21 +121,22 @@ const AddTrip = ({ handleCreateTrip }) => {
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
+
         <Col span={12}>
           <ProFormSelect
-            name="route_start"
+            name="start_point"
             showSearch
-            label="Tuyến xuất phát"
-            options={CITIES}
+            label="Điểm xuất phát"
+            request={handleGetCityList}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
         <Col span={12}>
           <ProFormSelect
-            name="route_end"
+            name="end_point"
             showSearch
-            label="Tuyến đến"
-            options={CITIES}
+            label="Điểm đến"
+            request={handleGetCityList}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>

@@ -14,15 +14,17 @@ import Setting from 'components/svgs/Setting';
 import EditPaymentModal from 'pages/admin/payment/components/EditPaymentModal';
 import AddPaymentModal from 'pages/admin/payment/components/AddPaymentModal';
 import { getPaymentList } from 'services/payment';
+import Tabular from 'components/Tabular';
+import { operatorColumnRender } from 'utils/columns';
 
 const PaymentPage = () => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
 
   const tableRef = useRef();
+
+  const { reload: reloadTable, selectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
@@ -36,16 +38,10 @@ const PaymentPage = () => {
     setLoading(false);
   }
 
-  const items = [
-    {
-      key: '1',
-      label: 'Xóa'
-    },
-    {
-      key: '2',
-      label: 'Sửa'
-    }
-  ];
+  function handleEdit(record) {
+    setSelectedRow(record);
+    setShowEditModal(true);
+  }
 
   const columns = [
     {
@@ -60,39 +56,7 @@ const PaymentPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (text, record) => (
-        <div className="flex items-center justify-center">
-          <Dropdown
-            menu={{
-              items,
-              onClick: async (e) => {
-                switch (e.key) {
-                  case '1':
-                    Modal.confirm({
-                      title: 'Bạn có chắc chắn muốn xóa?',
-                      okText: 'Đồng ý',
-                      cancelText: 'Hủy',
-                      onOk: () => {
-                        handleDelete(record.id);
-                      }
-                    });
-                    break;
-                  case '2':
-                    setShowEditModal(true);
-                    setSelectedRow(record);
-                    break;
-                  default:
-                }
-              }
-            }}
-            trigger={['click']}
-          >
-            <div className="flex items-center justify-center w-10 h-10 font-medium transition-all bg-white border border-blue-500 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white">
-              <SettingOutlined />
-            </div>
-          </Dropdown>
-        </div>
-      )
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
     },
     {
       title: 'Phương thức thanh toán',
@@ -100,10 +64,6 @@ const PaymentPage = () => {
       key: 'name'
     }
   ];
-
-  const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
 
   const onCloseEditModal = () => {
     setSelectedRow({});
@@ -117,6 +77,7 @@ const PaymentPage = () => {
   const handleMultiDelete = async () => {
     try {
       await multipleDeleteUserById({ ids: selectedRowKeys });
+      setSelectedRowKeys([]);
       handleReload();
       toast.success('Xóa thành công!');
     } catch (error) {
@@ -126,11 +87,9 @@ const PaymentPage = () => {
 
   return (
     <div className="min-h-[100vh] px-5 mt-10">
-      <ProTable
-        actionRef={tableRef}
+      <Tabular
+        ref={tableRef}
         columns={columns}
-        bordered
-        dataSource={dataSource || []}
         rowKey={(e) => e.id}
         request={async (params) => {
           setLoading(true);
@@ -138,7 +97,6 @@ const PaymentPage = () => {
             ...params
           };
           const res = await getPaymentList(cloneParams);
-          setDataSource(res.data?.data);
           setLoading(false);
           return {
             data: res.data.data,
@@ -146,30 +104,27 @@ const PaymentPage = () => {
           };
         }}
         headerTitle={
-          <div>
-            <h1 className="mb-2 text-xl font-medium">Quản lý phương thức thanh toán</h1>
-            <div className="flex items-center w-full gap-4">
-              <AddPaymentModal handleReload={handleReload} />
-              <Popconfirm
-                title="Xóa"
-                description="Bạn có chắc chấn muốn xóa?"
-                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-                onConfirm={handleMultiDelete}
-                disabled={selectedRowKeys?.length <= 0}
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-medium">Quản lý phương thức thanh toán</h1>
+            <AddPaymentModal handleReload={handleReload} />
+            <Popconfirm
+              title="Xóa"
+              description="Bạn có chắc chấn muốn xóa?"
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              onConfirm={handleMultiDelete}
+              disabled={selectedRowKeys?.length <= 0}
+            >
+              <span
+                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
+                  selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
+                }`}
               >
-                <span
-                  className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                    selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
-                  }`}
-                >
-                  <DeleteOutlined />
-                </span>
-              </Popconfirm>
-            </div>
+                <DeleteOutlined />
+              </span>
+            </Popconfirm>
           </div>
         }
         loading={loading}
-        scroll={{ y: 500 }}
         options={{
           reload: () => {
             setLoading(true);
@@ -180,7 +135,11 @@ const PaymentPage = () => {
           }
         }}
         pagination={false}
-        rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
+        handleDelete={handleDelete}
+        handleEdit={(record) => {
+          setSelectedRow(record);
+          setShowEditModal(true);
+        }}
       />
       {showEditModal && (
         <EditPaymentModal

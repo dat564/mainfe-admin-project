@@ -10,7 +10,8 @@ import requireAuthentication from 'hoc/requireAuthentication';
 import Tabular from 'components/Tabular';
 import { useSelector } from 'react-redux';
 import AddCarModal from 'pages/admin/car/components/AddCarModal';
-import { renderFormCol } from 'utils';
+import Setting from 'components/svgs/Setting';
+import { operatorColumnRender } from 'utils/columns';
 
 const CarPage = () => {
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,6 @@ const CarPage = () => {
   const [selectedRow, setSelectedRow] = useState();
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
   const userInfo = useSelector((state) => state.auth.userInfo) || {};
-  console.log({ userInfo });
 
   const tableRef = useRef();
 
@@ -31,36 +31,49 @@ const CarPage = () => {
       toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
       setSelectedRowKeys([]);
       tableRef.current.reload();
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
+    } catch (error) {}
     setLoading(false);
+  }
+
+  function handleEdit(record) {
+    setSelectedRow(record);
+    setShowEditModal(true);
   }
 
   const columns = [
     {
+      title: (
+        <div className="flex items-center justify-center">
+          <Setting />
+        </div>
+      ),
+      dataIndex: 'settings',
+      width: 100,
+      hideInSearch: true,
+      key: 'settings',
+      search: false,
+      align: 'center',
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+    },
+    {
       title: 'Tên xe',
       dataIndex: 'name',
-      key: 'name',
-      renderFormItem: renderFormCol
+      key: 'name'
     },
     {
       title: 'Số chỗ ngồi',
       dataIndex: 'seating_capacity',
-      key: 'seating_capacity',
-      renderFormItem: renderFormCol
+      key: 'seating_capacity'
     },
     {
       title: 'Biển số xe',
       dataIndex: 'license_plate',
-      key: 'license_plate',
-      renderFormItem: renderFormCol
+      key: 'license_plate'
     },
     {
       title: 'Nơi sản xuất',
       dataIndex: 'manufacture',
-      key: 'manufacture',
-      renderFormItem: renderFormCol
+      key: 'manufacture'
     }
   ];
 

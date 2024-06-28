@@ -1,4 +1,4 @@
-import { Space } from 'antd';
+import { Form, Space } from 'antd';
 import moment from 'moment';
 
 export function formatCurrency(amount) {
@@ -204,12 +204,16 @@ export function formatNumberToFixed(number) {
 }
 
 export function formatTime(timeString) {
+  if (!timeString) return '-';
   return moment(timeString).format('DD/MM/YYYY HH:MM:SS');
 }
 
-export const renderFormCol = (item, { type, defaultRender, ...rest }) => (
-  <Space direction="vertical" size="small">
-    <span className="font-medium">{item.title}</span>
-    {defaultRender()}
-  </Space>
-);
+export const renderFormCol = (item, { type, defaultRender, formItemProps, fieldProps, ...rest }) => {
+  const { key, title } = item;
+  return (
+    <Space direction="vertical" size="small">
+      <span className="font-medium">{title}</span>
+      <Form.Item name={key}>{defaultRender()}</Form.Item>
+    </Space>
+  );
+};

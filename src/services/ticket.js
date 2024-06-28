@@ -22,7 +22,7 @@ export function updateTicket(data) {
 }
 
 export function multiDeleteTicket(data) {
-  return request(`/ticket/delete`, {
+  return request(`/ticket/destroy`, {
     method: 'POST',
     data
   });

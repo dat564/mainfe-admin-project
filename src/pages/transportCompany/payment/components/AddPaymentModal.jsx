@@ -29,18 +29,6 @@ const AddPaymentModal = ({ handleReload }) => {
     }
   };
 
-  const handleGetTransportCompanyList = async () => {
-    try {
-      const res = await getUserList({ role: ROLES.TRANSPORT_COMPANY });
-      return res.data.data.map((item) => ({
-        label: item?.transport_company?.name,
-        value: item?.transport_company?.id
-      }));
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-
   const uploadButton = (
     <div>
       <PlusOutlined />

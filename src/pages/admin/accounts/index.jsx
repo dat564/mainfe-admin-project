@@ -1,10 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { getUserList } from 'services';
-import { ProFormText, ProTable } from '@ant-design/pro-components';
-import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import AddAccountModal from './components/AddAccountModal';
 import { ROLES } from 'constants';
-import { Dropdown, Modal, Popconfirm, Space } from 'antd';
+import { Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
 import EditAccountModal from './components/EditAccountModal';
 import { multipleDeleteUserById } from 'services';
@@ -13,16 +12,18 @@ import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
 import Setting from 'components/svgs/Setting';
 import { ROLES_OBJ } from 'constants';
-import { renderFormCol } from 'utils';
+import { operatorColumnRender } from 'utils/columns';
+import Tabular from 'components/Tabular';
+import { ROLES_ENUM } from 'constants';
 
 const AccountPage = () => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
 
   const tableRef = useRef();
+
+  const { reload: reloadTable, selectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
@@ -36,16 +37,10 @@ const AccountPage = () => {
     setLoading(false);
   }
 
-  const items = [
-    {
-      key: '1',
-      label: 'Xóa'
-    },
-    {
-      key: '2',
-      label: 'Sửa'
-    }
-  ];
+  async function handleEdit(record) {
+    setSelectedRow(record);
+    setShowEditModal(true);
+  }
 
   const columns = [
     {
@@ -60,51 +55,17 @@ const AccountPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (text, record) => (
-        <div className="flex items-center justify-center">
-          <Dropdown
-            menu={{
-              items,
-              onClick: async (e) => {
-                switch (e.key) {
-                  case '1':
-                    Modal.confirm({
-                      title: 'Bạn có chắc chắn muốn xóa?',
-                      okText: 'Đồng ý',
-                      cancelText: 'Hủy',
-                      onOk: () => {
-                        handleDelete(record.id);
-                      }
-                    });
-                    break;
-                  case '2':
-                    setShowEditModal(true);
-                    setSelectedRow(record);
-                    break;
-                  default:
-                }
-              }
-            }}
-            trigger={['click']}
-          >
-            <div className="flex items-center justify-center w-10 h-10 font-medium transition-all bg-white border border-blue-500 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white">
-              <SettingOutlined />
-            </div>
-          </Dropdown>
-        </div>
-      )
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
     },
     {
       title: 'Họ và tên',
       dataIndex: 'name',
-      key: 'name',
-      renderFormItem: renderFormCol
+      key: 'name'
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      key: 'email',
-      renderFormItem: renderFormCol
+      key: 'email'
     },
     {
       title: 'Giới tính',
@@ -116,8 +77,7 @@ const AccountPage = () => {
     {
       title: 'Di động',
       dataIndex: 'phone',
-      key: 'phone',
-      renderFormItem: renderFormCol
+      key: 'phone'
     },
     {
       title: 'Ngày sinh',
@@ -136,30 +96,23 @@ const AccountPage = () => {
       dataIndex: 'role',
       valueType: 'select',
       key: 'role',
-      renderFormItem: renderFormCol,
+      valueEnum: ROLES_ENUM,
       render: (_, record) => (
         <span>{ROLES_OBJ.find((role) => role.value === record.role)?.label || 'Không xác định'}</span>
       )
     }
   ];
 
-  const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
   const onCloseEditModal = () => {
     setSelectedRow({});
     setShowEditModal(false);
   };
 
-  const handleReload = () => {
-    tableRef.current.reload();
-  };
-
   const handleMultiDelete = async () => {
     try {
       await multipleDeleteUserById({ ids: selectedRowKeys });
-      handleReload();
+      setSelectedRowKeys([]);
+      reloadTable();
       toast.success('Xóa thành công!');
     } catch (error) {
       toast.error(error.response.data.message);
@@ -168,23 +121,19 @@ const AccountPage = () => {
 
   return (
     <div className="min-h-[100vh] px-5 mt-10">
-      <ProTable
-        actionRef={tableRef}
+      <Tabular
+        ref={tableRef}
         columns={columns}
-        bordered
-        scroll={{ y: 520 }}
-        search={true}
-        dataSource={dataSource || []}
         rowKey={(e) => e.id}
         request={async (params) => {
           setLoading(true);
+          const { current, pageSize, ...restParams } = params;
           const cloneParams = {
-            ...params,
-            page: params.current,
-            per_size: params.pageSize
+            ...restParams,
+            page: current,
+            per_size: pageSize
           };
           const res = await getUserList(cloneParams);
-          setDataSource(res.data?.data);
           setLoading(false);
           return {
             data: res.data.data,
@@ -195,17 +144,17 @@ const AccountPage = () => {
         headerTitle={
           <div className="flex items-center gap-2">
             <h1 className="mb-2 text-xl font-medium">Quản lý tài khoản</h1>
-            <AddAccountModal handleReload={handleReload} />
+            <AddAccountModal handleReload={reloadTable} />
             <Popconfirm
               title="Xóa"
               description="Bạn có chắc chấn muốn xóa?"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               onConfirm={handleMultiDelete}
-              disabled={selectedRowKeys.length <= 0}
+              disabled={selectedRowKeys?.length <= 0}
             >
               <span
                 className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                  selectedRowKeys.length <= 0 ? 'cursor-not-allowed' : ''
+                  selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
                 }`}
               >
                 <DeleteOutlined />
@@ -213,7 +162,6 @@ const AccountPage = () => {
             </Popconfirm>
           </div>
         }
-        loading={loading}
         options={{
           reload: () => {
             setLoading(true);
@@ -223,18 +171,14 @@ const AccountPage = () => {
             }, 1000);
           }
         }}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: false
-        }}
-        rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
+        loading={loading}
       />
       {showEditModal && (
         <EditAccountModal
           show={showEditModal}
           data={selectedRow}
           onClose={onCloseEditModal}
-          handleReload={handleReload}
+          handleReload={reloadTable}
         />
       )}
     </div>

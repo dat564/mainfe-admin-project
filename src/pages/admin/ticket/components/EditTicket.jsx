@@ -1,11 +1,34 @@
-import { ModalForm, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormDateTimePicker, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components';
+import { Col, Row } from 'antd';
+import { ROLES } from 'constants';
+import { TICKET_STATUS_OPTIONS } from 'constants';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
+import { getUserList } from 'services';
+import { getTripList } from 'services';
 import { updateTicket } from 'services';
 
 const EditTicket = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
+
+  console.log({ data });
+
+  const handleGetTrip = async () => {
+    const { data } = await getTripList();
+    return data?.data?.map((item) => ({
+      label: `${item?.route_start} ➡️ ${item?.route_end}`,
+      value: item?.id
+    }));
+  };
+
+  const handleGetCustomer = async () => {
+    const { data } = await getUserList({ role: ROLES.USER });
+    return data.map((item) => ({
+      label: item.name,
+      value: item.id
+    }));
+  };
 
   return (
     <ModalForm
@@ -13,7 +36,7 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
       width="70%"
       open={visible}
       initialValues={{
-        name: data?.name
+        ...data
       }}
       autoFocusFirstInput
       modalProps={{
@@ -39,12 +62,45 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
       formRef={formRef}
       className="px-10 py-5"
     >
-      <ProFormText
-        name="name"
-        label="Phương thức thanh toán"
-        rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-        className="p-4"
-      />
+      <Row gutter={[30, 20]} className="mb-5">
+        <Col span={12}>
+          <ProFormText
+            name="price"
+            label="Giá vé"
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            className="p-4"
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormDigit name="position_on_car" label="Số ghế" disabled />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="status"
+            label="Trạng thái"
+            options={TICKET_STATUS_OPTIONS}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormDateTimePicker
+            name="purchase_time"
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            label="Thời gian mua"
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect disabled name="trip_id" request={handleGetTrip} label="Chuyến" />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="customer_id"
+            request={handleGetCustomer}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            label="Khách hàng"
+          />
+        </Col>
+      </Row>
     </ModalForm>
   );
 };

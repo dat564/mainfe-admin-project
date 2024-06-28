@@ -10,7 +10,8 @@ import { getTemplateCalendarTripList } from 'services/templateCalendarTrip';
 import EditTemplateCalendarTripModal from 'pages/transportCompany/templateCalendarTrip/components/EditTemplateCalendarTripModal';
 import { multiDeleteTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import Tabular from 'components/Tabular';
-import { renderFormCol } from 'utils';
+import Setting from 'components/svgs/Setting';
+import { operatorColumnRender } from 'utils/columns';
 
 const TemplateCalendarTripPage = () => {
   const [loading, setLoading] = useState(false);
@@ -43,12 +44,30 @@ const TemplateCalendarTripPage = () => {
     }
   };
 
+  function handleEdit(record) {
+    setSelectedRow(record);
+    setShowEditModal(true);
+  }
+
   const columns = [
+    {
+      title: (
+        <div className="flex items-center justify-center">
+          <Setting />
+        </div>
+      ),
+      dataIndex: 'settings',
+      width: 100,
+      hideInSearch: true,
+      key: 'settings',
+      search: false,
+      align: 'center',
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+    },
     {
       title: 'Tên mẫu',
       dataIndex: 'name',
-      key: 'name',
-      renderFormItem: renderFormCol
+      key: 'name'
     }
   ];
 

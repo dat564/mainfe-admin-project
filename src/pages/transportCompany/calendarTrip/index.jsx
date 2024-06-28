@@ -6,11 +6,11 @@ import { toast } from 'react-toastify';
 import { multipleDeleteUserById } from 'services';
 import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
-import EditCalendarTripModal from './components/EditCalendarTripModal';
 import { getCalendarTripList } from 'services';
 import Tabular from 'components/Tabular';
-import { renderFormCol } from 'utils';
 import StepsFormModal from './components/StepsFormModal';
+import Setting from 'components/svgs/Setting';
+import { operatorColumnRender } from 'utils/columns';
 
 const CalendarTripPage = () => {
   const [loading, setLoading] = useState(false);
@@ -39,24 +39,40 @@ const CalendarTripPage = () => {
     setLoading(false);
   }
 
+  function handleEdit(record) {
+    setSelectedRow(record);
+    setShowEditModal(true);
+  }
+
   const columns = [
+    {
+      title: (
+        <div className="flex items-center justify-center">
+          <Setting />
+        </div>
+      ),
+      dataIndex: 'settings',
+      width: 100,
+      hideInSearch: true,
+      key: 'settings',
+      search: false,
+      align: 'center',
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+    },
     {
       title: 'Tên lịch trình',
       dataIndex: 'name',
-      key: 'name',
-      renderFormItem: renderFormCol
+      key: 'name'
     },
     {
       title: 'Thời gian áp dụng',
       dataIndex: 'start_time',
-      key: 'start_time',
-      renderFormItem: renderFormCol
+      key: 'start_time'
     },
     {
       title: 'Thời gian kết thúc',
       dataIndex: 'end_time',
-      key: 'end_time',
-      renderFormItem: renderFormCol
+      key: 'end_time'
     }
   ];
 
@@ -139,10 +155,10 @@ const CalendarTripPage = () => {
         <StepsFormModal handleReload={reloadTable} open={showAddModal} handleCancel={() => setShowAddModal(false)} />
       )}
       {showEditModal && (
-        <EditCalendarTripModal
-          show={showEditModal}
+        <StepsFormModal
+          open={showEditModal}
           data={selectedRow}
-          onClose={onCloseEditModal}
+          handleCancel={onCloseEditModal}
           handleReload={reloadTable}
         />
       )}

@@ -1,47 +1,45 @@
 import React, { useRef, useState } from 'react';
-import { ProTable } from '@ant-design/pro-components';
-import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import AddTransportCompanyModal from './components/AddTransportCompanyModal';
-import { Dropdown, Modal, Popconfirm } from 'antd';
+import { Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
 import EditTransportCompanyModal from './components/EditTransportCompanyModal';
 import requireAuthentication from 'hoc/requireAuthentication';
 import Setting from 'components/svgs/Setting';
 import { getTransportCompany } from 'services';
 import { ROLES } from 'constants';
-import { renderFormCol } from 'utils';
+import Tabular from 'components/Tabular';
+import { operatorColumnRender } from 'utils/columns';
+import { multiDeleteTransportCompany } from 'services';
+
+const MODAL_TYPE = {
+  ADD: 'ADD',
+  EDIT: 'EDIT'
+};
 
 const TransportCompanyPage = () => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState();
+  const [modalConfig, setModalConfig] = useState({ type: null, data: {} });
 
   const tableRef = useRef();
+  const { selectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
       setLoading(true);
       // await deleteMajorById(recordId);
       toast.success('Delete successfully!');
-      handleReload();
+      reloadTable();
+      setSelectedRowKeys([]);
     } catch (error) {
       toast.error(error.response.data.message);
     }
     setLoading(false);
   }
 
-  const items = [
-    {
-      label: 'Sửa',
-      key: '2'
-    },
-    {
-      key: '1',
-      label: 'Xóa'
-    }
-  ];
+  async function handleEdit(record) {
+    setModalConfig({ type: MODAL_TYPE.EDIT, data: record });
+  }
 
   const columns = [
     {
@@ -56,39 +54,7 @@ const TransportCompanyPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => (
-        <div className="flex items-center justify-center">
-          <Dropdown
-            menu={{
-              items,
-              onClick: async (e) => {
-                switch (e.key) {
-                  case '1':
-                    Modal.confirm({
-                      title: 'Bạn có chắc chắn muốn xóa?',
-                      okText: 'Đồng ý',
-                      cancelText: 'Hủy',
-                      onOk: () => {
-                        handleDelete(record.id);
-                      }
-                    });
-                    break;
-                  case '2':
-                    setShowEditModal(true);
-                    setSelectedRow(record);
-                    break;
-                  default:
-                }
-              }
-            }}
-            trigger={['click']}
-          >
-            <div className="flex items-center justify-center w-10 h-10 font-medium transition-all bg-white border border-blue-500 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white">
-              <SettingOutlined />
-            </div>
-          </Dropdown>
-        </div>
-      )
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
     },
     {
       title: 'Ảnh',
@@ -102,46 +68,33 @@ const TransportCompanyPage = () => {
     {
       title: 'Tên nhà xe',
       dataIndex: 'name',
-      key: 'name',
-      renderFormItem: renderFormCol
+      key: 'name'
     },
     {
       title: 'Địa chỉ',
       dataIndex: 'address',
-      renderFormItem: renderFormCol,
       key: 'address'
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
-      renderFormItem: renderFormCol,
       key: 'phone'
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      renderFormItem: renderFormCol,
       key: 'email'
     }
   ];
 
-  const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
   const onCloseEditModal = () => {
-    setSelectedRow({});
-    setShowEditModal(false);
-  };
-
-  const handleReload = () => {
-    tableRef.current.reload();
+    setModalConfig({ type: null, data: {} });
   };
 
   const handleMultiDelete = async () => {
     try {
-      // await multipleDeleteMajorById({ ids: selectedRowKeys });
-      handleReload();
+      await multiDeleteTransportCompany({ ids: selectedRowKeys });
+      reloadTable();
       toast.success('Delete successfully!');
     } catch (error) {
       toast.error(error.response.data.message);
@@ -150,10 +103,9 @@ const TransportCompanyPage = () => {
 
   return (
     <div className="min-h-[100vh] px-5 mt-10">
-      <ProTable
-        actionRef={tableRef}
+      <Tabular
+        ref={tableRef}
         columns={columns}
-        dataSource={dataSource || []}
         rowKey={(e) => e.id}
         request={async (params) => {
           setLoading(true);
@@ -173,7 +125,6 @@ const TransportCompanyPage = () => {
             };
           });
 
-          setDataSource(data);
           setLoading(false);
           return {
             data: data,
@@ -181,11 +132,10 @@ const TransportCompanyPage = () => {
             total: res.data.total
           };
         }}
-        scroll={{ y: 520 }}
         headerTitle={
           <div className="flex items-center gap-2">
             <h1 className="mb-2 text-xl font-medium ">Quản lý nhà xe</h1>
-            <AddTransportCompanyModal handleReload={handleReload} />
+            <AddTransportCompanyModal reloadTable={reloadTable} />
             <Popconfirm
               title="Delete"
               description="Are you sure to delete?"
@@ -198,12 +148,6 @@ const TransportCompanyPage = () => {
             </Popconfirm>
           </div>
         }
-        pagination={{
-          pageSize: 10
-        }}
-        search={{
-          labelWidth: 'auto'
-        }}
         loading={loading}
         options={{
           reload: () => {
@@ -214,14 +158,14 @@ const TransportCompanyPage = () => {
             }, 1000);
           }
         }}
-        rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
+        handleDelete={handleDelete}
       />
-      {showEditModal && (
+      {modalConfig.type === MODAL_TYPE.EDIT && (
         <EditTransportCompanyModal
-          show={showEditModal}
-          data={selectedRow}
+          show={modalConfig.type === MODAL_TYPE.EDIT}
+          data={modalConfig.data}
           onClose={onCloseEditModal}
-          handleReload={handleReload}
+          reloadTable={reloadTable}
         />
       )}
     </div>

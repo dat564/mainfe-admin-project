@@ -1,26 +1,20 @@
-import { FolderAddOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
-import { ROLES } from 'constants';
 import { NOTIFY_MESSAGE } from 'constants';
+import { requestImage } from 'constants/images';
 import useUploadImage from 'hooks/useUploadImage';
 import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { getUserList } from 'services';
+import { updateCompanyPayment } from 'services';
 import { createCompanyPayment } from 'services/companyPayment';
+import { uploadImage } from 'services/image';
 import { getPaymentList } from 'services/payment';
 
 const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
-  const {
-    previewImageModal,
-    fileList,
-    handlePreview,
-    handleChange,
-    handleCancelPreview,
-    setFileList,
-    setPreviewImageModal
-  } = useUploadImage();
+  const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, setFileList } =
+    useUploadImage();
 
   const handleGetPaymentList = async () => {
     try {
@@ -34,45 +28,6 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
     }
   };
 
-  const handleGetTransportCompanyList = async () => {
-    try {
-      const res = await getUserList({ role: ROLES.TRANSPORT_COMPANY });
-      return res.data.data.map((item) => ({
-        label: item?.transport_company?.name,
-        value: item?.transport_company?.id
-      }));
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-
-  useEffect(() => {
-    if (!data?.id) return;
-    getUserList({ id: data.id })
-      .then((res) => {
-        const [_data] = res.data.data;
-        if (_data?.img_url) {
-          setPreviewImageModal((prev) => ({
-            ...prev,
-            image: _data?.img_url
-          }));
-          setFileList([
-            {
-              name: 'image.png',
-              status: 'done',
-              url: _data?.img_url
-            }
-          ]);
-        }
-        formRef.current.setFieldsValue({
-          ..._data
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [data.id, setFileList, setPreviewImageModal]);
-
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -80,23 +35,58 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
     </div>
   );
 
+  const handleImageUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file.originFileObj); // Đính kèm file gốc vào form data
+
+      // Gửi yêu cầu POST đến API bằng Axios
+      const resImage = await uploadImage(formData);
+
+      // Xử lý kết quả trả về từ API
+      const result = resImage.data;
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    if (data.image_qr_code) {
+      setFileList([
+        {
+          uid: '-1',
+          name: 'image.png',
+          status: 'done',
+          url: `${requestImage}/${data.image_qr_code}`
+        }
+      ]);
+    }
+  }, [data, setFileList]);
+
   return (
     <ModalForm
       title="Thêm phương thức thanh toán"
       width="50%"
       open={visible}
       autoFocusFirstInput
+      initialValues={data}
       modalProps={{
         onCancel: () => onClose(),
         destroyOnClose: true
       }}
       onFinish={async (values) => {
         try {
-          await createCompanyPayment([
-            {
-              ...values
-            }
-          ]);
+          let uploadedImage;
+          const _data = { ...values, id: data.id };
+          if (fileList.length > 0 && fileList[0].originFileObj) {
+            uploadedImage = await handleImageUpload(fileList[0]);
+          }
+
+          if (uploadedImage) {
+            _data.img_url = uploadedImage.imageUrl;
+          }
+          await updateCompanyPayment(_data);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           onClose();
           handleReload();

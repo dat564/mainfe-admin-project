@@ -17,7 +17,7 @@ const getBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-const EditAccountModal = ({ show, data, onClose, handleReload }) => {
+const EditDriverModal = ({ show, data, onClose, handleReload }) => {
   const formRef = useRef();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -76,7 +76,7 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
 
   return (
     <ModalForm
-      title="Sửa tài khoản"
+      title="Sửa tài xế"
       width="70%"
       open={show}
       autoFocusFirstInput
@@ -167,16 +167,14 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
         <Col span={12}>
           <ProFormRadio.Group name="gender" label="Giới tính" options={GENDER_OPTIONS} />
         </Col>
-        {data?.role === ROLES.DRIVER && (
-          <Col span={12}>
-            <ProFormSelect
-              name="transport_company_id"
-              label="Nhà xe"
-              request={handleGetTransportCompany}
-              rules={[{ required: true, message: 'Vui lòng chọn trường này' }]}
-            />
-          </Col>
-        )}
+        <Col span={12}>
+          <ProFormSelect
+            name="transport_company_id"
+            label="Nhà xe"
+            request={handleGetTransportCompany}
+            rules={[{ required: true, message: 'Vui lòng chọn trường này' }]}
+          />
+        </Col>
       </Row>
       <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={() => setPreviewOpen(false)}>
         <img alt="example" style={{ width: '100%' }} src={previewImage} />
@@ -185,4 +183,4 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
   );
 };
 
-export default EditAccountModal;
+export default EditDriverModal;

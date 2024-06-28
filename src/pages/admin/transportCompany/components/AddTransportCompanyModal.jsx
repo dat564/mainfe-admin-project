@@ -44,7 +44,7 @@ const AddTransportCompanyModal = ({ handleReload }) => {
   const handleImageUpload = async (file) => {
     try {
       const formData = new FormData();
-      formData.append('images', file.originFileObj); // Đính kèm file gốc vào form data
+      formData.append('image', file.originFileObj); // Đính kèm file gốc vào form data
 
       // Thêm các thông tin khác cần thiết vào form data nếu có
 

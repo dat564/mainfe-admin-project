@@ -1,12 +1,12 @@
-import { PlusOutlined } from '@ant-design/icons';
+import { FolderAddOutlined, PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
-import { ROLES } from 'constants';
-import { NOTIFY_MESSAGE, GENDER_OPTIONS } from 'constants';
+import { NOTIFY_MESSAGE, GENDER_OPTIONS, ROLES, ROLES_OBJ } from 'constants';
 import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getTransportCompany } from 'services';
-import { updateUser } from 'services';
+import { createUser } from 'services';
 import { uploadImage } from 'services/image';
 
 const getBase64 = (file) =>
@@ -17,25 +17,13 @@ const getBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-const EditAccountModal = ({ show, data, onClose, handleReload }) => {
+const AddDriverModal = ({ handleReload }) => {
   const formRef = useRef();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [fileList, setFileList] = useState([]);
-
-  const handleGetTransportCompany = async () => {
-    try {
-      const res = await getTransportCompany();
-      const data = res.data.data;
-      return data.map((item) => ({
-        label: item.name,
-        value: item.id
-      }));
-    } catch (error) {
-      throw error;
-    }
-  };
+  const { transport_company } = useSelector((state) => state.auth.userInfo);
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
@@ -76,35 +64,38 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
 
   return (
     <ModalForm
-      title="Sửa tài khoản"
+      title="Thêm tài xế"
       width="70%"
-      open={show}
+      trigger={
+        <span className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200">
+          <FolderAddOutlined />
+        </span>
+      }
+      initialValues={{
+        gender: 0
+      }}
       autoFocusFirstInput
-      initialValues={data}
       modalProps={{
-        destroyOnClose: true,
-        onCancel: () => onClose()
+        onCancel: () => true,
+        destroyOnClose: true
       }}
       onFinish={async (values) => {
         try {
           let uploadedImage;
-          const _data = { ...values, id: data.id };
           if (fileList.length > 0 && fileList[0].originFileObj) {
-            uploadedImage = await handleImageUpload(fileList[0]);
+            uploadedImage = await handleImageUpload(fileList[0]); // Chuyển đổi và upload ảnh khi nhấn nút "Submit"
           }
 
-          if (uploadedImage) {
-            _data.img_url = uploadedImage.imageUrl;
-          }
-
-          await updateUser(_data);
-          toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
-          onClose();
-        } catch (error) {
-          toast.error(error.response.data.message);
-        }
-
-        handleReload();
+          await createUser({
+            ...values,
+            img_url: uploadedImage?.imageUrl || null,
+            role: ROLES.DRIVER,
+            transport_company_id: transport_company.id
+          });
+          toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+          handleReload();
+          return true;
+        } catch (err) {}
       }}
       formRef={formRef}
       className="px-10 py-5"
@@ -113,7 +104,7 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
         <Col span={12}>
           <h1 className="mb-2">Ảnh</h1>
           <Upload
-            action="#"
+            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
             listType="picture-card"
             fileList={fileList}
             onPreview={handlePreview}
@@ -143,14 +134,21 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
             name="email"
             label="Email"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            placeholder="Please enter a email"
           ></ProFormText>
+        </Col>
+        <Col span={12}>
+          <ProFormText.Password
+            name="password"
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            label="Password"
+            placeholder="Please enter password"
+          ></ProFormText.Password>
         </Col>
         <Col span={12}>
           <ProFormText name="address" label="Địa chỉ"></ProFormText>
         </Col>
         <Col span={12}>
-          <ProFormText name="CIC_code" label="Chứng minh nhân dân"></ProFormText>
+          <ProFormText name="CIC_code" label="Số chứng minh nhân dân"></ProFormText>
         </Col>
         <Col span={12}>
           <ProFormDatePicker name="birth_day" label="Ngày sinh"></ProFormDatePicker>
@@ -159,7 +157,7 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
           <ProFormText name="birth_place" label="Nơi sinh"></ProFormText>
         </Col>
         <Col span={12}>
-          <ProFormText name="permanent_residence" label="Hộ khẩu thường chú"></ProFormText>
+          <ProFormText name="permanent_residence" label="Hộ khẩu thường trú"></ProFormText>
         </Col>
         <Col span={12}>
           <ProFormText name="ethnicity" label="Dân tộc"></ProFormText>
@@ -167,16 +165,6 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
         <Col span={12}>
           <ProFormRadio.Group name="gender" label="Giới tính" options={GENDER_OPTIONS} />
         </Col>
-        {data?.role === ROLES.DRIVER && (
-          <Col span={12}>
-            <ProFormSelect
-              name="transport_company_id"
-              label="Nhà xe"
-              request={handleGetTransportCompany}
-              rules={[{ required: true, message: 'Vui lòng chọn trường này' }]}
-            />
-          </Col>
-        )}
       </Row>
       <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={() => setPreviewOpen(false)}>
         <img alt="example" style={{ width: '100%' }} src={previewImage} />
@@ -185,4 +173,4 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
   );
 };
 
-export default EditAccountModal;
+export default AddDriverModal;

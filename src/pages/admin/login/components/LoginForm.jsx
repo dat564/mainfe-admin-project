@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { login } from 'redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom/dist';
+import { ROLES } from 'constants';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -38,7 +39,12 @@ const LoginForm = () => {
       } = res.data;
       const payload = { access_token, refresh_token, user };
       dispatch(login(payload));
-      navigate('/');
+      const role = user?.role;
+      if (role === ROLES.ADMIN) {
+        navigate('/');
+      } else {
+        navigate('/drivers');
+      }
       toast.success(res.data?.message || 'Login success!', {
         position: 'top-center',
         autoClose: 3000,
@@ -62,7 +68,6 @@ const LoginForm = () => {
         progress: undefined,
         theme: 'light'
       });
-      console.log(error);
     }
   };
 
@@ -78,7 +83,7 @@ const LoginForm = () => {
             layout="vertical"
             onFinish={handleSubmit}
             initialValues={{
-              username: 'daothithien663@gmail.com',
+              username: 'phanhavau331@gmail.com',
               password: '123456'
             }}
           >
@@ -107,7 +112,6 @@ const LoginForm = () => {
               <Button
                 htmlType="submit"
                 className="flex items-center justify-center min-h-[50px] font-semibold text-white bg-[#422af8] rounded-2xl"
-                style={{ color: '#fff' }}
                 block
               >
                 Đăng nhập

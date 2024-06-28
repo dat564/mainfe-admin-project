@@ -22,7 +22,7 @@ export function updateCar(data) {
 }
 
 export function deleteCar(data) {
-  return request(`/transportCompanyCar/delete`, {
+  return request(`/transportCompanyCar/destroy`, {
     method: 'POST',
     data
   });

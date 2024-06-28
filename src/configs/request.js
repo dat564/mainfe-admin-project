@@ -70,7 +70,7 @@ request.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    if (error.response && error.response.status >= 500) {
+    if (error.response && error.response.status >= 400) {
       toast.error(error.response.data.message);
       return Promise.reject(error);
     }

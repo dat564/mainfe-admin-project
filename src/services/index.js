@@ -6,3 +6,6 @@ export * from './ticket';
 export * from './payment';
 export * from './companyPayment';
 export * from './calendarTrip.js';
+export * from './templateCalendarTrip.js';
+export * from './vourcher';
+export * from './payment';

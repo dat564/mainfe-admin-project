@@ -1,21 +1,26 @@
 import { StepsForm } from '@ant-design/pro-components';
 import { Modal } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { createTrip } from 'services/trip';
 import Step1 from './Step1';
 import Step2 from './Step2';
+import { createCalendarTrip } from 'services';
+import { useSelector } from 'react-redux';
+import { updateCalendarTrip } from 'services';
 
-const StepsFormModal = ({ handleReload, handleCancel, open }) => {
+const StepsFormModal = ({ handleReload, handleCancel, open, data }) => {
   const formRef = useRef();
   const stepFormRef = useRef();
   const [current, setCurrent] = useState(0);
-  const [trips, setTrips] = useState([]);
+  const [templateId, setTemplateId] = useState();
+  const { transport_company } = useSelector((state) => state.auth.userInfo);
+
+  console.log({ data });
 
   return (
     <Modal
-      title={'Thêm lịch trình'}
+      title={data ? 'Sửa lịch trình' : 'Thêm lịch trình'}
       width="70%"
       submitter={false}
       open={open}
@@ -27,22 +32,34 @@ const StepsFormModal = ({ handleReload, handleCancel, open }) => {
         <StepsForm
           formRef={formRef}
           current={current}
+          initialValues={data}
           autoFocusFirstInput
           onFinish={async (values) => {
+            if (!templateId) {
+              toast.error('Vui lòng chọn mẫu lịch trình!');
+              return false;
+            }
             try {
-              // const bodyData = trips.map((trip) => ({
-              //   ...values,
-              //   ...trip,
-              //   transport_company_car_id: values.carId
-              // }));
+              const bodyData = {
+                ...values,
+                template_id: templateId,
+                start_time: values.dateRange[0],
+                end_time: values.dateRange[1],
+                transport_company_id: transport_company.id
+              };
 
-              // await createTrip(bodyData);
-
-              toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+              if (data) {
+                bodyData.id = data.id;
+                await updateCalendarTrip([bodyData]);
+                toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
+              } else {
+                await createCalendarTrip([bodyData]);
+                toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+              }
               handleReload();
               handleCancel();
             } catch (err) {
-              toast.error(err.response.data.message);
+              // toast.error(err.response.data.message);
             }
           }}
           onCurrentChange={(current) => {
@@ -54,10 +71,10 @@ const StepsFormModal = ({ handleReload, handleCancel, open }) => {
           }}
         >
           <StepsForm.StepForm name="step1" title="Tạo lịch trình">
-            <Step1 />
+            <Step1 data={data} />
           </StepsForm.StepForm>
           <StepsForm.StepForm name="step2" title={'Chọn mẫu'}>
-            <Step2 />
+            <Step2 setTemplateId={setTemplateId} form={formRef.current} data={data} />
           </StepsForm.StepForm>
         </StepsForm>
       </div>

@@ -1,76 +1,32 @@
 import { ProTable } from '@ant-design/pro-components';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import { SettingOutlined } from '@ant-design/icons';
-import { Dropdown, Modal } from 'antd';
-import Setting from 'components/svgs/Setting';
-
-const items = [
-  {
-    label: 'Sửa',
-    key: '2'
-  },
-  {
-    key: '1',
-    label: 'Xóa'
-  }
-];
+import { renderFormCol } from 'utils';
 
 const Tabular = forwardRef(
-  ({ columns, isShowSetting = true, handleDelete, handleEdit, loading = false, ...restProps }, ref) => {
-    const defaultColumns = [
-      {
-        title: (
-          <div className="flex items-center justify-center">
-            <Setting />
-          </div>
-        ),
-        hideInTable: !isShowSetting,
-        dataIndex: 'settings',
-        width: 100,
-        hideInSearch: true,
-        key: 'settings',
-        search: false,
-        align: 'center',
-        render: (text, record) => (
-          <div className="flex items-center justify-center">
-            <Dropdown
-              menu={{
-                items,
-                onClick: async (e) => {
-                  switch (e.key) {
-                    case '1':
-                      Modal.confirm({
-                        title: 'Bạn có chắc chắn muốn xóa?',
-                        okText: 'Đồng ý',
-                        cancelText: 'Hủy',
-                        onOk: () => {
-                          handleDelete(record.id);
-                        }
-                      });
-                      break;
-                    case '2':
-                      handleEdit(record);
-                      break;
-                    default:
-                  }
-                }
-              }}
-              trigger={['click']}
-            >
-              <div className="flex items-center justify-center w-10 h-10 font-medium transition-all bg-white border border-blue-500 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white">
-                <SettingOutlined />
-              </div>
-            </Dropdown>
-          </div>
-        )
-      }
-    ];
-    const tableColumns = [...defaultColumns, ...columns];
+  (
+    {
+      columns,
+      handleDelete,
+      handleEdit,
+      loading = false,
+      rowSelectionType = 'checkbox',
+      customOnSelectChange,
+      ...restProps
+    },
+    ref
+  ) => {
+    const tableColumns = [...columns].map((column) => {
+      if (column.hideInSearch === true || column.search === false || column.renderFormCol === false) return column;
+      column['renderFormItem'] = renderFormCol;
+      return column;
+    });
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const tableRef = useRef();
 
     const onSelectChange = (newSelectedRowKeys) => {
+      console.log({ newSelectedRowKeys });
       setSelectedRowKeys(newSelectedRowKeys);
+      customOnSelectChange && customOnSelectChange(newSelectedRowKeys);
     };
 
     const reload = () => {
@@ -94,7 +50,7 @@ const Tabular = forwardRef(
         columns={tableColumns}
         bordered
         rowClassName="cursor-pointer"
-        rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
+        rowSelection={{ selectedRowKeys, onChange: onSelectChange, type: rowSelectionType }}
         pagination={{
           pageSize: 10
         }}

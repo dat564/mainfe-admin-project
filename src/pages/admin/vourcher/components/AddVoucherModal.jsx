@@ -1,69 +1,78 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormDigit, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormDatePicker, ProFormDigit, ProFormMoney, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
-import React from 'react';
+import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
-import { createCar } from 'services';
+import { createVouchers } from 'services/vourcher';
 
-const AddCarModal = ({ companyId, handleReload }) => {
+const AddVoucherModal = ({ reloadTable }) => {
+  const formRef = useRef();
+
   return (
     <ModalForm
-      title="Thêm xe"
-      width="60%"
+      title="Thêm phiếu giảm giá"
+      width="70%"
       trigger={
         <span className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200">
           <FolderAddOutlined />
         </span>
       }
+      autoFocusFirstInput
       modalProps={{
         onCancel: () => true,
         destroyOnClose: true
       }}
       onFinish={async (values) => {
         try {
-          await createCar([{ ...values, transport_company_id: companyId }]);
-          handleReload();
+          await createVouchers([
+            {
+              ...values
+            }
+          ]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+          reloadTable();
           return true;
-        } catch (error) {
+        } catch (err) {
           return false;
         }
       }}
+      formRef={formRef}
+      className="px-10 py-5"
     >
-      <Row gutter={[30, 20]} className="p-5">
-        <Col span={12}>
-          <ProFormText
-            name="name"
-            label="Tên xe"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            className="p-4"
-          ></ProFormText>
-        </Col>
+      <Row gutter={[30, 20]}>
         <Col span={12}>
           <ProFormDigit
-            name="seating_capacity"
-            label="Số chỗ ngồi"
+            name="quantity"
+            label="Số lượng"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            className="p-4"
           ></ProFormDigit>
         </Col>
         <Col span={12}>
+          <ProFormMoney
+            name="discount_price"
+            label="Số tiền giảm giá"
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
           <ProFormText
-            name="license_plate"
-            label="Biển số xe"
+            name="regular_point_need"
+            label="Điểm thưởng cần có"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           ></ProFormText>
         </Col>
         <Col span={12}>
-          <ProFormText
-            name="manufacture"
+          <ProFormDatePicker
+            name="expired_at"
+            label="Thời gian hết hạn"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            label="Hãng sản xuất"
-          ></ProFormText>
+          />
         </Col>
       </Row>
     </ModalForm>
   );
 };
 
-export default AddCarModal;
+export default AddVoucherModal;

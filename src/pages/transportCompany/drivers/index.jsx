@@ -1,52 +1,47 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { getUserList } from 'services';
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { ROLES } from 'constants';
 import { Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
+import { multipleDeleteUserById } from 'services';
+import { GENDER_LABEL } from 'constants';
 import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
-import AddTemplateCalendarTripModal from 'pages/transportCompany/templateCalendarTrip/components/AddTemplateCalendarTripModal';
-import { getTemplateCalendarTripList } from 'services/templateCalendarTrip';
-import EditTemplateCalendarTripModal from 'pages/transportCompany/templateCalendarTrip/components/EditTemplateCalendarTripModal';
-import { multiDeleteTemplateCalendarTrip } from 'services/templateCalendarTrip';
-import Tabular from 'components/Tabular';
 import Setting from 'components/svgs/Setting';
+import { ROLES_OBJ } from 'constants';
 import { operatorColumnRender } from 'utils/columns';
+import Tabular from 'components/Tabular';
+import { ROLES_ENUM } from 'constants';
+import AddDriverModal from './components/AddDriverModal';
+import EditDriverModal from './components/EditDriverModal';
+import { useSelector } from 'react-redux';
 
-const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
+const DriverPage = () => {
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
+  const { transport_company } = useSelector((state) => state.auth.userInfo);
 
   const tableRef = useRef();
-  const { selectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
+
+  const { reload: reloadTable, selectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
       setLoading(true);
-      await multiDeleteTemplateCalendarTrip({ ids: [recordId] });
+      await multipleDeleteUserById({ ids: [recordId] });
       toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
-      setSelectedRowKeys([]);
-      reloadTable();
+      tableRef.current.reload();
     } catch (error) {
       toast.error(error.response.data.message);
     }
     setLoading(false);
   }
 
-  const handleMultiDelete = async () => {
-    try {
-      await multiDeleteTemplateCalendarTrip({ ids: selectedRowKeys });
-      reloadTable();
-      toast.success('Xóa thành công!');
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-
-  function handleEdit(record) {
-    setShowEditModal(true);
+  async function handleEdit(record) {
     setSelectedRow(record);
+    setShowEditModal(true);
   }
 
   const columns = [
@@ -65,10 +60,38 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
       render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
     },
     {
-      title: 'Tên mẫu',
+      title: 'Họ và tên',
       dataIndex: 'name',
-      key: 'name',
-      renderFormCol: false
+      key: 'name'
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email'
+    },
+    {
+      title: 'Giới tính',
+      dataIndex: 'gender',
+      key: 'gender',
+      hideInSearch: true,
+      render: (_, record) => GENDER_LABEL[record?.gender]
+    },
+    {
+      title: 'Di động',
+      dataIndex: 'phone',
+      key: 'phone'
+    },
+    {
+      title: 'Ngày sinh',
+      dataIndex: 'birth_day',
+      hideInSearch: true,
+      key: 'birth_day'
+    },
+    {
+      title: 'Địa chỉ',
+      dataIndex: 'address',
+      hideInSearch: true,
+      key: 'address'
     }
   ];
 
@@ -77,35 +100,34 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
     setShowEditModal(false);
   };
 
-  useEffect(() => {
-    if (data && setSelectedRowKeys) {
-      setSelectedRowKeys([data.template_id]);
+  const handleMultiDelete = async () => {
+    try {
+      await multipleDeleteUserById({ ids: selectedRowKeys });
+      setSelectedRowKeys([]);
+      reloadTable();
+      toast.success('Xóa thành công!');
+    } catch (error) {
+      toast.error(error.response.data.message);
     }
-  }, [data, setSelectedRowKeys]);
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      selectedRowKeys,
-      selectedRow
-    }),
-    [selectedRowKeys, selectedRow]
-  );
+  };
 
   return (
-    <div className="px-5 mt-10 ">
+    <div className="min-h-[100vh] px-5 mt-10">
       <Tabular
         ref={tableRef}
         columns={columns}
         rowKey={(e) => e.id}
         request={async (params) => {
           setLoading(true);
+          const { current, pageSize, ...restParams } = params;
           const cloneParams = {
-            ...params,
-            per_size: params.pageSize,
-            page: params.current
+            ...restParams,
+            page: current,
+            per_size: pageSize,
+            role: ROLES.DRIVER,
+            transport_company_id: transport_company.id
           };
-          const res = await getTemplateCalendarTripList(cloneParams);
+          const res = await getUserList(cloneParams);
           setLoading(false);
           return {
             data: res.data.data,
@@ -114,9 +136,9 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
           };
         }}
         headerTitle={
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-medium">Quản lý mẫu lịch trình</h1>
-            <AddTemplateCalendarTripModal handleReload={reloadTable} />
+          <div className="flex items-center gap-2">
+            <h1 className="mb-2 text-xl font-medium">Quản lý tài xế</h1>
+            <AddDriverModal handleReload={reloadTable} />
             <Popconfirm
               title="Xóa"
               description="Bạn có chắc chấn muốn xóa?"
@@ -134,7 +156,6 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
             </Popconfirm>
           </div>
         }
-        loading={loading}
         options={{
           reload: () => {
             setLoading(true);
@@ -144,14 +165,11 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
             }, 1000);
           }
         }}
-        rowSelectionType="radio"
-        customOnSelectChange={(template_ids) => {
-          setTemplateId(template_ids[0]);
-        }}
+        loading={loading}
       />
       {showEditModal && (
-        <EditTemplateCalendarTripModal
-          visible={showEditModal}
+        <EditDriverModal
+          show={showEditModal}
           data={selectedRow}
           onClose={onCloseEditModal}
           handleReload={reloadTable}
@@ -159,6 +177,6 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
       )}
     </div>
   );
-});
+};
 
-export default requireAuthentication(Step2, [ROLES.TRANSPORT_COMPANY]);
+export default requireAuthentication(DriverPage, [ROLES.TRANSPORT_COMPANY]);

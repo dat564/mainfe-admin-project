@@ -1,8 +1,8 @@
 import React from 'react';
-import { DashboardOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { sideBar } from 'configs/sidebar';
+import { ROLES } from 'constants';
 
 const Sidebar = ({ hideSideBar }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
@@ -16,13 +16,13 @@ const Sidebar = ({ hideSideBar }) => {
       }`}
     >
       <div className="px-6 pt-4 mb-5 logo">
-        <h1 className="text-2xl font-bold">Admin 🚀🚀</h1>
+        <h1 className="text-2xl font-bold">{role === ROLES.ADMIN ? 'Admin 😊' : 'Nhà xe 😊'}</h1>
       </div>
 
       {sideBar.map(
         (item) =>
           item.roles.includes(role) && (
-            <div className="font-medium nav-list">
+            <div className="font-medium nav-list" key={item.key}>
               <NavLink
                 to={item.to}
                 key={item.key}

@@ -11,7 +11,9 @@ import Tabular from 'components/Tabular';
 import EditTicket from 'pages/admin/ticket/components/EditTicket';
 import AddTicket from 'pages/admin/ticket/components/AddTicket';
 import { multiDeleteTicket } from 'services';
-import { renderFormCol } from 'utils';
+import { getTripList } from 'services';
+import Setting from 'components/svgs/Setting';
+import { operatorColumnRender } from 'utils/columns';
 
 const TicketPage = () => {
   const [loading, setLoading] = useState(false);
@@ -34,24 +36,53 @@ const TicketPage = () => {
     setLoading(false);
   }
 
+  async function handleGetTripList() {
+    try {
+      const res = await getTripList();
+      const { data } = res?.data;
+      return data.map((item) => ({ label: item.name, value: item.id }));
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+
+  function handleEdit(record) {
+    setSelectedRow(record);
+    setShowEditModal(true);
+  }
+
   const columns = [
+    {
+      title: (
+        <div className="flex items-center justify-center">
+          <Setting />
+        </div>
+      ),
+      dataIndex: 'settings',
+      width: 100,
+      hideInSearch: true,
+      key: 'settings',
+      search: false,
+      align: 'center',
+      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+    },
     {
       title: 'Mã vé',
       dataIndex: 'code',
-      key: 'code',
-      renderFormItem: renderFormCol
+      key: 'code'
     },
     {
       title: 'Giá vé',
       dataIndex: 'price',
       key: 'price',
-      renderFormItem: renderFormCol
+      search: false
     },
     {
       title: 'Số ghế',
-      dataIndex: 'seat_number',
-      key: 'seat_number',
-      renderFormItem: renderFormCol
+      dataIndex: 'position_on_car',
+      key: 'position_on_car',
+      search: false,
+      render: (_, record) => record?.position_on_car + 1
     },
     {
       title: 'Trạng thái',
@@ -61,33 +92,33 @@ const TicketPage = () => {
         0: { text: 'Chưa khởi hành', status: 'Processing' },
         1: { text: 'Đang chạy', status: 'Success' },
         2: { text: 'Đã kết thúc', status: 'Error' }
-      },
-      renderFormItem: renderFormCol
+      }
     },
     {
       title: 'Thời gian mua',
       dataIndex: 'purchase_time',
       key: 'purchase_time',
-      render: (_, record) => formatTime(record.purchase_time),
-      renderFormItem: renderFormCol
+      render: (_, record) => formatTime(record.purchase_time)
     },
     {
-      title: 'Chuyến',
-      dataIndex: 'trip_id',
-      key: 'trip_id',
-      renderFormItem: renderFormCol
+      title: 'Điểm xuất phát',
+      dataIndex: 'route_start',
+      key: 'route_start',
+      valueType: 'select',
+      render: (_, record) => record?.trip?.route_start
+    },
+    {
+      title: 'Điểm đến',
+      dataIndex: 'route_end',
+      key: 'route_end',
+      valueType: 'select',
+      render: (_, record) => record?.trip?.route_end
     },
     {
       title: 'Khách hàng',
       dataIndex: 'customer_id',
       key: 'customer_id',
-      renderFormItem: renderFormCol
-    },
-    {
-      title: 'Hình thức thanh toán',
-      dataIndex: 'transport_company_payment_id',
-      key: 'transport_company_payment_id',
-      renderFormItem: renderFormCol
+      search: false
     }
   ];
 
@@ -109,18 +140,17 @@ const TicketPage = () => {
         rowKey={(e) => e.id}
         request={async (params) => {
           setLoading(true);
+          const { current, pageSize, ...rest } = params;
           const _params = {
-            ...params,
-            per_size: params.pageSize,
-            page: params.current,
-            start_time: params?.dateRange && params.dateRange[0],
-            end_time: params?.dateRange && params.dateRange[1]
+            ...rest,
+            per_size: pageSize,
+            page: current
           };
 
           const res = await getTicketList(_params);
           setLoading(false);
           return {
-            data: res.data.batchFees,
+            data: res.data.data,
             success: true,
             total: res.data.total
           };

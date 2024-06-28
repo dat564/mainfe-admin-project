@@ -2,9 +2,10 @@ import { PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getUserList } from 'services';
+import { updateTransportCompany } from 'services';
+import { updateUser } from 'services';
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -14,7 +15,7 @@ const getBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-const EditTransportCompanyModal = ({ show, data, onClose, handleReload }) => {
+const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
   const formRef = useRef();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -40,30 +41,6 @@ const EditTransportCompanyModal = ({ show, data, onClose, handleReload }) => {
     </div>
   );
 
-  useEffect(() => {
-    if (!data?.user?.id) return;
-    getUserList({ id: data.user.id })
-      .then((res) => {
-        const [_data] = res.data.data;
-        if (_data?.img_url) {
-          setPreviewImage(_data?.img_url);
-          setFileList([
-            {
-              name: 'image.png',
-              status: 'done',
-              url: _data?.img_url
-            }
-          ]);
-        }
-        formRef.current.setFieldsValue({
-          ..._data,
-          transport_name: _data?.transport_company?.name
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [data.user.id]);
   return (
     <ModalForm
       title="Sửa nhà xe"
@@ -74,16 +51,23 @@ const EditTransportCompanyModal = ({ show, data, onClose, handleReload }) => {
         destroyOnClose: true,
         onCancel: () => onClose()
       }}
+      initialValues={{
+        transport_name: data.name,
+        ...(data?.user ?? [])
+      }}
       onFinish={async (values) => {
-        try {
-          // await updateMajorById(data.id, values);
-          onClose();
-          toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
-        } catch (error) {
-          toast.error(error.response.data.message);
-        }
-
-        handleReload();
+        const _data = {
+          ...values,
+          id: data?.user?.id
+        };
+        const transportData = {
+          name: values.transport_name,
+          id: data.id
+        };
+        await Promise.all([updateTransportCompany([transportData]), updateUser(_data)]);
+        onClose();
+        reloadTable();
+        toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
       }}
       formRef={formRef}
       className="p-10"

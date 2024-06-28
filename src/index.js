@@ -9,7 +9,6 @@ import { ToastContainer } from 'react-toastify';
 import { Provider } from 'react-redux';
 import store from 'redux/store';
 import { Spin } from 'antd';
-import TreeSelectDropDown from 'components/treeSelectDropdown';
 
 const routers = createBrowserRouter(routes);
 

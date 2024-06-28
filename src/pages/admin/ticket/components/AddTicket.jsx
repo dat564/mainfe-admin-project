@@ -1,20 +1,30 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import {
-  ModalForm,
-  ProFormDatePicker,
-  ProFormDateTimePicker,
-  ProFormDigit,
-  ProFormSelect,
-  ProFormText
-} from '@ant-design/pro-components';
+import { ModalForm, ProFormDateTimePicker, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
-import { NOTIFY_MESSAGE } from 'constants';
+import { TICKET_STATUS_OPTIONS, NOTIFY_MESSAGE, ROLES } from 'constants';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
+import { getUserList, getTripList } from 'services';
 import { createPayment } from 'services/payment';
 
 const AddTicket = ({ handleReload }) => {
   const formRef = useRef();
+
+  const handleGetTrip = async () => {
+    const { data } = await getTripList();
+    return data.map((item) => ({
+      label: item.name,
+      value: item.id
+    }));
+  };
+
+  const handleGetCustomer = async () => {
+    const { data } = await getUserList({ role: ROLES.USER });
+    return data.map((item) => ({
+      label: item.name,
+      value: item.id
+    }));
+  };
 
   return (
     <ModalForm
@@ -58,45 +68,38 @@ const AddTicket = ({ handleReload }) => {
         </Col>
         <Col span={12}>
           <ProFormDigit
-            name="seating_capacity"
+            name="position_on_car"
             label="Số ghế"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
         <Col span={12}>
           <ProFormSelect
-            name="license_plate"
+            name="status"
             label="Trạng thái"
-            options={[
-              {
-                label: 'Đang hoạt động',
-                value: 'active'
-              },
-              {
-                label: 'Không hoạt động',
-                value: 'inactive'
-              }
-            ]}
+            options={TICKET_STATUS_OPTIONS}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
         <Col span={12}>
           <ProFormDateTimePicker
-            name="manufacture"
+            name="purchase_time"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Thời gian mua"
           />
         </Col>
         <Col span={12}>
           <ProFormSelect
-            name="manufacture"
+            name="trip_id"
+            request={handleGetTrip}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Chuyến"
           />
         </Col>
         <Col span={12}>
           <ProFormSelect
-            name="manufacture"
+            name="customer_id"
+            request={handleGetCustomer}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Khách hàng"
           />
