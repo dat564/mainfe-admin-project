@@ -12,6 +12,7 @@ import CalendarTrip from 'pages/transportCompany/calendarTrip';
 import Drivers from 'pages/transportCompany/drivers';
 import CompanyPayment from 'pages/transportCompany/payment';
 import TemplateCalendarTrip from 'pages/transportCompany/templateCalendarTrip';
+import BillPage from 'pages/transportCompany/bill';
 
 export const sideBar = [
   {
@@ -109,5 +110,13 @@ export const sideBar = [
     to: '/vourcher',
     component: <VourcherPage />,
     roles: [ROLES.ADMIN]
+  },
+  {
+    key: 'bill',
+    title: 'Quản lý đơn',
+    icon: <TableOutlined />,
+    to: '/bill',
+    component: <BillPage />,
+    roles: [ROLES.TRANSPORT_COMPANY]
   }
 ];

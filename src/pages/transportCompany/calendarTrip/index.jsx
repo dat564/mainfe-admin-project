@@ -11,6 +11,7 @@ import Tabular from 'components/Tabular';
 import StepsFormModal from './components/StepsFormModal';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
+import { multiDeleteCalendarTrip } from 'services';
 
 const CalendarTripPage = () => {
   const [loading, setLoading] = useState(false);
@@ -83,7 +84,7 @@ const CalendarTripPage = () => {
 
   const handleMultiDelete = async () => {
     try {
-      await multipleDeleteUserById({ ids: selectedRowKeys });
+      await multiDeleteCalendarTrip({ ids: selectedRowKeys });
       reloadTable();
       toast.success('Xóa thành công!');
     } catch (error) {

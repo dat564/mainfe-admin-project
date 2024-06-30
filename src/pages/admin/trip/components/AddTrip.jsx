@@ -4,7 +4,8 @@ import {
   ProFormDateTimeRangePicker,
   ProFormMoney,
   ProFormSelect,
-  ProFormSwitch
+  ProFormSwitch,
+  ProFormText
 } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { ROLES } from 'constants';
@@ -122,7 +123,7 @@ const AddTrip = ({ handleCreateTrip }) => {
           />
         </Col>
 
-        <Col span={12}>
+        {/* <Col span={12}>
           <ProFormSelect
             name="start_point"
             showSearch
@@ -139,6 +140,14 @@ const AddTrip = ({ handleCreateTrip }) => {
             request={handleGetCityList}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
+        </Col> */}
+
+        <Col span={12}>
+          <ProFormText name="start_point" label="Điểm khởi hành" rules={[{ required: true, message: 'Vui lòng nhập trường này' }]} />
+        </Col>
+
+        <Col span={12}>
+          <ProFormText name="end_point" label="Điểm kết thúc" rules={[{ required: true, message: 'Vui lòng nhập trường này' }]} />
         </Col>
         <Col span={12}>
           <ProFormSwitch

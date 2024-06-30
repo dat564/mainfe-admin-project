@@ -13,10 +13,8 @@ const StepsFormModal = ({ handleReload, handleCancel, open, data }) => {
   const formRef = useRef();
   const stepFormRef = useRef();
   const [current, setCurrent] = useState(0);
-  const [templateId, setTemplateId] = useState();
+  const [templateId, setTemplateId] = useState(data?.template_id);
   const { transport_company } = useSelector((state) => state.auth.userInfo);
-
-  console.log({ data });
 
   return (
     <Modal

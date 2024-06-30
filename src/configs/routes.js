@@ -15,6 +15,7 @@ import CalendarTripPage from 'pages/transportCompany/calendarTrip';
 import DriverPage from 'pages/transportCompany/drivers';
 import TemplateCalendarTripPage from 'pages/transportCompany/templateCalendarTrip';
 import VourcherPage from 'pages/admin/vourcher';
+import BillPage from 'pages/transportCompany/bill';
 
 const routes = [
   {
@@ -77,6 +78,10 @@ const routes = [
       {
         path: '/vourcher',
         element: <VourcherPage />
+      },
+      {
+        path: '/bill',
+        element: <BillPage />
       }
     ]
   },
