@@ -17,7 +17,7 @@ const refreshToken = async () => {
     });
 
     if (response.data.status === 'success') {
-      const { access_token, refresh_token } = response.data.authorisation;
+      const { access_token, refresh_token } = response.data.authorization;
       const _user = response.data.user;
 
       // If the refresh is successful, update the JWT token
