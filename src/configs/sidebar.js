@@ -118,5 +118,13 @@ export const sideBar = [
     to: '/bill',
     component: <BillPage />,
     roles: [ROLES.TRANSPORT_COMPANY]
+  },
+  {
+    key: 'rating',
+    title: 'Quản lý đánh giá',
+    icon: <TableOutlined />,
+    to: '/rating',
+    component: <BillPage />,
+    roles: [ROLES.TRANSPORT_COMPANY]
   }
 ];

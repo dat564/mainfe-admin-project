@@ -24,7 +24,6 @@ const Tabular = forwardRef(
     const tableRef = useRef();
 
     const onSelectChange = (newSelectedRowKeys) => {
-      console.log({ newSelectedRowKeys });
       setSelectedRowKeys(newSelectedRowKeys);
       customOnSelectChange && customOnSelectChange(newSelectedRowKeys);
     };
@@ -52,8 +51,9 @@ const Tabular = forwardRef(
         rowClassName="cursor-pointer"
         rowSelection={{ selectedRowKeys, onChange: onSelectChange, type: rowSelectionType }}
         pagination={{
-          pageSize: 10
+          pageSize: 10,
         }}
+        scroll={{ y: 500 }}
         search={{
           labelWidth: 'auto'
         }}

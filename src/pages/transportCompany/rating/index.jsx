@@ -2,10 +2,11 @@ import React, { useRef, useState } from 'react';
 import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import Tabular from 'components/Tabular';
-import { getVoucherList } from 'services/vourcher';
 import { getBillList } from 'services/bill';
+import { getRatingList } from 'services/rating';
+import { billLabel } from 'constants/bill';
 
-const BillPage = () => {
+const RatingPage = () => {
   const [loading, setLoading] = useState(false);
 
   const tableRef = useRef();
@@ -15,32 +16,29 @@ const BillPage = () => {
       title: 'Tuyến bắt đầu',
       dataIndex: 'route_start',
       hideInSearch: true,
-      key: 'route_start',
-      render: (text, record) => record.trip.route_start
+      key: 'route_start'
     },
     {
       title: 'Tuyến kết thúc',
       dataIndex: 'route_end',
       key: 'route_end',
-      hideInSearch: true,
-      render: (text, record) => record.trip.route_end
+      hideInSearch: true
     },
     {
       title: 'Loại xe',
       dataIndex: 'car_type',
-      key: 'car_type',
-      render: (text, record) => record.trip.car.name
+      key: 'car_type'
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
-      key: 'status'
+      key: 'status',
+      render: (text, record) => billLabel[record.status]
     },
     {
       title: 'Người đặt',
       dataIndex: 'user',
-      key: 'user',
-      render: (text, record) => record.user.name
+      key: 'user'
     }
   ];
 
@@ -59,7 +57,7 @@ const BillPage = () => {
             page: params.current
           };
 
-          const res = await getBillList(_params);
+          const res = await getRatingList(_params);
           setLoading(false);
           return {
             data: res.data.data,
@@ -82,4 +80,4 @@ const BillPage = () => {
   );
 };
 
-export default requireAuthentication(BillPage, [ROLES.TRANSPORT_COMPANY]);
+export default requireAuthentication(RatingPage, [ROLES.TRANSPORT_COMPANY]);

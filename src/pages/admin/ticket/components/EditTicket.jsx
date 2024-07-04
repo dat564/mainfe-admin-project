@@ -1,4 +1,4 @@
-import { ModalForm, ProFormDateTimePicker, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormDateTimePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { ROLES } from 'constants';
 import { TICKET_STATUS_OPTIONS } from 'constants';
@@ -98,6 +98,15 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
             request={handleGetCustomer}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Khách hàng"
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSwitch
+            name="static_start_point"
+            label="Điểm đón tĩnh"
+            style={{
+              backgroundColor: 'red'
+            }}
           />
         </Col>
       </Row>

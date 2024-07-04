@@ -16,6 +16,7 @@ import DriverPage from 'pages/transportCompany/drivers';
 import TemplateCalendarTripPage from 'pages/transportCompany/templateCalendarTrip';
 import VourcherPage from 'pages/admin/vourcher';
 import BillPage from 'pages/transportCompany/bill';
+import RatingPage from 'pages/transportCompany/rating';
 
 const routes = [
   {
@@ -82,6 +83,10 @@ const routes = [
       {
         path: '/bill',
         element: <BillPage />
+      },
+      {
+        path: '/rating',
+        element: <RatingPage />
       }
     ]
   },
