@@ -2,9 +2,7 @@ import React, { useRef, useState } from 'react';
 import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import Tabular from 'components/Tabular';
-import { getBillList } from 'services/bill';
 import { getRatingList } from 'services/rating';
-import { billLabel } from 'constants/bill';
 
 const RatingPage = () => {
   const [loading, setLoading] = useState(false);
@@ -13,32 +11,40 @@ const RatingPage = () => {
 
   const columns = [
     {
-      title: 'Tuyến bắt đầu',
-      dataIndex: 'route_start',
-      hideInSearch: true,
-      key: 'route_start'
+      title: 'Mã đơn',
+      dataIndex: 'bill_code',
+      key: 'bill_code',
+      render: (_, record) => record.bill?.code
     },
     {
-      title: 'Tuyến kết thúc',
-      dataIndex: 'route_end',
-      key: 'route_end',
-      hideInSearch: true
+      title: 'Mã chuyến',
+      dataIndex: 'trip_id',
+      key: 'trip_id',
+      render: (_, record) => `${record.bill?.trip.route_start} ➡️ ${record.bill?.trip.route_end}`
     },
     {
-      title: 'Loại xe',
-      dataIndex: 'car_type',
-      key: 'car_type'
+      title: 'Đánh giá tài xế',
+      dataIndex: 'rate_driver',
+      key: 'rate_driver',
+      render: (_, record) => `${record.rate_driver} ⭐`
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (text, record) => billLabel[record.status]
+      title: 'Đánh giá chuyến',
+      dataIndex: 'rate_trip',
+      key: 'rate_trip',
+      render: (_, record) => `${record.rate_trip} ⭐`
     },
     {
-      title: 'Người đặt',
-      dataIndex: 'user',
-      key: 'user'
+      title: 'Ngày tạo',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (text) => new Date(text).toLocaleString()
+    },
+    {
+      title: 'Ngày cập nhật',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
+      render: (text) => new Date(text).toLocaleString()
     }
   ];
 
@@ -74,7 +80,7 @@ const RatingPage = () => {
             }, 1000);
           }
         }}
-        headerTitle={<h1 className="text-xl font-medium ">Quản lý đơn</h1>}
+        headerTitle={<h1 className="text-xl font-medium ">Quản lý đánh giá</h1>}
       />
     </div>
   );
