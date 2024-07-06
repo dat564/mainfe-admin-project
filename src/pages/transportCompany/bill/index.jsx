@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import Tabular from 'components/Tabular';
-import { getVoucherList } from 'services/vourcher';
 import { getBillList } from 'services/bill';
 
 const BillPage = () => {
@@ -11,6 +10,11 @@ const BillPage = () => {
   const tableRef = useRef();
 
   const columns = [
+    {
+      title: 'Mã đơn',
+      dataIndex: 'code',
+      key: 'code'
+    },
     {
       title: 'Tuyến bắt đầu',
       dataIndex: 'route_start',
