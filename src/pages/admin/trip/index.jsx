@@ -15,6 +15,7 @@ import { NOTIFY_MESSAGE } from 'constants';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { getDriverList } from 'services';
+import { render } from '@testing-library/react';
 
 const TripPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -22,8 +23,6 @@ const TripPage = () => {
   const [selectedInstance, setSelectedInstance] = useState(null);
   const [loading, setLoading] = useState(false);
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
-  console.log({ transport_company });
-
   const tableRef = useRef();
 
   const { selectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
@@ -48,7 +47,9 @@ const TripPage = () => {
 
   const handleGetDriverList = async () => {
     try {
-      const res = await getDriverList({});
+      const res = await getDriverList({
+        transport_company_id: transport_company?.id
+      });
       const { data } = res?.data;
       return data.map((item) => ({ label: item.name, value: item.id }));
     } catch (error) {
@@ -87,26 +88,21 @@ const TripPage = () => {
     },
     {
       title: 'Điểm xuất phát',
-      dataIndex: 'start_point',
-      key: 'start_point'
+      dataIndex: 'route_start',
+      key: 'route_start'
     },
     {
       title: 'Điểm đến',
-      dataIndex: 'end_point',
-      key: 'end_point'
-    },
-
-    {
-      title: 'Nhà xe',
-      dataIndex: 'transport_company_car_id',
-      key: 'transport_company_car_id'
+      dataIndex: 'route_end',
+      key: 'route_end'
     },
     {
       title: 'Tài xế',
       dataIndex: 'driver_id',
       key: 'driver_id',
       valueType: 'select',
-      request: handleGetDriverList
+      request: handleGetDriverList,
+      render: (_, record) => record?.driver?.user?.name
     }
   ];
 

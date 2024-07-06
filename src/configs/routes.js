@@ -87,6 +87,10 @@ const routes = [
       {
         path: '/rating',
         element: <RatingPage />
+      },
+      {
+        path: '/rating-admin',
+        element: <RatingPage />
       }
     ]
   },

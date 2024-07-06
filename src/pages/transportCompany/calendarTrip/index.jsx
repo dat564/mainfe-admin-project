@@ -12,6 +12,8 @@ import StepsFormModal from './components/StepsFormModal';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { multiDeleteCalendarTrip } from 'services';
+import { convertDatetimeToServer } from 'utils/date';
+import { convertDatetime } from 'utils/date';
 
 const CalendarTripPage = () => {
   const [loading, setLoading] = useState(false);
@@ -68,12 +70,26 @@ const CalendarTripPage = () => {
     {
       title: 'Thời gian áp dụng',
       dataIndex: 'start_time',
-      key: 'start_time'
+      search: false,
+      key: 'start_time',
+      render: (text, record) => convertDatetime(record.start_time)
     },
     {
       title: 'Thời gian kết thúc',
       dataIndex: 'end_time',
-      key: 'end_time'
+      search: false,
+      key: 'end_time',
+      render: (text, record) => convertDatetime(record.end_time)
+    },
+    {
+      title: 'Khoảng thời gian',
+      dataIndex: 'time_range',
+      key: 'time_range',
+      valueType: 'dateTimeRange',
+      hideInTable: true,
+      fieldProps: {
+        format: 'DD/MM/YYYY HH:mm:ss'
+      }
     }
   ];
 
@@ -99,9 +115,13 @@ const CalendarTripPage = () => {
         columns={columns}
         rowKey={(e) => e.id}
         request={async (params) => {
+          const { time_range } = params;
+          const [startTime, endTime] = time_range || [];
           setLoading(true);
           const cloneParams = {
-            ...params
+            ...params,
+            start_time: convertDatetimeToServer(startTime),
+            end_time: convertDatetimeToServer(endTime)
           };
           const res = await getCalendarTripList(cloneParams);
           setLoading(false);

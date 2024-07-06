@@ -13,12 +13,13 @@ const BillPage = () => {
     {
       title: 'Mã đơn',
       dataIndex: 'code',
+      search: false,
       key: 'code'
     },
     {
       title: 'Tuyến bắt đầu',
       dataIndex: 'route_start',
-      hideInSearch: true,
+      search: false,
       key: 'route_start',
       render: (text, record) => record.trip.route_start
     },
@@ -26,25 +27,34 @@ const BillPage = () => {
       title: 'Tuyến kết thúc',
       dataIndex: 'route_end',
       key: 'route_end',
-      hideInSearch: true,
+      search: false,
       render: (text, record) => record.trip.route_end
     },
     {
       title: 'Loại xe',
       dataIndex: 'car_type',
+      search: false,
       key: 'car_type',
       render: (text, record) => record.trip.car.name
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
+      search: false,
       key: 'status'
     },
     {
       title: 'Người đặt',
       dataIndex: 'user',
+      search: false,
       key: 'user',
-      render: (text, record) => record.user.name
+      render: (_, record) => record.user.name
+    },
+    {
+      title: 'Tìm kiếm',
+      dataIndex: 'search',
+      key: 'search',
+      hideInTable: true
     }
   ];
 

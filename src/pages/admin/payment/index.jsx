@@ -61,7 +61,14 @@ const PaymentPage = () => {
     {
       title: 'Phương thức thanh toán',
       dataIndex: 'name',
+      search: false,
       key: 'name'
+    },
+    {
+      title: 'Tìm kiếm',
+      dataIndex: 'search',
+      hideInTable: true,
+      key: 'search'
     }
   ];
 

@@ -60,12 +60,20 @@ const TransportCompanyPaymentPage = () => {
     {
       title: 'Tên tài khoản',
       dataIndex: 'name_bank',
+      search: false,
       key: 'name_bank'
     },
     {
       title: 'Số tài khoản',
       dataIndex: 'number_bank',
+      search: false,
       key: 'number_bank'
+    },
+    {
+      title: 'Tìm kiếm',
+      dataIndex: 'search',
+      hideInTable: true,
+      key: 'search'
     }
   ];
 

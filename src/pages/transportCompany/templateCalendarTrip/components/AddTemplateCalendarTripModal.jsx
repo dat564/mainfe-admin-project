@@ -1,7 +1,9 @@
-import { FolderAddOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FolderAddOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText, ProTable } from '@ant-design/pro-components';
-import { Col, Row } from 'antd';
+import { Col, Popconfirm, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
+import AddTrip from 'pages/admin/trip/components/AddTrip';
+import AddTemplateTrip from 'pages/transportCompany/templateCalendarTrip/components/AddTemplateTrip';
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -23,6 +25,24 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
       key: 'end_point'
     },
     {
+      dataIndex: 'price_static',
+      key: 'price_static',
+      title: 'Giá cố định',
+      render: (_, record) => record?.tickets?.[0]?.price
+    },
+    {
+      title: 'Xe',
+      dataIndex: 'car_id',
+      key: 'car_id',
+      render: (_, record) => record?.car?.name
+    },
+    {
+      title: 'Tài xế',
+      dataIndex: 'driver_id',
+      key: 'driver_id',
+      render: (_, record) => record?.driver?.user?.name
+    },
+    {
       title: 'Thời gian đi',
       dataIndex: 'departure_time',
       key: 'departure_time',
@@ -42,6 +62,15 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
 
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const handleMultiDelete = () => {
+    setDataSource(dataSource.filter((item) => !selectedRowKeys.includes(item.key)));
+    setSelectedRowKeys([]);
+  };
+
+  const handleCreateTrip = (values) => {
+    return true;
   };
 
   return (
@@ -101,7 +130,14 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
             columns={columns}
             rowKey={(record) => record.id}
             dataSource={dataSource}
-            headerTitle={<h1 className="mt-10 mb-2 text-xl font-medium">Các chuyến hiện tại</h1>}
+            headerTitle={
+              <div>
+                <div className="flex items-center w-full gap-4">
+                  <h1 className="text-xl font-medium">Các chuyến hiện tại</h1>
+                  <AddTemplateTrip />
+                </div>
+              </div>
+            }
             search={false}
             request={async (params) => {
               setLoading(true);

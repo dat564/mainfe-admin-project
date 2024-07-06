@@ -68,22 +68,32 @@ const TransportCompanyPage = () => {
     {
       title: 'Tên nhà xe',
       dataIndex: 'name',
+      search: false,
       key: 'name'
     },
     {
       title: 'Địa chỉ',
       dataIndex: 'address',
+      search: false,
       key: 'address'
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
+      search: false,
       key: 'phone'
     },
     {
       title: 'Email',
       dataIndex: 'email',
+      search: false,
       key: 'email'
+    },
+    {
+      title: 'Tìm kiếm',
+      dataIndex: 'search',
+      key: 'search',
+      hideInTable: true
     }
   ];
 

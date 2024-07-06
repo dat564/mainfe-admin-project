@@ -54,25 +54,32 @@ const VoucherPage = () => {
       render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
     },
     {
+      title: 'Mã phiếu',
+      dataIndex: 'code',
+      key: 'code'
+    },
+    {
       title: 'Số lượng',
       dataIndex: 'quantity',
-      hideInSearch: true,
+      search: false,
       key: 'quantity'
     },
     {
       title: 'Giá giảm',
       dataIndex: 'discount_price',
       key: 'discount_price',
-      hideInSearch: true
+      search: false
     },
     {
       title: 'Điểm cần đạt để nhận',
       dataIndex: 'regular_point_need',
+      search: false,
       key: 'regular_point_need'
     },
     {
       title: 'Thời gian hết hạn',
       dataIndex: 'expired_at',
+      search: false,
       key: 'expired_at'
     }
   ];

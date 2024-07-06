@@ -58,22 +58,32 @@ const CarPage = () => {
     {
       title: 'Tên xe',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      search: false
     },
     {
       title: 'Số chỗ ngồi',
       dataIndex: 'seating_capacity',
+      search: false,
       key: 'seating_capacity'
     },
     {
       title: 'Biển số xe',
       dataIndex: 'license_plate',
+      search: false,
       key: 'license_plate'
     },
     {
       title: 'Nơi sản xuất',
       dataIndex: 'manufacture',
+      search: false,
       key: 'manufacture'
+    },
+    {
+      title: 'Tìm kiếm',
+      dataIndex: 'search',
+      hideInTable: true,
+      key: 'search'
     }
   ];
 

@@ -20,31 +20,60 @@ const RatingPage = () => {
       title: 'Mã chuyến',
       dataIndex: 'trip_id',
       key: 'trip_id',
+      search: false,
       render: (_, record) => `${record.bill?.trip.route_start} ➡️ ${record.bill?.trip.route_end}`
     },
     {
       title: 'Đánh giá tài xế',
       dataIndex: 'rate_driver',
+      search: false,
       key: 'rate_driver',
       render: (_, record) => `${record.rate_driver} ⭐`
     },
     {
       title: 'Đánh giá chuyến',
       dataIndex: 'rate_trip',
+      search: false,
       key: 'rate_trip',
       render: (_, record) => `${record.rate_trip} ⭐`
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
+      search: false,
       key: 'created_at',
       render: (text) => new Date(text).toLocaleString()
     },
     {
       title: 'Ngày cập nhật',
       dataIndex: 'updated_at',
+      search: false,
       key: 'updated_at',
       render: (text) => new Date(text).toLocaleString()
+    },
+    {
+      title: 'Đánh giá tài xế thấp nhất',
+      dataIndex: 'driver_rating_min',
+      key: 'driver_rating_min',
+      hideInTable: true
+    },
+    {
+      title: 'Đánh giá tài xế cao nhất',
+      dataIndex: 'driver_rating_max',
+      key: 'driver_rating_max',
+      hideInTable: true
+    },
+    {
+      title: 'Đánh giá chuyến thấp nhất',
+      dataIndex: 'trip_rating_min',
+      key: 'trip_rating_min',
+      hideInTable: true
+    },
+    {
+      title: 'Đánh giá chuyến cao nhất',
+      dataIndex: 'trip_rating_max',
+      key: 'trip_rating_max',
+      hideInTable: true
     }
   ];
 

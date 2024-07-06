@@ -14,6 +14,7 @@ import { multiDeleteTicket } from 'services';
 import { getTripList } from 'services';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
+import { convertDatetimeToServer } from 'utils/date';
 
 const TicketPage = () => {
   const [loading, setLoading] = useState(false);
@@ -67,8 +68,15 @@ const TicketPage = () => {
       render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
     },
     {
+      title: 'Tìm kiếm',
+      dataIndex: 'name_or_code',
+      hideInTable: true,
+      key: 'name_or_code'
+    },
+    {
       title: 'Mã vé',
       dataIndex: 'code',
+      search: false,
       key: 'code'
     },
     {
@@ -88,6 +96,7 @@ const TicketPage = () => {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      search: false,
       valueEnum: {
         0: { text: 'Chưa khởi hành', status: 'Processing' },
         1: { text: 'Đang chạy', status: 'Success' },
@@ -98,12 +107,17 @@ const TicketPage = () => {
       title: 'Thời gian mua',
       dataIndex: 'purchase_time',
       key: 'purchase_time',
+      valueType: 'dateTimeRange',
+      fieldProps: {
+        format: 'DD/MM/YYYY HH:mm:ss'
+      },
       render: (_, record) => formatTime(record.purchase_time)
     },
     {
       title: 'Điểm xuất phát',
       dataIndex: 'route_start',
       key: 'route_start',
+      search: false,
       valueType: 'select',
       render: (_, record) => record?.trip?.route_start
     },
@@ -111,6 +125,7 @@ const TicketPage = () => {
       title: 'Điểm đến',
       dataIndex: 'route_end',
       key: 'route_end',
+      search: false,
       valueType: 'select',
       render: (_, record) => record?.trip?.route_end
     },
@@ -139,12 +154,15 @@ const TicketPage = () => {
         columns={columns}
         rowKey={(e) => e.id}
         request={async (params) => {
+          const { current, pageSize, purchase_time, ...rest } = params;
+          const [startTime, endTime] = purchase_time || [];
           setLoading(true);
-          const { current, pageSize, ...rest } = params;
           const _params = {
             ...rest,
             per_size: pageSize,
-            page: current
+            page: current,
+            start_time: convertDatetimeToServer(startTime),
+            end_time: convertDatetimeToServer(endTime)
           };
 
           const res = await getTicketList(_params);
