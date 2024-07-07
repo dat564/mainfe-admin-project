@@ -22,7 +22,7 @@ const TicketPage = () => {
   const [selectedRow, setSelectedRow] = useState({});
 
   const tableRef = useRef();
-  const { reload: reloadTable, selectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
+  const { reload: reloadTable, getSelectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
@@ -139,7 +139,12 @@ const TicketPage = () => {
 
   const handleMultiDelete = async () => {
     try {
-      await multiDeleteTicket({ ids: selectedRowKeys });
+      const checkedList = getSelectedRowKeys?.();
+      if (!checkedList.length) {
+        toast.error('Vui lòng chọn ít nhất 1 bản ghi để xóa');
+        return;
+      }
+      await multiDeleteTicket({ ids: getSelectedRowKeys() });
       reloadTable();
       toast.success('Delete successfully!');
     } catch (error) {
@@ -182,12 +187,9 @@ const TicketPage = () => {
               description="Bạn có chắc muốn xóa?"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               onConfirm={handleMultiDelete}
-              disabled={selectedRowKeys?.length <= 0}
             >
               <span
-                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                  selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
-                }`}
+                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200`}
               >
                 <DeleteOutlined />
               </span>

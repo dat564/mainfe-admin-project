@@ -1,7 +1,7 @@
 import { FolderAddOutlined, PlusOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
-import { NOTIFY_MESSAGE, GENDER_OPTIONS, ROLES } from 'constants';
+import { NOTIFY_MESSAGE, ROLES } from 'constants';
 import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { createUser } from 'services';
@@ -15,7 +15,7 @@ const getBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
-const AddTransportCompanyModal = ({ handleReload }) => {
+const AddTransportCompanyModal = ({ reloadTable }) => {
   const formRef = useRef();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -86,10 +86,11 @@ const AddTransportCompanyModal = ({ handleReload }) => {
             img_url: uploadedImage?.imageUrl || null
           });
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
-          handleReload();
+          reloadTable && reloadTable();
           return true;
         } catch (err) {
           toast.error(err.response.data.message);
+          return false;
         }
       }}
       formRef={formRef}

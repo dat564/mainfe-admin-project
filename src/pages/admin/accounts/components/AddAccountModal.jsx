@@ -130,6 +130,15 @@ const AddAccountModal = ({ handleReload }) => {
             {fileList.length >= 1 ? null : uploadButton}
           </Upload>
         </Col>
+        {role === ROLES.TRANSPORT_COMPANY && (
+          <Col span={12}>
+            <ProFormText
+              name="transport_name"
+              label="Tên nhà xe"
+              rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            ></ProFormText>
+          </Col>
+        )}
         <Col span={12}>
           <ProFormText
             name="name"
@@ -142,20 +151,29 @@ const AddAccountModal = ({ handleReload }) => {
           <ProFormText
             name="phone"
             label="Di động"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[
+              { required: true, message: 'Vui lòng nhập trường này' },
+              { pattern: /^(?:\+?84|0)(?:\d{9,10})$/, message: 'Số điện thoại không hợp lệ' }
+            ]}
           ></ProFormText>
         </Col>
         <Col span={12}>
           <ProFormText
             name="email"
             label="Email"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[
+              { required: true, message: 'Vui lòng nhập trường này' },
+              { type: 'email', message: 'Email không hợp lệ' }
+            ]}
           ></ProFormText>
         </Col>
         <Col span={12}>
           <ProFormText.Password
             name="password"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[
+              { required: true, message: 'Vui lòng nhập trường này' },
+              { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự' }
+            ]}
             label="Password"
             placeholder="Please enter password"
           ></ProFormText.Password>

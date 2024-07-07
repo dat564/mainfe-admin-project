@@ -22,9 +22,11 @@ const Tabular = forwardRef(
     });
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const tableRef = useRef();
+    const selectedRowKeysRef = useRef(selectedRowKeys);
 
     const onSelectChange = (newSelectedRowKeys) => {
-      setSelectedRowKeys(newSelectedRowKeys);
+      setSelectedRowKeys(() => newSelectedRowKeys);
+      selectedRowKeysRef.current = newSelectedRowKeys;
       customOnSelectChange && customOnSelectChange(newSelectedRowKeys);
     };
 
@@ -36,12 +38,16 @@ const Tabular = forwardRef(
       tableRef.current.reset();
     };
 
-    useImperativeHandle(ref, () => ({
-      reload,
-      selectedRowKeys,
-      setSelectedRowKeys,
-      reset
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        reload,
+        setSelectedRowKeys,
+        getSelectedRowKeys: () => selectedRowKeysRef.current || [],
+        reset
+      }),
+      []
+    );
 
     return (
       <ProTable
@@ -51,7 +57,7 @@ const Tabular = forwardRef(
         rowClassName="cursor-pointer"
         rowSelection={{ selectedRowKeys, onChange: onSelectChange, type: rowSelectionType }}
         pagination={{
-          pageSize: 10,
+          pageSize: 10
         }}
         scroll={{ y: 500 }}
         search={{

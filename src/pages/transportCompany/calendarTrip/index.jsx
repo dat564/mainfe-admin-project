@@ -27,7 +27,7 @@ const CalendarTripPage = () => {
 
   const tableRef = useRef();
 
-  const { selectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
+  const { getSelectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
@@ -100,7 +100,12 @@ const CalendarTripPage = () => {
 
   const handleMultiDelete = async () => {
     try {
-      await multiDeleteCalendarTrip({ ids: selectedRowKeys });
+      const checkedList = getSelectedRowKeys?.();
+      if (!checkedList?.length) {
+        toast.error('Vui lòng chọn ít nhất 1 bản ghi để xóa');
+        return;
+      }
+      await multiDeleteCalendarTrip({ ids: getSelectedRowKeys() });
       reloadTable();
       toast.success('Xóa thành công!');
     } catch (error) {
@@ -144,12 +149,9 @@ const CalendarTripPage = () => {
               description="Bạn có chắc chấn muốn xóa?"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               onConfirm={handleMultiDelete}
-              disabled={selectedRowKeys?.length <= 0}
             >
               <span
-                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                  selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
-                }`}
+                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 `}
               >
                 <DeleteOutlined />
               </span>

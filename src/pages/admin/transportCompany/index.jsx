@@ -22,7 +22,7 @@ const TransportCompanyPage = () => {
   const [modalConfig, setModalConfig] = useState({ type: null, data: {} });
 
   const tableRef = useRef();
-  const { selectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
+  const { getSelectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
@@ -103,7 +103,12 @@ const TransportCompanyPage = () => {
 
   const handleMultiDelete = async () => {
     try {
-      await multiDeleteTransportCompany({ ids: selectedRowKeys });
+      const checkedList = getSelectedRowKeys?.();
+      if (!checkedList?.length) {
+        toast.error('Please select at least 1 record to delete');
+        return;
+      }
+      await multiDeleteTransportCompany({ ids: getSelectedRowKeys() });
       reloadTable();
       toast.success('Delete successfully!');
     } catch (error) {

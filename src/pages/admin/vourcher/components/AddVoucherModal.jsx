@@ -57,11 +57,11 @@ const AddVoucherModal = ({ reloadTable }) => {
           />
         </Col>
         <Col span={12}>
-          <ProFormText
+          <ProFormDigit
             name="regular_point_need"
             label="Điểm thưởng cần có"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          ></ProFormText>
+          />
         </Col>
         <Col span={12}>
           <ProFormDatePicker

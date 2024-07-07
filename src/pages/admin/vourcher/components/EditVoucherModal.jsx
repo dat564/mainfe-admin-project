@@ -1,4 +1,4 @@
-import { ModalForm, ProFormDatePicker, ProFormDigit, ProFormMoney, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormDatePicker, ProFormDigit, ProFormMoney } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef } from 'react';
@@ -53,11 +53,11 @@ const EditVoucherModal = ({ show, data, onClose, reloadTable }) => {
           />
         </Col>
         <Col span={12}>
-          <ProFormText
+          <ProFormDigit
             name="regular_point_need"
             label="Điểm thưởng cần có"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          ></ProFormText>
+          />
         </Col>
         <Col span={12}>
           <ProFormDatePicker

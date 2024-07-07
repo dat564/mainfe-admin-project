@@ -75,12 +75,9 @@ const Step2Content = ({ handleSetTrips }) => {
                 description="Bạn có chắc chấn muốn xóa?"
                 icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                 onConfirm={handleMultiDelete}
-                disabled={selectedRowKeys.length <= 0}
               >
                 <span
-                  className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                    selectedRowKeys.length <= 0 ? 'cursor-not-allowed' : ''
-                  }`}
+                  className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200`}
                 >
                   <DeleteOutlined />
                 </span>

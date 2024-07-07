@@ -16,6 +16,7 @@ import AddPaymentModal from 'pages/admin/payment/components/AddPaymentModal';
 import { getPaymentList } from 'services/payment';
 import Tabular from 'components/Tabular';
 import { operatorColumnRender } from 'utils/columns';
+import { multiDeletePayment } from 'services';
 
 const PaymentPage = () => {
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ const PaymentPage = () => {
 
   const tableRef = useRef();
 
-  const { reload: reloadTable, selectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
+  const { reload: reloadTable, getSelectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
@@ -77,15 +78,16 @@ const PaymentPage = () => {
     setShowEditModal(false);
   };
 
-  const handleReload = () => {
-    tableRef.current.reload();
-  };
-
   const handleMultiDelete = async () => {
     try {
-      await multipleDeleteUserById({ ids: selectedRowKeys });
+      const checkedList = getSelectedRowKeys?.();
+      if (!checkedList?.length) {
+        toast.error('Vui lòng chọn ít nhất 1 bản ghi để xóa');
+        return;
+      }
+      await multiDeletePayment({ ids: getSelectedRowKeys() });
       setSelectedRowKeys([]);
-      handleReload();
+      reloadTable();
       toast.success('Xóa thành công!');
     } catch (error) {
       toast.error(error.response.data.message);
@@ -113,18 +115,15 @@ const PaymentPage = () => {
         headerTitle={
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-medium">Quản lý phương thức thanh toán</h1>
-            <AddPaymentModal handleReload={handleReload} />
+            <AddPaymentModal handleReload={reloadTable} />
             <Popconfirm
               title="Xóa"
               description="Bạn có chắc chấn muốn xóa?"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               onConfirm={handleMultiDelete}
-              disabled={selectedRowKeys?.length <= 0}
             >
               <span
-                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                  selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
-                }`}
+                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200`}
               >
                 <DeleteOutlined />
               </span>
@@ -153,7 +152,7 @@ const PaymentPage = () => {
           visible={showEditModal}
           data={selectedRow}
           onClose={onCloseEditModal}
-          handleReload={handleReload}
+          handleReload={reloadTable}
         />
       )}
     </div>

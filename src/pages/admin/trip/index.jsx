@@ -15,7 +15,6 @@ import { NOTIFY_MESSAGE } from 'constants';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { getDriverList } from 'services';
-import { render } from '@testing-library/react';
 
 const TripPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -25,7 +24,7 @@ const TripPage = () => {
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
   const tableRef = useRef();
 
-  const { selectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
+  const { getSelectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
   async function handleDelete(recordId) {
     try {
@@ -112,6 +111,12 @@ const TripPage = () => {
 
   const handleMultiDelete = async () => {
     try {
+      const checkedList = getSelectedRowKeys?.();
+      if (!checkedList?.length) {
+        toast.error('Vui lòng chọn ít nhất 1 bản ghi để xóa');
+        return;
+      }
+      await multiDeleteTrip({ ids: getSelectedRowKeys() });
       handleReload();
       toast.success('Delete successfully!');
     } catch (error) {
@@ -168,12 +173,9 @@ const TripPage = () => {
               description="Bạn có chắc muốn xóa?"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               onConfirm={handleMultiDelete}
-              disabled={selectedRowKeys?.length <= 0}
             >
               <span
-                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 ${
-                  selectedRowKeys?.length <= 0 ? 'cursor-not-allowed' : ''
-                }`}
+                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200`}
               >
                 <DeleteOutlined />
               </span>
