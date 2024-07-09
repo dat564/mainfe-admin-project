@@ -11,12 +11,14 @@ import TransportCompanyPaymentPage from 'pages/transportCompany/payment';
 import ErrorPage from 'pages/error';
 import PaymentPage from 'pages/admin/payment';
 import Dashboard from 'pages/admin/dashboard';
+import DashBoardTransportCompany from 'pages/transportCompany/dashboard';
 import CalendarTripPage from 'pages/transportCompany/calendarTrip';
 import DriverPage from 'pages/transportCompany/drivers';
 import TemplateCalendarTripPage from 'pages/transportCompany/templateCalendarTrip';
 import VourcherPage from 'pages/admin/vourcher';
 import BillPage from 'pages/transportCompany/bill';
 import RatingPage from 'pages/transportCompany/rating';
+import Reconciled from 'pages/admin/reconciled';
 
 const routes = [
   {
@@ -27,6 +29,10 @@ const routes = [
       {
         path: '/',
         element: <Dashboard />
+      },
+      {
+        path: '/transport_company',
+        element: <DashBoardTransportCompany />
       },
       {
         path: '/accounts',
@@ -91,6 +97,10 @@ const routes = [
       {
         path: '/rating-admin',
         element: <RatingPage />
+      },
+      {
+        path: '/reconciled',
+        element: <Reconciled />
       }
     ]
   },

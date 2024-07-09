@@ -2,6 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
+import useUploadImage from 'hooks/useUploadImage';
 import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { updateTransportCompany } from 'services';
@@ -17,22 +18,8 @@ const getBase64 = (file) =>
 
 const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
   const formRef = useRef();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewTitle, setPreviewTitle] = useState('');
-  const [fileList, setFileList] = useState([]);
-
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
-  };
-
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, handleImageUpload } =
+    useUploadImage();
 
   const uploadButton = (
     <div>
@@ -56,9 +43,14 @@ const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
         ...(data?.user ?? [])
       }}
       onFinish={async (values) => {
+        let uploadedImage;
+        if (fileList.length > 0 && fileList[0].originFileObj) {
+          uploadedImage = await handleImageUpload(fileList[0]); // Chuyển đổi và upload ảnh khi nhấn nút "Submit"
+        }
         const _data = {
           ...values,
-          id: data?.user?.id
+          id: data?.user?.id,
+          img_url: uploadedImage || null
         };
         const transportData = {
           name: values.transport_name,
@@ -111,8 +103,8 @@ const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
           <ProFormText name="address" label="Địa chỉ"></ProFormText>
         </Col>
       </Row>
-      <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={() => setPreviewOpen(false)}>
-        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      <Modal open={previewImageModal.open} title={previewImageModal.title} footer={null} onCancel={handleCancelPreview}>
+        <img alt="example" style={{ width: '100%' }} src={previewImageModal.image} />
       </Modal>
     </ModalForm>
   );

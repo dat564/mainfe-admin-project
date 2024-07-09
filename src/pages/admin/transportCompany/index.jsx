@@ -10,7 +10,8 @@ import { getTransportCompany } from 'services';
 import { ROLES } from 'constants';
 import Tabular from 'components/Tabular';
 import { operatorColumnRender } from 'utils/columns';
-import { multiDeleteTransportCompany } from 'services';
+import { multipleDeleteUserById } from 'services';
+import { image_url } from 'configs/images';
 
 const MODAL_TYPE = {
   ADD: 'ADD',
@@ -27,7 +28,7 @@ const TransportCompanyPage = () => {
   async function handleDelete(recordId) {
     try {
       setLoading(true);
-      // await deleteMajorById(recordId);
+      await multipleDeleteUserById({ ids: [recordId] });
       toast.success('Delete successfully!');
       reloadTable();
       setSelectedRowKeys([]);
@@ -38,7 +39,13 @@ const TransportCompanyPage = () => {
   }
 
   async function handleEdit(record) {
-    setModalConfig({ type: MODAL_TYPE.EDIT, data: record });
+    setModalConfig({
+      type: MODAL_TYPE.EDIT,
+      data: {
+        ...record,
+        id: record.transportCompanyId
+      }
+    });
   }
 
   const columns = [
@@ -54,16 +61,17 @@ const TransportCompanyPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+      render: (_, record) => operatorColumnRender({ record, handleDelete, handleEdit })
     },
     {
       title: 'Ảnh',
       dataIndex: 'img_url',
       key: 'img_url',
       search: false,
-      render: (_, record) => (
-        <img src={record.img_url} alt={record.name} className="object-cover w-10 h-10 rounded-full" />
-      )
+      render: (_, record) =>
+        record.img_url && (
+          <img src={`${image_url}${record.img_url}`} alt={record.name} className="object-cover w-20 h-20" />
+        )
     },
     {
       title: 'Tên nhà xe',
@@ -108,7 +116,7 @@ const TransportCompanyPage = () => {
         toast.error('Please select at least 1 record to delete');
         return;
       }
-      await multiDeleteTransportCompany({ ids: getSelectedRowKeys() });
+      await multipleDeleteUserById({ ids: getSelectedRowKeys() });
       reloadTable();
       toast.success('Delete successfully!');
     } catch (error) {
@@ -136,7 +144,9 @@ const TransportCompanyPage = () => {
             return {
               ...item.user,
               ...item,
-              key: item.id
+              id: item.user.id,
+              transportCompanyId: item.id,
+              key: item.user.id
             };
           });
 

@@ -1,7 +1,7 @@
 import { SettingOutlined } from '@ant-design/icons';
 import { Dropdown, Modal } from 'antd';
 
-const items = [
+const defaultItems = [
   {
     label: 'Sửa',
     key: '2'
@@ -12,11 +12,11 @@ const items = [
   }
 ];
 
-export const operatorColumnRender = (record, handleDelete, handleEdit) => (
+export const operatorColumnRender = ({ record, items = [], handleDelete, handleEdit }) => (
   <div className="flex items-center justify-center">
     <Dropdown
       menu={{
-        items,
+        items: [...defaultItems, ...items],
         onClick: async (e) => {
           switch (e.key) {
             case '1':

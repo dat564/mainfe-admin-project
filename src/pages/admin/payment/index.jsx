@@ -1,10 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { getUserList } from 'services';
-import { ProTable } from '@ant-design/pro-components';
-import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 // import AddAccountModal from './components/AddAccountModal';
 import { ROLES } from 'constants';
-import { Dropdown, Modal, Popconfirm } from 'antd';
+import { Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
 // import EditAccountModal from './components/EditAccountModal';
 import { multipleDeleteUserById } from 'services';
@@ -12,11 +10,11 @@ import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
 import Setting from 'components/svgs/Setting';
 import EditPaymentModal from 'pages/admin/payment/components/EditPaymentModal';
-import AddPaymentModal from 'pages/admin/payment/components/AddPaymentModal';
 import { getPaymentList } from 'services/payment';
 import Tabular from 'components/Tabular';
 import { operatorColumnRender } from 'utils/columns';
 import { multiDeletePayment } from 'services';
+import AddPaymentModal from 'pages/admin/payment/components/AddPaymentModal';
 
 const PaymentPage = () => {
   const [loading, setLoading] = useState(false);
@@ -57,7 +55,7 @@ const PaymentPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+      render: (_, record) => operatorColumnRender({ record, handleDelete, handleEdit })
     },
     {
       title: 'Phương thức thanh toán',

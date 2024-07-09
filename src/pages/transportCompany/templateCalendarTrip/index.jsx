@@ -67,7 +67,7 @@ const TemplateCalendarTripPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+      render: (_, record) => operatorColumnRender({ record, handleDelete, handleEdit })
     },
     {
       title: 'Tên mẫu',

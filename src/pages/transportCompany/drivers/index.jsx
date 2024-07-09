@@ -1,27 +1,53 @@
 import React, { useRef, useState } from 'react';
 import { getUserList } from 'services';
-import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { ROLES } from 'constants';
-import { Popconfirm } from 'antd';
+import { Calendar, Dropdown, Modal, Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
 import { multipleDeleteUserById } from 'services';
 import { GENDER_LABEL } from 'constants';
 import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
 import Setting from 'components/svgs/Setting';
-import { ROLES_OBJ } from 'constants';
-import { operatorColumnRender } from 'utils/columns';
 import Tabular from 'components/Tabular';
-import { ROLES_ENUM } from 'constants';
 import AddDriverModal from './components/AddDriverModal';
 import EditDriverModal from './components/EditDriverModal';
 import { useSelector } from 'react-redux';
+import CalendarDriverModal from 'pages/transportCompany/drivers/components/CalendarDriverModal';
+
+const items = [
+  {
+    label: 'Sửa',
+    key: '2'
+  },
+  {
+    key: '1',
+    label: 'Xóa'
+  },
+  {
+    label: 'Xem lịch trình tài xế',
+    key: 'calendar-driver'
+  }
+];
+
+const TypeModal = {
+  CalendarDriver: 'calendar-driver'
+};
 
 const DriverPage = () => {
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
   const { transport_company } = useSelector((state) => state.auth.userInfo);
+  const [configModal, setConfigModal] = useState({
+    visible: false,
+    data: null,
+    type: ''
+  });
+
+  const handleCloseModal = () => {
+    setConfigModal({ visible: false, data: null, type: '' });
+  };
 
   const tableRef = useRef();
 
@@ -57,7 +83,45 @@ const DriverPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+      render: (_, record) => (
+        <div className="flex items-center justify-center">
+          <Dropdown
+            menu={{
+              items,
+              onClick: async (e) => {
+                switch (e.key) {
+                  case '1':
+                    Modal.confirm({
+                      title: 'Bạn có chắc chắn muốn xóa?',
+                      okText: 'Đồng ý',
+                      cancelText: 'Hủy',
+                      onOk: () => {
+                        handleDelete(record.id);
+                      }
+                    });
+                    break;
+                  case '2':
+                    handleEdit(record);
+                    break;
+                  case 'calendar-driver':
+                    setConfigModal({
+                      visible: true,
+                      data: { ...record, id: record?.driver?.id },
+                      type: TypeModal.CalendarDriver
+                    });
+                    break;
+                  default:
+                }
+              }
+            }}
+            trigger={['click']}
+          >
+            <div className="flex items-center justify-center w-10 h-10 font-medium transition-all bg-white border border-blue-500 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white">
+              <SettingOutlined />
+            </div>
+          </Dropdown>
+        </div>
+      )
     },
     {
       title: 'Họ và tên',
@@ -176,6 +240,9 @@ const DriverPage = () => {
           onClose={onCloseEditModal}
           handleReload={reloadTable}
         />
+      )}
+      {configModal.visible && configModal.type === TypeModal.CalendarDriver && (
+        <CalendarDriverModal open={configModal.visible} driver={configModal.data} handleClose={handleCloseModal} />
       )}
     </div>
   );

@@ -13,6 +13,7 @@ import Drivers from 'pages/transportCompany/drivers';
 import CompanyPayment from 'pages/transportCompany/payment';
 import TemplateCalendarTrip from 'pages/transportCompany/templateCalendarTrip';
 import BillPage from 'pages/transportCompany/bill';
+import Reconciled from 'pages/admin/reconciled';
 
 export const sideBar = [
   {
@@ -80,8 +81,16 @@ export const sideBar = [
     roles: [ROLES.ADMIN]
   },
   {
+    key: 'reconciled',
+    title: 'Quản lý thông tin đối soát',
+    icon: <TableOutlined />,
+    to: '/reconciled',
+    component: <Reconciled />,
+    roles: [ROLES.ADMIN]
+  },
+  {
     key: 'transport-company-payment',
-    title: 'Phương thức thanh toán',
+    title: 'Quản lý thông tin đối soát',
     icon: <TableOutlined />,
     to: '/transport-company-payment',
     component: <CompanyPayment />,
@@ -113,7 +122,7 @@ export const sideBar = [
   },
   {
     key: 'bill',
-    title: 'Quản lý đơn',
+    title: 'Đơn hàng',
     icon: <TableOutlined />,
     to: '/bill',
     component: <BillPage />,
@@ -121,7 +130,7 @@ export const sideBar = [
   },
   {
     key: 'rating',
-    title: 'Quản lý đánh giá',
+    title: 'Đánh giá',
     icon: <TableOutlined />,
     to: '/rating',
     component: <BillPage />,

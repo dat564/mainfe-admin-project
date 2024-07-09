@@ -8,16 +8,8 @@ import { toast } from 'react-toastify';
 import { createCar } from 'services';
 
 const AddCarModal = ({ companyId, handleReload }) => {
-  const {
-    previewImageModal,
-    fileList,
-    handlePreview,
-    handleChange,
-    handleCancelPreview,
-    setFileList,
-    setPreviewImageModal,
-    handleImageUpload
-  } = useUploadImage();
+  const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, handleImageUpload } =
+    useUploadImage();
 
   const uploadButton = (
     <div>
@@ -25,7 +17,7 @@ const AddCarModal = ({ companyId, handleReload }) => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
-  
+
   return (
     <ModalForm
       title="Thêm xe"

@@ -55,7 +55,7 @@ const AccountPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+      render: (_, record) => operatorColumnRender({ record, handleDelete, handleEdit })
     },
     {
       title: 'Họ và tên',

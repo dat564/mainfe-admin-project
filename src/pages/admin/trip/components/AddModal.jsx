@@ -3,7 +3,7 @@ import { Modal } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import Step1Content from './Step1Content';
 import Step2Content from './Step2Content';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { createTrip } from 'services/trip';
 
@@ -11,11 +11,7 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
   const formRef = useRef();
   const stepFormRef = useRef();
   const [current, setCurrent] = useState(0);
-  const [trips, setTrips] = useState([]);
-
-  const handleSetTrips = useCallback((dataSource) => {
-    setTrips(dataSource);
-  }, []);
+  const [timeRange, setTimeRange] = useState([]);
 
   return (
     <Modal
@@ -34,11 +30,10 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
           autoFocusFirstInput
           onFinish={async (values) => {
             try {
-              const bodyData = trips.map((trip) => ({
+              const bodyData = {
                 ...values,
-                ...trip,
                 transport_company_car_id: values.carId
-              }));
+              };
 
               await createTrip(bodyData);
 
@@ -59,11 +54,11 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
             width: '100%'
           }}
         >
-          <StepsForm.StepForm name="step1" title="Chọn xe">
-            <Step1Content />
+          <StepsForm.StepForm name="step1" title="Chọn thời gian chạy">
+            <Step1Content setTimeRange={setTimeRange} />
           </StepsForm.StepForm>
           <StepsForm.StepForm name="step2" title={'Thêm chuyến'}>
-            <Step2Content handleSetTrips={handleSetTrips} />
+            <Step2Content timeRange={timeRange} />
           </StepsForm.StepForm>
         </StepsForm>
       </div>

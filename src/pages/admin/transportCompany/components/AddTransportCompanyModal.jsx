@@ -83,7 +83,7 @@ const AddTransportCompanyModal = ({ reloadTable }) => {
           await createUser({
             ...values,
             role: ROLES.TRANSPORT_COMPANY,
-            img_url: uploadedImage?.imageUrl || null
+            img_url: uploadedImage || null
           });
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           reloadTable && reloadTable();

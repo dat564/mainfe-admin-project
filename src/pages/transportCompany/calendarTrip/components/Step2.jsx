@@ -67,7 +67,7 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+      render: (_, record) => operatorColumnRender({ record, handleDelete, handleEdit })
     },
     {
       title: 'Tên mẫu',
