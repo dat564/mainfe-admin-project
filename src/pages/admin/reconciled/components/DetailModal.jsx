@@ -30,7 +30,7 @@ const DetailModal = ({ visible, handleCancel, data }) => {
   ];
 
   return (
-    <Modal open={visible} onCancel={handleCancel} title="Chi tiết đối soát của nhà xe">
+    <Modal width={'70%'} open={visible} onCancel={handleCancel} title="Chi tiết đối soát của nhà xe">
       <Tabular
         ref={tableRef}
         columns={columns}
