@@ -118,6 +118,7 @@ const Step2 = forwardRef(({ setTemplateId, data }, ref) => {
             total: res.data.total
           };
         }}
+        search={false}
         headerTitle={
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-medium">Quản lý mẫu lịch trình</h1>

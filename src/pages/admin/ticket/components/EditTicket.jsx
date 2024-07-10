@@ -1,4 +1,11 @@
-import { ModalForm, ProFormDateTimePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
+import {
+  ModalForm,
+  ProFormDateTimePicker,
+  ProFormDigit,
+  ProFormSelect,
+  ProFormSwitch,
+  ProFormText
+} from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { ROLES } from 'constants';
 import { TICKET_STATUS_OPTIONS } from 'constants';
@@ -102,8 +109,8 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
         </Col>
         <Col span={12}>
           <ProFormSwitch
-            name="static_start_point"
-            label="Điểm đón tĩnh"
+            name="on_voucher"
+            label="Áp dụng voucher"
             style={{
               backgroundColor: 'red'
             }}

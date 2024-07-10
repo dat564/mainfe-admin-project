@@ -16,9 +16,10 @@ export const createReconciled = async (data) => {
   });
 };
 
-export const getDetailReconciled = async (id) => {
+export const getDetailReconciled = async (params) => {
   return request({
     url: `/reconciliationCompany/detail`,
-    method: 'GET'
+    method: 'GET',
+    params
   });
 };

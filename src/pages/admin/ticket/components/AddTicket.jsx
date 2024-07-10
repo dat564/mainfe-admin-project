@@ -1,5 +1,12 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormDateTimePicker, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components';
+import {
+  ModalForm,
+  ProFormDateTimePicker,
+  ProFormDigit,
+  ProFormSelect,
+  ProFormSwitch,
+  ProFormText
+} from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { TICKET_STATUS_OPTIONS, NOTIFY_MESSAGE, ROLES } from 'constants';
 import React, { useRef } from 'react';
@@ -102,6 +109,12 @@ const AddTicket = ({ handleReload }) => {
             request={handleGetCustomer}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Khách hàng"
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSwitch
+            name="on_voucher"
+            label="Áp dụng voucher"
           />
         </Col>
       </Row>

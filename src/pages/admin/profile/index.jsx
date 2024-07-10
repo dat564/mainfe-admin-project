@@ -6,7 +6,7 @@ import { ProForm, ProFormDatePicker, ProFormRadio, ProFormText } from '@ant-desi
 // import { getImageUrl } from "@/utils/utils";
 import styles from './EditUserInfo.module.less';
 import rules from './components/rules.validate';
-import { getUserById } from 'services';
+import { getUserList } from 'services';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { NOTIFY_MESSAGE } from 'constants';
@@ -76,10 +76,11 @@ const EditUserInfo = function () {
   }
 
   useEffect(() => {
-    if (!user?.id) return;
-    getUserById(user?.id)
+    if(!user.id) return;
+    getUserList({id: user.id})
       .then((res) => {
-        const data = res.data.data;
+        const [data] = res.data.data || [];
+        console.log({data})
         if (data?.img_url) {
           const _imageName = data.img_url.split('/').pop().split('.')[0];
           setImageName(_imageName);
@@ -181,7 +182,7 @@ const EditUserInfo = function () {
                     htmlType="submit"
                     onClick={() => props.form?.submit()}
                   >
-                    Update
+                    Cập nhật
                   </Button>
                 </div>
               )
@@ -211,85 +212,45 @@ const EditUserInfo = function () {
                         />
                       </Button>
                     </div>
-                    {studentData && (
-                      <div className={`ml-5 flex flex-col gap-3 p-5 border rounded bg-white`}>
-                        <div className="flex items-center gap-3">
-                          <p>Status:</p>
-                          <span>
-                            {studentData?.status_fee === 0 ? (
-                              <Tag color="error">Debt</Tag>
-                            ) : studentData.status_fee === 1 ? (
-                              <Tag color="success">Suffcient</Tag>
-                            ) : (
-                              '-'
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <p>Process:</p>
-                          <span>
-                            <Tooltip
-                              title={`${formatCurrency(studentData?.student_payed)}/${formatCurrency(
-                                studentData?.fee_real
-                              )}`}
-                            >
-                              <Progress
-                                style={{
-                                  minWidth: 200
-                                }}
-                                percent={((studentData?.student_payed / studentData?.fee_real) * 100).toFixed(0)}
-                              ></Progress>
-                            </Tooltip>
-                          </span>
-                        </div>
-                      </div>
-                    )}
                   </div>
-                  {studentData && (
-                    <div className="">
-                      <Button onClick={() => setVisibleHistory(true)} type="primary">
-                        Tuition history
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </Col>
               <Col span={12}>
-                <ProFormText name="name" label="Name" rules={rules.name} />
+                <ProFormText name="name" label="Họ và tên" rules={rules.name} />
               </Col>
               <Col span={12}>
                 <ProFormRadio.Group
                   name="gender"
-                  label="Gender"
+                  label="Giới tính"
                   options={[
                     {
-                      label: 'Male',
+                      label: 'Nam',
                       value: 0
                     },
                     {
-                      label: 'Female',
+                      label: 'Nữ',
                       value: 1
                     },
                     {
-                      label: 'Other...',
+                      label: 'Khác...',
                       value: 2
                     }
                   ]}
                 />
               </Col>
               <Col span={12}>
-                <ProFormDatePicker name="birth_day" label="Date of birth" />
+                <ProFormDatePicker name="birth_day" label="Ngày sinh" />
               </Col>
               <Col span={12}>
-                <ProFormText name="phone" label="Phone" rules={rules.phone} />
+                <ProFormText name="phone" label="Số điện thoại" rules={rules.phone} />
               </Col>
               <Col span={12}>
-                <ProFormText {...formItemLayout} name="address" label="Address" />
+                <ProFormText {...formItemLayout} name="address" label="Địa chỉ" />
               </Col>
             </Row>
 
             <Title level={2} style={{ color: '#5090AE', marginTop: 20 }}>
-              Account information
+              Thông tin tài khoản
             </Title>
 
             <Row gutter={[130, 12]}>
@@ -301,12 +262,12 @@ const EditUserInfo = function () {
                 <ProFormText.Password
                   id="password_old"
                   name="passwordOld"
-                  label="Password old"
+                  label="Mật khẩu cũ"
                   rules={rules.oldPassword}
                 />
               </Col>
               <Col span={12}>
-                <ProFormText.Password name="passwordNew" label="Password new" rules={rules.newPassword} />
+                <ProFormText.Password name="passwordNew" label="Mật khẩu mới" rules={rules.newPassword} />
               </Col>
             </Row>
           </ProForm>

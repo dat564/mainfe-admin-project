@@ -14,6 +14,7 @@ import { operatorColumnRender } from 'utils/columns';
 import { multiDeleteCalendarTrip } from 'services';
 import { convertDatetimeToServer } from 'utils/date';
 import { convertDatetime } from 'utils/date';
+import { ProFormSwitch } from '@ant-design/pro-components';
 
 const CalendarTripPage = () => {
   const [loading, setLoading] = useState(false);
@@ -80,6 +81,14 @@ const CalendarTripPage = () => {
       search: false,
       key: 'end_time',
       render: (text, record) => convertDatetime(record.end_time)
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'is_active',
+      key: 'is_active',
+      render: (_, record) => <ProFormSwitch disabled fieldProps={{
+        value: record.is_active
+      }} />
     },
     {
       title: 'Khoảng thời gian',

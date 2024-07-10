@@ -1,29 +1,65 @@
-import { ModalForm, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import Tabular from 'components/Tabular';
 import { NOTIFY_MESSAGE } from 'constants';
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { getDetailReconciled } from 'services/reconciled';
+import { getDriverList } from 'services';
 import { createReconciled } from 'services/reconciled';
+import { formatTime } from 'utils';
 
-const AddReconciledModal = ({ handleReload, visible, handleCancel, transport_company }) => {
+const AddReconciledModal = ({ handleReload, visible, handleCancel, data }) => {
+  console.log({ data });
+  const transport_company = useMemo(() => data?.transport_company, [data]);
+  const trips = useMemo(() => data?.trips, [data]);
+
+  console.log({ trips });
+  console.log('transport_company', transport_company);
   const formRef = useRef();
   const tableRef = useRef();
-  const [loading, setLoading] = useState(false);
+
+  const handleGetDriverList = async () => {
+    try {
+      const res = await getDriverList({
+        transport_company_id: transport_company?.id
+      });
+      const { data } = res?.data;
+      console.log({ driver: data });
+      return data.map((item) => ({ label: item.name, value: item.id }));
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   const columns = [
     {
-      title: 'Số tiền chưa đối soát',
-      dataIndex: 'unreconciled_amount',
-      search: false,
-      key: 'unreconciled_amount'
+      title: 'Mã chuyến đi',
+      dataIndex: 'code',
+      key: 'code'
     },
     {
-      title: 'Tổng số tiền đã đối soát',
-      dataIndex: 'total_reconciled_amount',
-      search: false,
-      key: 'total_reconciled_amount'
+      title: 'Thời gian khởi hành',
+      dataIndex: 'departure_time',
+      hideInSearch: true,
+      key: 'departure_time',
+      render: (_, record) => formatTime(record.scheduled_end_time)
+    },
+    {
+      title: 'Thời gian kết thúc',
+      dataIndex: 'scheduled_end_time',
+      key: 'scheduled_end_time',
+      render: (_, record) => formatTime(record.scheduled_end_time),
+      hideInSearch: true
+    },
+    {
+      title: 'Điểm xuất phát',
+      dataIndex: 'route_start',
+      key: 'route_start'
+    },
+    {
+      title: 'Điểm đến',
+      dataIndex: 'route_end',
+      key: 'route_end'
     }
   ];
 
@@ -37,20 +73,17 @@ const AddReconciledModal = ({ handleReload, visible, handleCancel, transport_com
         onCancel: handleCancel,
         destroyOnClose: true
       }}
-      onFinish={async (values) => {
-        try {
-          await createReconciled([
-            {
-              ...values
-            }
-          ]);
-          toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
-          handleReload();
-          handleCancel();
-          return true;
-        } catch (err) {
-          toast.error(err.response.data.message);
-        }
+      onFinish={async () => {
+        await createReconciled([
+          {
+            transport_company_id: transport_company?.id,
+            trip_id: trips.map((e) => e.id)
+          }
+        ]);
+        toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+        handleReload();
+        handleCancel();
+        return true;
       }}
       formRef={formRef}
       className="px-10 py-5"
@@ -60,46 +93,19 @@ const AddReconciledModal = ({ handleReload, visible, handleCancel, transport_com
           <ProFormText
             disabled
             label="Nhà xe"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          ></ProFormText>
-        </Col>
-        <Col span={24}>
-          <Tabular
-            ref={tableRef}
-            columns={columns}
-            search={false}
-            bordered
-            rowKey={(e) => e.id}
-            request={async (params) => {
-              setLoading(true);
-              const cloneParams = {
-                ...params,
-                transport_company_id: transport_company?.id
-              };
-              const res = await getDetailReconciled(cloneParams);
-              setLoading(false);
-              return {
-                data: res.data.data,
-                success: true
-              };
-            }}
-            rowSelection={{}}
-            headerTitle={
-              <div className="flex items-center gap-3">
-                <h1 className="text-xl font-medium">Quản lý thông tin đối soát</h1>
-              </div>
-            }
-            loading={loading}
-            options={{
-              reload: () => {
-                setLoading(true);
-                tableRef.current.reset();
-                setTimeout(() => {
-                  setLoading(false);
-                }, 1000);
-              }
+            fieldProps={{
+              value: transport_company?.name
             }}
           />
+        </Col>
+        <Col span={12}>
+          <ProFormSwitch
+            label="Mặc định"
+            name="is_default"
+          />
+        </Col>
+        <Col span={24}>
+          <Tabular ref={tableRef} columns={columns} dataSource={trips} search={false} bordered rowKey={(e) => e.id} />
         </Col>
       </Row>
     </ModalForm>

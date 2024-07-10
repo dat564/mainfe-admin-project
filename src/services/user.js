@@ -4,13 +4,7 @@ import { ROLES } from 'constants';
 export function getUserList(params) {
   return request('/user', {
     method: 'GET',
-    params
-  });
-}
-
-export function getUserById(id) {
-  return request(`/user/${id}`, {
-    method: 'GET'
+    params,
   });
 }
 

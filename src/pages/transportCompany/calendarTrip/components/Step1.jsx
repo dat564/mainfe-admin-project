@@ -1,4 +1,4 @@
-import { ProFormDateRangePicker, ProFormText } from '@ant-design/pro-components';
+import { ProFormDateRangePicker, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import React from 'react';
 
@@ -22,6 +22,13 @@ const Step1 = ({ data }) => {
           rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
         />
       </Col>
+      <Col span={12}>
+          <ProFormSwitch
+            name="is_active"
+            label="Trạng thái"
+            initialValue={data?.is_active}
+          />
+        </Col>
       <ProFormDateRangePicker hidden name="template_id" />
     </Row>
   );

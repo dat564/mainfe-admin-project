@@ -7,17 +7,32 @@ import { getReconciledList } from 'services/reconciled';
 import { SettingOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
 import Setting from 'components/svgs/Setting';
+import DetailModal from 'pages/admin/reconciled/components/DetailModal';
+import { ProFormSwitch } from '@ant-design/pro-components';
 
 const items = [
   {
     label: 'Đối soát',
     key: 'reconcile'
+  },
+  {
+    label: 'Xem chi tiết',
+    key: 'detail'
   }
 ];
 
+const ModalType = {
+  RECONCILE: 'RECONCILE',
+  DETAIL: 'DETAIL'
+};
+
 const TransportCompanyPaymentPage = () => {
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [configModal, setConfigModal] = useState({
+    visible: false,
+    data: null,
+    type: null
+  });
 
   const tableRef = useRef();
 
@@ -45,7 +60,18 @@ const TransportCompanyPaymentPage = () => {
               onClick: async (e) => {
                 switch (e.key) {
                   case 'reconcile':
-                    setVisible(true);
+                    setConfigModal({
+                      visible: true,
+                      data: record,
+                      type: ModalType.RECONCILE
+                    });
+                    break;
+                  case 'detail':
+                    setConfigModal({
+                      visible: true,
+                      data: record,
+                      type: ModalType.DETAIL
+                    });
                     break;
                   default:
                 }
@@ -80,6 +106,14 @@ const TransportCompanyPaymentPage = () => {
       key: 'reconciled_amount'
     },
     {
+      title: "Mặc định",
+      dataIndex: "is_default",
+      key: "is_default",
+      render: (_, record) => <ProFormSwitch disabled fieldProps={{
+        value: record.is_active
+      }} />
+    },
+    {
       title: 'Tìm kiếm',
       dataIndex: 'search',
       hideInTable: true,
@@ -109,7 +143,6 @@ const TransportCompanyPaymentPage = () => {
         headerTitle={
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-medium">Quản lý thông tin đối soát</h1>
-            <AddReconciledModal handleReload={reloadTable} />
           </div>
         }
         loading={loading}
@@ -123,8 +156,33 @@ const TransportCompanyPaymentPage = () => {
           }
         }}
       />
-      {visible && (
-        <AddReconciledModal handleReload={reloadTable} handleCancel={() => setVisible(false)} visible={visible} />
+      {configModal.visible && configModal.type === ModalType.RECONCILE && (
+        <AddReconciledModal
+          handleReload={reloadTable}
+          data={configModal.data}
+          handleCancel={() =>
+            setConfigModal({
+              visible: false,
+              data: null,
+              type: null
+            })
+          }
+          visible={configModal.visible}
+        />
+      )}
+      {configModal.visible && configModal.type === ModalType.DETAIL && (
+        <DetailModal
+          handleReload={reloadTable}
+          data={configModal.data}
+          handleCancel={() =>
+            setConfigModal({
+              visible: false,
+              data: null,
+              type: null
+            })
+          }
+          visible={configModal.visible}
+        />
       )}
     </div>
   );
