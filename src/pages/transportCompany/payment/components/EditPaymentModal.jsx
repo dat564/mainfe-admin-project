@@ -7,7 +7,6 @@ import useUploadImage from 'hooks/useUploadImage';
 import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { updateCompanyPayment } from 'services';
-import { createCompanyPayment } from 'services/companyPayment';
 import { uploadImage } from 'services/image';
 import { getPaymentList } from 'services/payment';
 
@@ -44,7 +43,7 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
       const resImage = await uploadImage(formData);
 
       // Xử lý kết quả trả về từ API
-      const result = resImage.data;
+      const result = resImage.data.data;
       return result;
     } catch (error) {
       throw error;
@@ -66,7 +65,7 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
 
   return (
     <ModalForm
-      title="Thêm phương thức thanh toán"
+      title="Sửa phương thức thanh toán"
       width="50%"
       open={visible}
       autoFocusFirstInput
@@ -84,9 +83,9 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
           }
 
           if (uploadedImage) {
-            _data.img_url = uploadedImage.imageUrl;
+            _data.image_qr_code = uploadedImage;
           }
-          await updateCompanyPayment(_data);
+          await updateCompanyPayment([_data]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           onClose();
           handleReload();

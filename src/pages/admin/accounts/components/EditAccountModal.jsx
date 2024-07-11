@@ -1,9 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
+import { image_url } from 'configs/images';
 import { ROLES } from 'constants';
 import { NOTIFY_MESSAGE, GENDER_OPTIONS } from 'constants';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getTransportCompany } from 'services';
 import { updateUser } from 'services';
@@ -48,6 +49,26 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
   };
 
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
+  useEffect(() => {
+    if (!data && !formRef.current) return;
+    if (data?.images) {
+      setPreviewImage((prev) => ({
+        ...prev,
+        image: image_url + data?.images
+      }));
+      setFileList([
+        {
+          name: 'image.png',
+          status: 'done',
+          url: image_url + data?.images
+        }
+      ]);
+    }
+    formRef.current.setFieldsValue({
+      ...data
+    });
+  }, [data, setFileList]);
 
   const uploadButton = (
     <div>

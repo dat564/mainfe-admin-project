@@ -20,6 +20,8 @@ import { getCompanyPaymentList } from 'services/companyPayment';
 const AddTemplateTrip = () => {
   const formRef = useRef();
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
+  const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(false);
+  const [isStaticEndPoint, setIsStaticEndPoint] = React.useState(false);
 
   const handleGetDriver = async () => {
     try {
@@ -145,24 +147,14 @@ const AddTemplateTrip = () => {
         </Col> */}
 
         <Col span={12}>
-          <ProFormText
-            name="start_point"
-            label="Điểm khởi hành"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
-
-        <Col span={12}>
-          <ProFormText
-            name="end_point"
-            label="Điểm kết thúc"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
-        <Col span={12}>
           <ProFormSwitch
             name="static_start_point"
-            label="Điểm đón tĩnh"
+            label="Đón tận nơi"
+            fieldProps={{
+              onChange: (value) => {
+                setIsStaticStartPoint(value);
+              }
+            }}
             style={{
               backgroundColor: 'red'
             }}
@@ -171,11 +163,23 @@ const AddTemplateTrip = () => {
         <Col span={12}>
           <ProFormSwitch
             name="static_end_point"
-            label="Điểm đến tĩnh"
+            label="Trả tận nơi"
+            fieldProps={{
+              onChange: (value) => {
+                setIsStaticEndPoint(value);
+              }
+            }}
             style={{
               backgroundColor: 'red'
             }}
           />
+        </Col>
+        <Col span={12}>
+          <ProFormText name="start_point" label="Điểm khởi hành" disabled={!isStaticStartPoint} />
+        </Col>
+
+        <Col span={12}>
+          <ProFormText name="end_point" disabled={!isStaticEndPoint} label="Điểm kết thúc" />
         </Col>
         <Col span={12}>
           <ProFormSelect

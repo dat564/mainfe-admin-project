@@ -82,7 +82,7 @@ const EditCalendarTripModal = ({ handleReload, data, visible, onClose }) => {
 
   return (
     <ModalForm
-      title="Thêm phương thức thanh toán"
+      title="Sửa phương thức thanh toán"
       width="50%"
       open={visible}
       autoFocusFirstInput

@@ -13,6 +13,7 @@ import Tabular from 'components/Tabular';
 import { useSelector } from 'react-redux';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
+import { ProFormSwitch } from '@ant-design/pro-components';
 
 const TransportCompanyPaymentPage = () => {
   const [loading, setLoading] = useState(false);
@@ -55,7 +56,7 @@ const TransportCompanyPaymentPage = () => {
       key: 'settings',
       search: false,
       align: 'center',
-      render: (_, record) => operatorColumnRender(record, handleDelete, handleEdit)
+      render: (_, record) => operatorColumnRender({ record, handleDelete, handleEdit })
     },
     {
       title: 'Tên tài khoản',
@@ -68,6 +69,12 @@ const TransportCompanyPaymentPage = () => {
       dataIndex: 'number_bank',
       search: false,
       key: 'number_bank'
+    },
+    {
+      title: 'Mặc định',
+      dataIndex: 'is_default',
+      key: 'is_default',
+      render: (_, record) => <ProFormSwitch initialValue={record.is_default} disabled></ProFormSwitch>
     },
     {
       title: 'Tìm kiếm',
@@ -144,11 +151,6 @@ const TransportCompanyPaymentPage = () => {
               setLoading(false);
             }, 1000);
           }
-        }}
-        handleDelete={handleDelete}
-        handleEdit={(record) => {
-          setSelectedRow(record);
-          setShowEditModal(true);
         }}
       />
       {showEditModal && (

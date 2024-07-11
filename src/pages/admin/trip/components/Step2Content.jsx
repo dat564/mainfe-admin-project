@@ -8,10 +8,12 @@ import { getCompanyPaymentList } from 'services';
 import { getUserList } from 'services';
 import { ROLES } from 'constants';
 import { convertDatetimeToServer } from 'utils/date';
+import moment from 'moment';
 
 const Step2Content = ({ timeRange }) => {
-  console.log({ timeRange });
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
+  const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(false);
+  const [isStaticEndPoint, setIsStaticEndPoint] = React.useState(false);
 
   const handleGetDriver = async () => {
     try {
@@ -22,18 +24,6 @@ const Step2Content = ({ timeRange }) => {
       });
       const { data } = res?.data;
       return data.map((item) => ({ label: item.name, value: item?.driver?.id }));
-    } catch (error) {
-      console.log({ error });
-    }
-  };
-
-  const handleGetCompanyPaymentList = async () => {
-    try {
-      const res = await getCompanyPaymentList({
-        transport_company_id: transport_company?.id
-      });
-      const { data } = res?.data;
-      return data.map((item) => ({ label: item.name_bank, value: item.id }));
     } catch (error) {
       console.log({ error });
     }
@@ -106,24 +96,14 @@ const Step2Content = ({ timeRange }) => {
       </Col>
 
       <Col span={12}>
-        <ProFormText
-          name="start_point"
-          label="Điểm khởi hành"
-          rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-        />
-      </Col>
-
-      <Col span={12}>
-        <ProFormText
-          name="end_point"
-          label="Điểm kết thúc"
-          rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-        />
-      </Col>
-      <Col span={12}>
         <ProFormSwitch
           name="static_start_point"
-          label="Điểm đón tĩnh"
+          label="Đón tận nơi"
+          fieldProps={{
+            onChange: (value) => {
+              setIsStaticStartPoint(value);
+            }
+          }}
           style={{
             backgroundColor: 'red'
           }}
@@ -132,20 +112,23 @@ const Step2Content = ({ timeRange }) => {
       <Col span={12}>
         <ProFormSwitch
           name="static_end_point"
-          label="Điểm đến tĩnh"
+          label="Trả tận nơi"
+          fieldProps={{
+            onChange: (value) => {
+              setIsStaticEndPoint(value);
+            }
+          }}
           style={{
             backgroundColor: 'red'
           }}
         />
       </Col>
       <Col span={12}>
-        <ProFormSelect
-          name="transport_company_payment_id"
-          showSearch
-          request={handleGetCompanyPaymentList}
-          label="Phương thức thanh toán"
-          rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-        />
+        <ProFormText name="start_point" label="Điểm khởi hành" disabled={!isStaticStartPoint} />
+      </Col>
+
+      <Col span={12}>
+        <ProFormText name="end_point" disabled={!isStaticEndPoint} label="Điểm kết thúc" />
       </Col>
       <Col span={12}>
         <ProFormMoney
@@ -153,9 +136,6 @@ const Step2Content = ({ timeRange }) => {
           label="Giá mặc định"
           // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
         />
-      </Col>
-      <Col span={12}>
-        <ProFormSwitch name="is_template" label="Là mẫu" />
       </Col>
     </Row>
   );

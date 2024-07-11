@@ -7,14 +7,20 @@ import useUploadImage from 'hooks/useUploadImage';
 import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getUserList } from 'services';
 import { createCompanyPayment } from 'services/companyPayment';
 import { getPaymentList } from 'services/payment';
 
 const AddPaymentModal = ({ handleReload }) => {
   const formRef = useRef();
-  const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, handleImageUpload } =
-    useUploadImage();
+  const {
+    previewImageModal,
+    fileList,
+    handlePreview,
+    handleChange,
+    handleCancelPreview,
+    handleImageUpload,
+    setFileList
+  } = useUploadImage();
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
 
   const handleGetPaymentList = async () => {
@@ -47,7 +53,10 @@ const AddPaymentModal = ({ handleReload }) => {
       }
       autoFocusFirstInput
       modalProps={{
-        onCancel: () => true,
+        onCancel: () => {
+          setFileList([]);
+          return true;
+        },
         destroyOnClose: true
       }}
       onFinish={async (values) => {

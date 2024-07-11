@@ -1,25 +1,26 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
+import { image_url } from 'configs/images';
 import { NOTIFY_MESSAGE } from 'constants';
 import useUploadImage from 'hooks/useUploadImage';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { updateTransportCompany } from 'services';
 import { updateUser } from 'services';
 
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-
 const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
   const formRef = useRef();
-  const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, handleImageUpload } =
-    useUploadImage();
+  const {
+    previewImageModal,
+    fileList,
+    handlePreview,
+    handleChange,
+    handleCancelPreview,
+    handleImageUpload,
+    setPreviewImageModal,
+    setFileList
+  } = useUploadImage();
 
   const uploadButton = (
     <div>
@@ -27,6 +28,26 @@ const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+
+  useEffect(() => {
+    if (!data && !formRef.current) return;
+    if (data?.images) {
+      setPreviewImageModal((prev) => ({
+        ...prev,
+        image: image_url + data?.images
+      }));
+      setFileList([
+        {
+          name: 'image.png',
+          status: 'done',
+          url: image_url + data?.images
+        }
+      ]);
+    }
+    formRef.current.setFieldsValue({
+      ...data
+    });
+  }, [data, setFileList, setPreviewImageModal]);
 
   return (
     <ModalForm

@@ -40,7 +40,7 @@ const EditCarModal = ({ companyId, handleReload, visible, onClose, data }) => {
     formRef.current.setFieldsValue({
       ...data
     });
-  }, [data]);
+  }, [data, setFileList, setPreviewImageModal]);
 
   const uploadButton = (
     <div>
