@@ -87,12 +87,12 @@ const TripPage = () => {
       hideInSearch: true
     },
     {
-      title: 'Điểm xuất phát',
+      title: 'Tuyến đi',
       dataIndex: 'route_start',
       key: 'route_start'
     },
     {
-      title: 'Điểm đến',
+      title: 'Tuyến đến',
       dataIndex: 'route_end',
       key: 'route_end'
     },

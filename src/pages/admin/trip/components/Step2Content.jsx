@@ -1,17 +1,14 @@
 import { ProFormMoney, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { getCarList } from 'services';
 import { getCityList } from 'services/cities';
-import { getCompanyPaymentList } from 'services';
 import { getUserList } from 'services';
 import { ROLES } from 'constants';
 import { convertDatetimeToServer } from 'utils/date';
-import moment from 'moment';
 
 const Step2Content = ({ timeRange }) => {
-  const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
+  console.log({ timeRange });
   const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(false);
   const [isStaticEndPoint, setIsStaticEndPoint] = React.useState(false);
 
@@ -19,8 +16,8 @@ const Step2Content = ({ timeRange }) => {
     try {
       const res = await getUserList({
         role: ROLES.DRIVER,
-        departure_time: convertDatetimeToServer(timeRange[0].format('DD/MM/YYYY HH:mm:ss')),
-        actual_end_time: convertDatetimeToServer(timeRange[1].format('DD/MM/YYYY HH:mm:ss'))
+        departure_time: convertDatetimeToServer(timeRange[0]),
+        actual_end_time: convertDatetimeToServer(timeRange[1])
       });
       const { data } = res?.data;
       return data.map((item) => ({ label: item.name, value: item?.driver?.id }));
@@ -40,11 +37,9 @@ const Step2Content = ({ timeRange }) => {
 
   const handleGetCarByTransportCompanyId = async () => {
     try {
-      if (!transport_company) return [];
       const res = await getCarList({
-        transport_company_id: transport_company?.id,
-        start_time: convertDatetimeToServer(timeRange[0].format('DD/MM/YYYY HH:mm:ss')),
-        end_time: convertDatetimeToServer(timeRange[1].format('DD/MM/YYYY HH:mm:ss'))
+        start_time: convertDatetimeToServer(timeRange[0]),
+        end_time: convertDatetimeToServer(timeRange[1])
       });
       const data = res.data.data;
       return data.map((item) => ({
@@ -81,7 +76,7 @@ const Step2Content = ({ timeRange }) => {
           name="carId"
           label="Xe"
           rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          params={[timeRange, transport_company?.id]}
+          params={[timeRange]}
           request={handleGetCarByTransportCompanyId}
         />
       </Col>
