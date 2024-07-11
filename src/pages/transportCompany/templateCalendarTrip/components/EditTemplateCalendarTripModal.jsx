@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { getTripList } from 'services';
 import { updateTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import { formatTime } from 'utils';
+import { convertDateAndFormat } from 'utils/date';
 
 const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
@@ -25,13 +26,13 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
       title: 'Thời gian đi',
       dataIndex: 'departure_time',
       key: 'departure_time',
-      render: (_, record) => formatTime(record.departure_time)
+      render: (_, record) => convertDateAndFormat(record.departure_time)
     },
     {
       title: 'Thời gian đến',
       dataIndex: 'scheduled_end_time',
       key: 'scheduled_end_time',
-      render: (_, record) => formatTime(record.scheduled_end_time)
+      render: (_, record) => convertDateAndFormat(record.scheduled_end_time)
     }
   ];
   const [loading, setLoading] = useState(false);
