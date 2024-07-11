@@ -78,7 +78,7 @@ const AddTemplateTrip = () => {
             scheduled_end_time: values.timeRage[1],
             is_template: true
           };
-          await createTrip(obj);
+          await createTrip([obj]);
           return true;
         } catch (err) {
           toast.error(err.response.data.message);
@@ -181,15 +181,7 @@ const AddTemplateTrip = () => {
         <Col span={12}>
           <ProFormText name="end_point" disabled={!isStaticEndPoint} label="Điểm kết thúc" />
         </Col>
-        <Col span={12}>
-          <ProFormSelect
-            name="transport_company_payment_id"
-            showSearch
-            request={handleGetCompanyPaymentList}
-            label="Phương thức thanh toán"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
+
         <Col span={12}>
           <ProFormMoney
             name="price_static"

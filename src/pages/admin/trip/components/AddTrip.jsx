@@ -23,7 +23,6 @@ const AddTrip = ({ handleCreateTrip }) => {
         destroyOnClose: true
       }}
       onFinish={async (values) => {
-        console.log({ values, departure_time: values.timeRage[0], scheduled_end_time: values.timeRage[1] });
         try {
           const obj = {
             ...values,
