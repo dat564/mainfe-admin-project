@@ -30,7 +30,8 @@ const Step1Content = ({ setTimeRange }) => {
           fieldProps={{
             onChange: (value) => {
               setTimeRange(value);
-            }
+            },
+            format: 'DD/MM/YYYY HH:mm:ss'
           }}
           disabledDate={(current) => current && current < moment().startOf('day')}
         />

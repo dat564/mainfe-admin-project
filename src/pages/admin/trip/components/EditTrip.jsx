@@ -84,7 +84,7 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isTe
       <Row gutter={[30, 20]}>
         <Col span={12}>
           <ProFormSelect
-            name="start_point"
+            name="route_start"
             showSearch
             label="Điểm xuất phát"
             options={CITIES}
@@ -93,7 +93,7 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isTe
         </Col>
         <Col span={12}>
           <ProFormSelect
-            name="end_point"
+            name="route_end"
             showSearch
             label="Điểm đến"
             options={CITIES}
