@@ -55,7 +55,7 @@ const AddDriverModal = ({ handleReload }) => {
       const resImage = await uploadImage(formData);
 
       // Xử lý kết quả trả về từ API
-      const result = resImage.data;
+      const result = resImage.data.data;
       return result;
     } catch (error) {
       throw error;
@@ -88,7 +88,7 @@ const AddDriverModal = ({ handleReload }) => {
 
           await createUser({
             ...values,
-            img_url: uploadedImage?.imageUrl || null,
+            img_url: uploadedImage || null,
             role: ROLES.DRIVER,
             transport_company_id: transport_company.id
           });

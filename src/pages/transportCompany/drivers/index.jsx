@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { getUserList } from 'services';
 import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { ROLES } from 'constants';
-import { Calendar, Dropdown, Modal, Popconfirm } from 'antd';
+import { Dropdown, Modal, Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
 import { multipleDeleteUserById } from 'services';
 import { GENDER_LABEL } from 'constants';
