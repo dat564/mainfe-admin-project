@@ -1,21 +1,8 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import {
-  ModalForm,
-  ProFormDateTimeRangePicker,
-  ProFormMoney,
-  ProFormSelect,
-  ProFormSwitch,
-  ProFormText
-} from '@ant-design/pro-components';
-import { Col, Row } from 'antd';
-import { ROLES } from 'constants';
+import { ModalForm } from '@ant-design/pro-components';
 import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getCarList } from 'services';
-import { getUserList } from 'services';
-import { getCityList } from 'services/cities';
-import { getCompanyPaymentList } from 'services/companyPayment';
 
 const AddTrip = ({ handleCreateTrip }) => {
   const formRef = useRef();
@@ -36,6 +23,7 @@ const AddTrip = ({ handleCreateTrip }) => {
         destroyOnClose: true
       }}
       onFinish={async (values) => {
+        console.log({ values, departure_time: values.timeRage[0], scheduled_end_time: values.timeRage[1] });
         try {
           const obj = {
             ...values,
@@ -44,9 +32,7 @@ const AddTrip = ({ handleCreateTrip }) => {
           };
           handleCreateTrip(obj);
           return true;
-        } catch (err) {
-          toast.error(err.response.data.message);
-        }
+        } catch (err) {}
       }}
       formRef={formRef}
       className="p-10"

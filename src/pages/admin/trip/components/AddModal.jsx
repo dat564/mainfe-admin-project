@@ -32,17 +32,20 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
             try {
               const bodyData = {
                 ...values,
+                departure_time: timeRange[0],
+                scheduled_end_time: timeRange[1],
                 transport_company_car_id: values.carId
               };
 
-              await createTrip(bodyData);
+              delete bodyData.timeRage;
+
+              await createTrip([bodyData]);
 
               toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
               handleReload();
               handleCancel();
               return true;
             } catch (err) {
-              toast.error(err.response.data.message);
               return false;
             }
           }}
