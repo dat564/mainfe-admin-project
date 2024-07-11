@@ -74,7 +74,14 @@ const TransportCompanyPaymentPage = () => {
       title: 'Mặc định',
       dataIndex: 'is_default',
       key: 'is_default',
-      render: (_, record) => <ProFormSwitch initialValue={record.is_default} disabled></ProFormSwitch>
+      render: (_, record) => (
+        <ProFormSwitch
+          fieldProps={{
+            initialValue: record.is_default
+          }}
+          disabled
+        ></ProFormSwitch>
+      )
     },
     {
       title: 'Tìm kiếm',
