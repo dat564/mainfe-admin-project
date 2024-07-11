@@ -92,8 +92,8 @@ const AddTemplateTrip = () => {
         try {
           const obj = {
             ...values,
-            departure_time: values.timeRage[0],
-            scheduled_end_time: values.timeRage[1],
+            departure_time: convertDatetimeToServer(values.timeRage[0]),
+            scheduled_end_time: convertDatetimeToServer(values.timeRage[1]),
             is_template: true
           };
           await createTrip([obj]);
@@ -128,6 +128,9 @@ const AddTemplateTrip = () => {
           <ProFormDateTimeRangePicker
             name="timeRage"
             label="Thời gian xuất phát và kết thúc"
+            fieldProps={{
+              format: 'DD/MM/YYYY HH:mm:ss'
+            }}
             rules={[
               {
                 required: true,
@@ -136,14 +139,7 @@ const AddTemplateTrip = () => {
             ]}
           ></ProFormDateTimeRangePicker>
         </Col>
-        <Col span={12}>
-          <ProFormSelect
-            name="carId"
-            label="Xe"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            request={handleGetCarByTransportCompanyId}
-          />
-        </Col>
+
         <Col span={12}>
           <ProFormSelect
             name="driver_id"
@@ -152,25 +148,6 @@ const AddTemplateTrip = () => {
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
-
-        {/* <Col span={12}>
-          <ProFormSelect
-            name="start_point"
-            showSearch
-            label="Điểm xuất phát"
-            request={handleGetCityList}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
-        <Col span={12}>
-          <ProFormSelect
-            name="end_point"
-            showSearch
-            label="Điểm đến"
-            request={handleGetCityList}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col> */}
 
         <Col span={12}>
           <ProFormSwitch
@@ -213,6 +190,14 @@ const AddTemplateTrip = () => {
             name="price_static"
             label="Giá mặc định"
             // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="carId"
+            label="Xe"
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            request={handleGetCarByTransportCompanyId}
           />
         </Col>
       </Row>

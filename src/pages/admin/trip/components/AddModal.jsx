@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { createTrip } from 'services/trip';
 import { convertDatetimeToServer } from 'utils/date';
 import moment from 'moment';
+import { convertDatetimeOfDayjsToServer } from 'utils/date';
 
 const AddModal = ({ handleReload, handleCancel, open }) => {
   const formRef = useRef();
@@ -32,10 +33,11 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
           autoFocusFirstInput
           onFinish={async (values) => {
             try {
+              console.log(timeRange);
               const bodyData = {
                 ...values,
-                departure_time: convertDatetimeToServer(moment(timeRange[0].$d).format('DD-MM-YYYY HH:mm:ss')),
-                scheduled_end_time: convertDatetimeToServer(moment(timeRange[1].$d).format('DD-MM-YYYY HH:mm:ss')),
+                departure_time: convertDatetimeOfDayjsToServer(timeRange[0]),
+                scheduled_end_time: convertDatetimeOfDayjsToServer(timeRange[1]),
                 transport_company_car_id: values.carId
               };
 

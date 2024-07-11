@@ -15,6 +15,7 @@ import { multiDeleteCalendarTrip } from 'services';
 import { convertDatetimeToServer } from 'utils/date';
 import { convertDatetime } from 'utils/date';
 import { ProFormSwitch } from '@ant-design/pro-components';
+import { convertDateAndFormat } from 'utils/date';
 
 const CalendarTripPage = () => {
   const [loading, setLoading] = useState(false);
@@ -73,22 +74,27 @@ const CalendarTripPage = () => {
       dataIndex: 'start_time',
       search: false,
       key: 'start_time',
-      render: (text, record) => convertDatetime(record.start_time)
+      render: (text, record) => convertDateAndFormat(record.start_time)
     },
     {
       title: 'Thời gian kết thúc',
       dataIndex: 'end_time',
       search: false,
       key: 'end_time',
-      render: (text, record) => convertDatetime(record.end_time)
+      render: (text, record) => convertDateAndFormat(record.end_time)
     },
     {
       title: 'Trạng thái',
       dataIndex: 'is_active',
       key: 'is_active',
-      render: (_, record) => <ProFormSwitch disabled fieldProps={{
-        value: record.is_active
-      }} />
+      render: (_, record) => (
+        <ProFormSwitch
+          disabled
+          fieldProps={{
+            value: record.is_active
+          }}
+        />
+      )
     },
     {
       title: 'Khoảng thời gian',

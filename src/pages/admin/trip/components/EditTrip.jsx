@@ -3,7 +3,8 @@ import {
   ProFormDateTimeRangePicker,
   ProFormMoney,
   ProFormSelect,
-  ProFormSwitch
+  ProFormSwitch,
+  ProFormText
 } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
@@ -14,9 +15,14 @@ import { toast } from 'react-toastify';
 import { updateTrip } from 'services';
 import { getUserList } from 'services';
 import { getCompanyPaymentList } from 'services/companyPayment';
+import { convertDatetimeToServer } from 'utils/date';
+import { convertDatetime } from 'utils/date';
+import { convertDatetimeOfDayjsToServer } from 'utils/date';
 
-const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isTempUpdate = false }) => {
+const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }) => {
   const formRef = useRef();
+  const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(false);
+  const [isStaticEndPoint, setIsStaticEndPoint] = React.useState(false);
 
   const handleGetDriver = async () => {
     try {
@@ -54,72 +60,26 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isTe
       }}
       initialValues={{
         ...data,
-        timeRage: [data.departure_time, data.scheduled_end_time]
+        timeRage: [convertDatetime(data.departure_time), convertDatetime(data.scheduled_end_time)]
       }}
       onFinish={async (values) => {
         try {
-          if (!isTempUpdate) {
-            const body = {
-              ...values,
-              id: data.id
-            };
-            await updateTrip(body);
-            handleReload();
-            toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
-            return true;
-          } else {
-            const obj = {
-              ...values,
-              departure_time: values.timeRage[0],
-              scheduled_end_time: values.timeRage[1]
-            };
-            handleUpdateTrip(obj);
-            return true;
-          }
+          const body = {
+            ...values,
+            id: data.id,
+            departure_time: convertDatetimeToServer(values.timeRage[0]),
+            scheduled_end_time: convertDatetimeToServer(values.timeRage[1])
+          };
+          await updateTrip([body]);
+          handleReload();
+          toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
+          return true;
         } catch (err) {}
       }}
       formRef={formRef}
       className="p-10"
     >
       <Row gutter={[30, 20]}>
-        <Col span={12}>
-          <ProFormSelect
-            name="route_start"
-            showSearch
-            label="Điểm xuất phát"
-            options={CITIES}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
-        <Col span={12}>
-          <ProFormSelect
-            name="route_end"
-            showSearch
-            label="Điểm đến"
-            options={CITIES}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
-        <Col span={12}>
-          <ProFormDateTimeRangePicker
-            name="timeRage"
-            label="Thời gian xuất phát và kết thúc"
-            rules={[
-              {
-                required: true,
-                message: 'Vui lòng nhập trường này'
-              }
-            ]}
-          ></ProFormDateTimeRangePicker>
-        </Col>
-        <Col span={12}>
-          <ProFormSelect
-            name="driver_id"
-            label="Tài xế"
-            request={handleGetDriver}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-          />
-        </Col>
         <Col span={12}>
           <ProFormSelect
             name="route_start"
@@ -139,22 +99,55 @@ const EditTrip = ({ handleUpdateTrip, handleReload, data, visible, onClose, isTe
           />
         </Col>
         <Col span={12}>
+          <ProFormDateTimeRangePicker
+            name="timeRage"
+            label="Thời gian xuất phát và kết thúc"
+            fieldProps={{
+              format: 'DD/MM/YYYY HH:mm:ss'
+            }}
+            rules={[
+              {
+                required: true,
+                message: 'Vui lòng nhập trường này'
+              }
+            ]}
+          ></ProFormDateTimeRangePicker>
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="driver_id"
+            label="Tài xế"
+            request={handleGetDriver}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          />
+        </Col>
+        <Col span={12}>
           <ProFormSwitch
             name="static_start_point"
-            label="Điểm đón tĩnh"
-            style={{
-              backgroundColor: 'red'
+            label="Đón tận nơi"
+            fieldProps={{
+              onChange: (value) => {
+                setIsStaticStartPoint(value);
+              }
             }}
           />
         </Col>
         <Col span={12}>
           <ProFormSwitch
             name="static_end_point"
-            label="Điểm đến tĩnh"
-            style={{
-              backgroundColor: 'red'
+            label="Trả tận nơi"
+            fieldProps={{
+              onChange: (value) => {
+                setIsStaticEndPoint(value);
+              }
             }}
           />
+        </Col>
+        <Col span={12}>
+          <ProFormText name="start_point" showSearch label="Điểm xuất phát" disabled={!isStaticStartPoint} />
+        </Col>
+        <Col span={12}>
+          <ProFormText name="end_point" showSearch label="Điểm đến" disabled={!isStaticEndPoint} />
         </Col>
         {isTempUpdate && (
           <Col span={12}>

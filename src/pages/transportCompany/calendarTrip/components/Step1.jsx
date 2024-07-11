@@ -17,18 +17,17 @@ const Step1 = ({ data }) => {
       <Col span={12}>
         <ProFormDateRangePicker
           name="dateRange"
-          initialValue={[data?.start_time, data?.end_time]}
+          fieldProps={{
+            initialValue: [data?.start_time, data?.end_time],
+            format: 'DD/MM/YYYY'
+          }}
           label="Ngày bắt đầu và kết thúc"
           rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
         />
       </Col>
       <Col span={12}>
-          <ProFormSwitch
-            name="is_active"
-            label="Trạng thái"
-            initialValue={data?.is_active}
-          />
-        </Col>
+        <ProFormSwitch name="is_active" label="Trạng thái" initialValue={data?.is_active} />
+      </Col>
       <ProFormDateRangePicker hidden name="template_id" />
     </Row>
   );

@@ -3,6 +3,7 @@ import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import Tabular from 'components/Tabular';
 import { getRatingList } from 'services/rating';
+import { convertDateAndFormat } from 'utils/date';
 
 const RatingPage = () => {
   const [loading, setLoading] = useState(false);
@@ -42,14 +43,14 @@ const RatingPage = () => {
       dataIndex: 'created_at',
       search: false,
       key: 'created_at',
-      render: (text) => new Date(text).toLocaleString()
+      render: (text) => convertDateAndFormat(text)
     },
     {
       title: 'Ngày cập nhật',
       dataIndex: 'updated_at',
       search: false,
       key: 'updated_at',
-      render: (text) => new Date(text).toLocaleString()
+      render: (text) => convertDateAndFormat(text)
     },
     {
       title: 'Đánh giá tài xế thấp nhất',

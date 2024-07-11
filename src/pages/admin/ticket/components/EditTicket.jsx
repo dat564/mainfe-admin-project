@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { getUserList } from 'services';
 import { getTripList } from 'services';
 import { updateTicket } from 'services';
+import { convertDatetimeToServer } from 'utils/date';
 
 const EditTicket = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
@@ -55,7 +56,8 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
           await updateTicket([
             {
               ...values,
-              id: data.id
+              id: data.id,
+              purchase_time: convertDatetimeToServer(values.purchase_time)
             }
           ]);
           toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
@@ -94,6 +96,9 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
             name="purchase_time"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Thời gian mua"
+            fieldProps={{
+              format: 'DD/MM/YYYY HH:mm:ss'
+            }}
           />
         </Col>
         <Col span={12}>

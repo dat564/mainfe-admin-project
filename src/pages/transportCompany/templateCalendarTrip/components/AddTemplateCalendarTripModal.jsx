@@ -9,20 +9,20 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getTripList } from 'services';
 import { createTemplateCalendarTrip } from 'services/templateCalendarTrip';
-import { formatTime } from 'utils';
+import { convertDateAndFormat } from 'utils/date';
 
 const AddTemplateCalendarTripModal = ({ handleReload }) => {
   const formRef = useRef();
   const columns = [
     {
-      title: 'Điểm đi',
-      dataIndex: 'start_point',
-      key: 'start_point'
+      title: 'Tuyến đi',
+      dataIndex: 'route_start',
+      key: 'route_start'
     },
     {
-      title: 'Điểm đến',
-      dataIndex: 'end_point',
-      key: 'end_point'
+      title: 'Tuyến đến',
+      dataIndex: 'route_end',
+      key: 'route_end'
     },
     {
       dataIndex: 'price_static',
@@ -46,13 +46,13 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
       title: 'Thời gian đi',
       dataIndex: 'departure_time',
       key: 'departure_time',
-      render: (_, record) => formatTime(record.departure_time)
+      render: (_, record) => convertDateAndFormat(record.departure_time)
     },
     {
       title: 'Thời gian đến',
       dataIndex: 'scheduled_end_time',
       key: 'scheduled_end_time',
-      render: (_, record) => formatTime(record.scheduled_end_time)
+      render: (_, record) => convertDateAndFormat(record.scheduled_end_time)
     }
   ];
   const [dataSource, setDataSource] = React.useState([]);
@@ -62,15 +62,6 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
 
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
-  };
-
-  const handleMultiDelete = () => {
-    setDataSource(dataSource.filter((item) => !selectedRowKeys.includes(item.key)));
-    setSelectedRowKeys([]);
-  };
-
-  const handleCreateTrip = (values) => {
-    return true;
   };
 
   return (

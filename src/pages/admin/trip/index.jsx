@@ -15,6 +15,7 @@ import { NOTIFY_MESSAGE } from 'constants';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { getDriverList } from 'services';
+import { convertDateAndFormat } from 'utils/date';
 
 const TripPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -76,13 +77,13 @@ const TripPage = () => {
       dataIndex: 'departure_time',
       hideInSearch: true,
       key: 'departure_time',
-      render: (_, record) => formatTime(record.scheduled_end_time)
+      render: (_, record) => convertDateAndFormat(record.departure_time)
     },
     {
       title: 'Thời gian kết thúc',
       dataIndex: 'scheduled_end_time',
       key: 'scheduled_end_time',
-      render: (_, record) => formatTime(record.scheduled_end_time),
+      render: (_, record) => convertDateAndFormat(record.scheduled_end_time),
       hideInSearch: true
     },
     {

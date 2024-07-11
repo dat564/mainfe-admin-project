@@ -13,6 +13,7 @@ import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { getUserList, getTripList } from 'services';
 import { createPayment } from 'services/payment';
+import { convertDatetimeToServer } from 'utils/date';
 
 const AddTicket = ({ handleReload }) => {
   const formRef = useRef();
@@ -51,7 +52,8 @@ const AddTicket = ({ handleReload }) => {
         try {
           await createPayment([
             {
-              ...values
+              ...values,
+              purchase_time: convertDatetimeToServer(values.purchase_time)
             }
           ]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
@@ -93,6 +95,9 @@ const AddTicket = ({ handleReload }) => {
             name="purchase_time"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Thời gian mua"
+            fieldProps={{
+              format: 'DD/MM/YYYY HH:mm:ss'
+            }}
           />
         </Col>
         <Col span={12}>
@@ -112,10 +117,7 @@ const AddTicket = ({ handleReload }) => {
           />
         </Col>
         <Col span={12}>
-          <ProFormSwitch
-            name="on_voucher"
-            label="Áp dụng voucher"
-          />
+          <ProFormSwitch name="on_voucher" label="Áp dụng voucher" />
         </Col>
       </Row>
     </ModalForm>
