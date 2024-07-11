@@ -77,7 +77,7 @@ const TransportCompanyPaymentPage = () => {
       render: (_, record) => (
         <ProFormSwitch
           fieldProps={{
-            initialValue: record.is_default
+            value: record.is_default
           }}
           disabled
         ></ProFormSwitch>
