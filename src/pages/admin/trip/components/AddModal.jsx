@@ -33,11 +33,10 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
           autoFocusFirstInput
           onFinish={async (values) => {
             try {
-              console.log(timeRange);
               const bodyData = {
                 ...values,
-                departure_time: convertDatetimeOfDayjsToServer(timeRange[0]),
-                scheduled_end_time: convertDatetimeOfDayjsToServer(timeRange[1]),
+                departure_time: convertDatetimeToServer(timeRange[0]),
+                scheduled_end_time: convertDatetimeToServer(timeRange[1]),
                 transport_company_car_id: values.carId
               };
 
