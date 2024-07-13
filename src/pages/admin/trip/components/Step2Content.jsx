@@ -1,4 +1,14 @@
-import { ProFormMoney, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
+import {
+  ProFormDatePicker,
+  ProFormDigit,
+  ProFormFieldSet,
+  ProFormGroup,
+  ProFormList,
+  ProFormMoney,
+  ProFormSelect,
+  ProFormSwitch,
+  ProFormText
+} from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import React from 'react';
 import { getCarList } from 'services';
@@ -131,6 +141,36 @@ const Step2Content = ({ timeRange }) => {
           label="Giá mặc định"
           // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
         />
+      </Col>
+
+      <Col span={24}>
+        <ProFormList
+          name="users"
+          label="Các điểm dừng"
+          rules={[
+            {
+              validator: async (_, value) => {
+                console.log(value);
+                if (value && value.length > 0) {
+                  return;
+                }
+                throw new Error('至少要有一项！');
+              }
+            }
+          ]}
+        >
+          <ProFormGroup>
+            <ProFormSelect
+              name="break_point"
+              showSearch
+              label="Điểm dừng"
+              request={handleGetCityList}
+              width={550}
+              rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            />
+            <ProFormMoney name="price" label="Giá" width={550} />
+          </ProFormGroup>
+        </ProFormList>
       </Col>
     </Row>
   );

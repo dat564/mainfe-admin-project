@@ -1,5 +1,5 @@
 import { StepsForm } from '@ant-design/pro-components';
-import { Modal } from 'antd';
+import { Button, Modal, Spin } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
 import Step1Content from './Step1Content';
 import Step2Content from './Step2Content';
@@ -7,12 +7,13 @@ import React, { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { createTrip } from 'services/trip';
 import { convertDatetimeToServer } from 'utils/date';
-import moment from 'moment';
-import { convertDatetimeOfDayjsToServer } from 'utils/date';
+import Step3 from 'pages/admin/trip/components/Step3';
 
 const AddModal = ({ handleReload, handleCancel, open }) => {
   const formRef = useRef();
   const stepFormRef = useRef();
+  const [loading, setLoading] = useState(false);
+  const [tripCreated, setTripCreated] = useState([]);
   const [current, setCurrent] = useState(0);
   const [timeRange, setTimeRange] = useState([]);
 
@@ -32,28 +33,54 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
           current={current}
           autoFocusFirstInput
           onFinish={async (values) => {
-            try {
-              const bodyData = {
-                ...values,
-                departure_time: convertDatetimeToServer(timeRange[0]),
-                scheduled_end_time: convertDatetimeToServer(timeRange[1]),
-                transport_company_car_id: values.carId
-              };
+            setLoading(true);
+            const bodyData = {
+              ...values,
+              departure_time: convertDatetimeToServer(timeRange[0]),
+              scheduled_end_time: convertDatetimeToServer(timeRange[1]),
+              transport_company_car_id: values.carId
+            };
 
-              delete bodyData.timeRage;
+            delete bodyData.timeRage;
 
-              await createTrip([bodyData]);
+            const res = await createTrip([bodyData]);
 
-              toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
-              handleReload();
-              handleCancel();
-              return true;
-            } catch (err) {
-              return false;
-            }
+            setTripCreated(res.data.data[0]);
+            setLoading(false);
+            handleReload && handleReload();
+            toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           }}
-          onCurrentChange={(current) => {
-            setCurrent(current);
+          submitter={{
+            render: (props) => {
+              if (current === 2) {
+                return null;
+              }
+              return (
+                <div className="flex justify-end gap-3">
+                  {current > 0 && (
+                    <Button
+                      onClick={() => {
+                        setCurrent((prev) => prev - 1);
+                      }}
+                    >
+                      Trước
+                    </Button>
+                  )}
+                  <Button
+                    type="primary"
+                    onClick={async () => {
+                      if (current === 1) {
+                        setLoading(() => true);
+                        await formRef.current.submit();
+                      }
+                      if (!loading) setCurrent((prev) => prev + 1);
+                    }}
+                  >
+                    Tiếp theo
+                  </Button>
+                </div>
+              );
+            }
           }}
           containerStyle={{
             margin: 0,
@@ -65,6 +92,9 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
           </StepsForm.StepForm>
           <StepsForm.StepForm name="step2" title={'Thêm chuyến'}>
             <Step2Content timeRange={timeRange} />
+          </StepsForm.StepForm>
+          <StepsForm.StepForm name="step3" title={'Sửa vé'}>
+            {loading ? <Spin spinning></Spin> : <Step3 trip={tripCreated} />}
           </StepsForm.StepForm>
         </StepsForm>
       </div>

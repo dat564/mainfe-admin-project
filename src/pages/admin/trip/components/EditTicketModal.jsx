@@ -17,7 +17,7 @@ import { getTripList } from 'services';
 import { updateTicket } from 'services';
 import { convertDatetimeToServer } from 'utils/date';
 
-const EditTicket = ({ handleReload, data, visible, onClose }) => {
+const EditTicketModal = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
 
   console.log({ data });
@@ -44,7 +44,8 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
       width="70%"
       open={visible}
       initialValues={{
-        ...data
+        ...data,
+        position_on_car: data?.position_on_car + 1
       }}
       autoFocusFirstInput
       modalProps={{
@@ -91,21 +92,11 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
-        <Col span={12}>
-          <ProFormDateTimePicker
-            name="purchase_time"
-            label="Thời gian mua"
-            fieldProps={{
-              format: 'DD/MM/YYYY HH:mm:ss'
-            }}
-          />
-        </Col>
+
         <Col span={12}>
           <ProFormSelect disabled name="trip_id" request={handleGetTrip} label="Chuyến" />
         </Col>
-        <Col span={12}>
-          <ProFormSelect name="customer_id" request={handleGetCustomer} label="Khách hàng" />
-        </Col>
+
         <Col span={12}>
           <ProFormSwitch
             name="on_voucher"
@@ -120,4 +111,4 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
   );
 };
 
-export default EditTicket;
+export default EditTicketModal;

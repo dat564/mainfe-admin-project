@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import moment from 'moment';
+import momentTimezon from 'moment-timezone';
 
 export function convertDatetime(inputStr) {
   if (!inputStr) return;
@@ -51,4 +52,14 @@ export function convertDateToServer(inputStr) {
 export function convertDatetimeOfDayjsToServer(dateString) {
   // dùng dayjs trừ 7 đi
   return dayjs(dateString).subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss');
+}
+
+export function convertDatetimeByDayjs(inputStr, format = 'DD/MM/YYYY HH:mm:ss') {
+  if (!inputStr) return;
+  const timeZone = 'Asia/Bangkok';
+  if (!dayjs(inputStr).isValid()) {
+    return inputStr;
+  }
+
+  return momentTimezon(inputStr).tz(timeZone).format(format);
 }

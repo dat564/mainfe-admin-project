@@ -3,7 +3,7 @@ import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import Tabular from 'components/Tabular';
 import { getRatingList } from 'services/rating';
-import { convertDateAndFormat } from 'utils/date';
+import { convertDatetimeByDayjs } from 'utils/date';
 
 const RatingPage = () => {
   const [loading, setLoading] = useState(false);
@@ -25,11 +25,23 @@ const RatingPage = () => {
       render: (_, record) => `${record.bill?.trip.route_start} ➡️ ${record.bill?.trip.route_end}`
     },
     {
+      title: 'Tài xế',
+      dataIndex: 'driver',
+      key: 'driver',
+      render: (_, record) => record?.bill?.trip?.driver?.name
+    },
+    {
       title: 'Đánh giá tài xế',
       dataIndex: 'rate_driver',
       search: false,
       key: 'rate_driver',
       render: (_, record) => `${record.rate_driver} ⭐`
+    },
+    {
+      title: 'Chuyến',
+      dataIndex: 'trip',
+      key: 'trip',
+      render: (_, record) => record?.bill?.trip?.name
     },
     {
       title: 'Đánh giá chuyến',
@@ -43,25 +55,27 @@ const RatingPage = () => {
       dataIndex: 'created_at',
       search: false,
       key: 'created_at',
-      render: (text) => convertDateAndFormat(text)
+      render: (text) => convertDatetimeByDayjs(text)
     },
     {
       title: 'Ngày cập nhật',
       dataIndex: 'updated_at',
       search: false,
       key: 'updated_at',
-      render: (text) => convertDateAndFormat(text)
+      render: (text) => convertDatetimeByDayjs(text)
     },
     {
       title: 'Đánh giá tài xế thấp nhất',
       dataIndex: 'driver_rating_min',
       key: 'driver_rating_min',
+      valueType: 'number',
       hideInTable: true
     },
     {
       title: 'Đánh giá tài xế cao nhất',
       dataIndex: 'driver_rating_max',
       key: 'driver_rating_max',
+      valueType: 'number',
       hideInTable: true
     },
     {
