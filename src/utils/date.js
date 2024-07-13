@@ -37,6 +37,17 @@ export function convertDatetimeToServer(inputStr) {
   return outputStr;
 }
 
+export function convertDateToServer(inputStr) {
+  if (!inputStr) return;
+  // Sử dụng Moment.js để phân tích chuỗi đầu vào
+  var momentObj = moment(inputStr, 'DD/MM/YYYY');
+
+  // Chuyển đổi đối tượng Moment trở lại chuỗi với định dạng mong muốn
+  var outputStr = momentObj.format('YYYY-MM-DD');
+
+  return outputStr;
+}
+
 export function convertDatetimeOfDayjsToServer(dateString) {
   // dùng dayjs trừ 7 đi
   return dayjs(dateString).subtract(7, 'hours').format('YYYY-MM-DD HH:mm:ss');

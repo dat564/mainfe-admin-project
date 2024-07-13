@@ -8,6 +8,7 @@ import Step2 from './Step2';
 import { createCalendarTrip } from 'services';
 import { useSelector } from 'react-redux';
 import { updateCalendarTrip } from 'services';
+import { convertDateToServer } from 'utils/date';
 
 const StepsFormModal = ({ handleReload, handleCancel, open, data }) => {
   const formRef = useRef();
@@ -41,8 +42,8 @@ const StepsFormModal = ({ handleReload, handleCancel, open, data }) => {
               const bodyData = {
                 ...values,
                 template_id: templateId,
-                start_time: values.dateRange[0],
-                end_time: values.dateRange[1],
+                start_time: convertDateToServer(values.dateRange[0]),
+                end_time: convertDateToServer(values.dateRange[1]),
                 transport_company_id: transport_company.id
               };
 

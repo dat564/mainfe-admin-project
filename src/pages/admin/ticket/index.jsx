@@ -15,6 +15,7 @@ import { getTripList } from 'services';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { convertDatetimeToServer } from 'utils/date';
+import { convertDateAndFormat } from 'utils/date';
 
 const TicketPage = () => {
   const [loading, setLoading] = useState(false);
@@ -41,7 +42,7 @@ const TicketPage = () => {
     try {
       const res = await getTripList();
       const { data } = res?.data;
-      return data.map((item) => ({ label: item.name, value: item.id }));
+      return data.map((item) => ({ label: item.code, value: item.id }));
     } catch (error) {
       console.log({ error });
     }
@@ -111,7 +112,15 @@ const TicketPage = () => {
       fieldProps: {
         format: 'DD/MM/YYYY HH:mm:ss'
       },
-      render: (_, record) => formatTime(record.purchase_time)
+      render: (_, record) => convertDateAndFormat(record.purchase_time)
+    },
+    {
+      title: 'Chuyến',
+      dataIndex: 'trip_id',
+      key: 'trip_id',
+      hideInTable: true,
+      valueType: 'select',
+      request: handleGetTripList
     },
     {
       title: 'Điểm xuất phát',

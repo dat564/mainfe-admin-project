@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { DeleteOutlined, FolderAddOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { formatTime } from 'utils/utils';
-import { Popconfirm } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
 import EditTrip from './components/EditTrip';
 import requireAuthentication from 'hoc/requireAuthentication';
@@ -16,13 +16,21 @@ import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { getDriverList } from 'services';
 import { convertDateAndFormat } from 'utils/date';
+import TicketDetailModal from 'pages/admin/trip/components/TicketDetailModal';
+
+const ModalType = {
+  ADD: 'ADD',
+  EDIT: 'EDIT',
+  TICKET_DETAIL: 'TICKET_DETAIL'
+};
 
 const TripPage = () => {
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedInstance, setSelectedInstance] = useState(null);
   const [loading, setLoading] = useState(false);
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
+  const [configModal, setConfigModal] = useState({
+    data: null,
+    type: null
+  });
   const tableRef = useRef();
 
   const { getSelectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
@@ -41,8 +49,7 @@ const TripPage = () => {
   }
 
   function handleEdit(record) {
-    setSelectedInstance(record);
-    setShowEditModal(true);
+    openModal(ModalType.EDIT, record);
   }
 
   const handleGetDriverList = async () => {
@@ -55,6 +62,20 @@ const TripPage = () => {
     } catch (error) {
       console.log({ error });
     }
+  };
+
+  const openModal = (type, data) => {
+    setConfigModal({
+      data,
+      type
+    });
+  };
+
+  const closeModal = () => {
+    setConfigModal({
+      data: null,
+      type: null
+    });
   };
 
   const columns = [
@@ -71,6 +92,16 @@ const TripPage = () => {
       search: false,
       align: 'center',
       render: (_, record) => operatorColumnRender({ record, handleDelete, handleEdit })
+    },
+    {
+      title: 'Mã chuyến',
+      dataIndex: 'code',
+      key: 'code',
+      render: (text, record) => (
+        <Button type="link" onClick={() => openModal(ModalType.TICKET_DETAIL, record)}>
+          {text}
+        </Button>
+      )
     },
     {
       title: 'Thời gian khởi hành',
@@ -165,7 +196,7 @@ const TripPage = () => {
             <h1 className="text-xl font-medium ">Quản lý chuyến</h1>
             <span
               className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200"
-              onClick={() => setShowAddModal(true)}
+              onClick={() => openModal(ModalType.ADD)}
             >
               <FolderAddOutlined />
             </span>
@@ -183,27 +214,20 @@ const TripPage = () => {
             </Popconfirm>
           </div>
         }
-        handleDelete={handleDelete}
-        handleEdit={(record) => {
-          setShowEditModal(true);
-          setSelectedInstance(record);
-        }}
       />
-      {showEditModal && (
-        <EditTrip
-          handleReload={handleReload}
-          visible={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          data={selectedInstance}
-        />
+      {configModal.type === ModalType.EDIT && (
+        <EditTrip handleReload={handleReload} visible onClose={() => closeModal()} data={configModal.data} />
       )}
-      {showAddModal && (
+      {configModal.type === ModalType.ADD && (
         <AddModal
           handleReload={handleReload}
-          open={showAddModal}
-          handleCancel={() => setShowAddModal(false)}
+          open
+          handleCancel={() => closeModal()}
           companyId={transport_company?.id}
         />
+      )}
+      {configModal.type === ModalType.TICKET_DETAIL && (
+        <TicketDetailModal open onCancel={closeModal} tripData={configModal.data} />
       )}
     </div>
   );

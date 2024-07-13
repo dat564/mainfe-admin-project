@@ -17,7 +17,6 @@ import { getUserList } from 'services';
 import { getCompanyPaymentList } from 'services/companyPayment';
 import { convertDatetimeToServer } from 'utils/date';
 import { convertDatetime } from 'utils/date';
-import { convertDatetimeOfDayjsToServer } from 'utils/date';
 
 const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }) => {
   const formRef = useRef();
@@ -60,7 +59,7 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
       }}
       initialValues={{
         ...data,
-        timeRage: [convertDatetime(data.departure_time), convertDatetime(data.scheduled_end_time)]
+        timeRage: [convertDatetime(data?.departure_time), convertDatetime(data?.scheduled_end_time)]
       }}
       onFinish={async (values) => {
         try {
@@ -160,13 +159,13 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
             />
           </Col>
         )}
-        <Col span={12}>
+        {/* <Col span={12}>
           <ProFormMoney
             name="price_static"
             label="Giá mặc định"
             // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
-        </Col>
+        </Col> */}
       </Row>
     </ModalForm>
   );

@@ -35,7 +35,7 @@ const Step1Content = ({ setTimeRange }) => {
               ]);
             },
             format: 'DD/MM/YYYY HH:mm:ss',
-            disabledDate: (current) => current && current < moment().startOf('day').add(1, 'day')
+            disabledDate: (current) => current && current < moment().startOf('day')
           }}
         />
       </Col>
