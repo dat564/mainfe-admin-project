@@ -45,7 +45,7 @@ const DriverPage = () => {
     type: ''
   });
 
-  const handleCloseModal = () => {
+  const handleCloseModal = () => {  
     setConfigModal({ visible: false, data: null, type: '' });
   };
 

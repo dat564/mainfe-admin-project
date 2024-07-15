@@ -18,3 +18,9 @@ export const TICKET_STATUS_OPTIONS = [
     value: TICKET_STATUS.PAID
   }
 ];
+
+export const TICKET_STATUS_ENUM = {
+  [TICKET_STATUS.EMPTY]: { text: 'Trống', status: 'Processing' },
+  [TICKET_STATUS.RESERVED]: { text: 'Đang đặt', status: 'Warning' },
+  [TICKET_STATUS.PAID]: { text: 'Đã thanh toán', status: 'Success' }
+};

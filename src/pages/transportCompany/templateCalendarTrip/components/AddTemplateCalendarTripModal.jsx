@@ -1,8 +1,7 @@
-import { DeleteOutlined, FolderAddOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { FolderAddOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText, ProTable } from '@ant-design/pro-components';
-import { Col, Popconfirm, Row } from 'antd';
+import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
-import AddTrip from 'pages/admin/trip/components/AddTrip';
 import AddTemplateTrip from 'pages/transportCompany/templateCalendarTrip/components/AddTemplateTrip';
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';

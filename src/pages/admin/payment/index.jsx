@@ -28,7 +28,7 @@ const PaymentPage = () => {
   async function handleDelete(recordId) {
     try {
       setLoading(true);
-      await multipleDeleteUserById({ ids: [recordId] });
+      await multiDeletePayment({ ids: [recordId] });
       toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
       tableRef.current.reload();
     } catch (error) {

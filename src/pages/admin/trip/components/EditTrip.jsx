@@ -1,3 +1,4 @@
+import { DeleteOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import {
   ModalForm,
   ProFormDateTimeRangePicker,
@@ -6,22 +7,121 @@ import {
   ProFormSwitch,
   ProFormText
 } from '@ant-design/pro-components';
-import { Col, Row } from 'antd';
+import { Col, Dropdown, Popconfirm, Row } from 'antd';
+import Setting from 'components/svgs/Setting';
+import Tabular from 'components/Tabular';
 import { NOTIFY_MESSAGE } from 'constants';
 import { CITIES } from 'constants';
 import { ROLES } from 'constants';
+import AddBreakPointModal from 'pages/admin/trip/components/AddBreakPointModal';
+import EditBreakPointModal from 'pages/admin/trip/components/EditBreakPointModal';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { updateTrip } from 'services';
 import { getUserList } from 'services';
+import { getBreakpointList } from 'services/breakpoint';
+import { multiDeleteBreakpoint } from 'services/breakpoint';
 import { getCompanyPaymentList } from 'services/companyPayment';
 import { convertDatetimeToServer } from 'utils/date';
 import { convertDatetime } from 'utils/date';
+
+const ModalType = {
+  EDIT: 'EDIT'
+};
+
+const items = [
+  {
+    key: 'edit',
+    label: 'Chỉnh sửa'
+  }
+];
 
 const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }) => {
   const formRef = useRef();
   const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(false);
   const [isStaticEndPoint, setIsStaticEndPoint] = React.useState(false);
+
+  const [loading, setLoading] = React.useState(false);
+  const tableRef = React.useRef();
+
+  const { getSelectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
+
+  const [configModal, setConfigModal] = React.useState({
+    data: null,
+    type: null
+  });
+
+  const onCloseModal = () => {
+    setConfigModal({ data: null, type: null });
+  };
+
+  const onOpenModal = (type, data) => {
+    setConfigModal({ data, type });
+  };
+
+  const handleMultiDelete = async () => {
+    const selectedRowKeys = getSelectedRowKeys();
+    if (selectedRowKeys.length === 0) return;
+    try {
+      setLoading(true);
+      await multiDeleteBreakpoint({ ids: selectedRowKeys });
+      setSelectedRowKeys([]);
+      reloadTable();
+    } catch (error) {
+      console.log({ error });
+    }
+    setLoading(false);
+  };
+
+  const columns = [
+    {
+      title: (
+        <div className="flex items-center justify-center">
+          <Setting />
+        </div>
+      ),
+      dataIndex: 'settings',
+      width: 100,
+      hideInSearch: true,
+      key: 'settings',
+      search: false,
+      align: 'center',
+      render: (_, record) => (
+        <div className="flex items-center justify-center">
+          <Dropdown
+            menu={{
+              items,
+              onClick: async (e) => {
+                switch (e.key) {
+                  case 'edit':
+                    onOpenModal(ModalType.EDIT, record);
+                    break;
+                  default:
+                }
+              }
+            }}
+            trigger={['click']}
+          >
+            <div className="flex items-center justify-center w-10 h-10 font-medium transition-all bg-white border border-blue-500 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white">
+              <SettingOutlined />
+            </div>
+          </Dropdown>
+        </div>
+      )
+    },
+    {
+      title: 'Điểm dừng',
+      dataIndex: 'name',
+      search: false,
+      key: 'name'
+    },
+    {
+      title: 'Giá vé',
+      dataIndex: 'price',
+      search: false,
+      key: 'price'
+    }
+  ];
 
   const handleGetDriver = async () => {
     try {
@@ -78,7 +178,7 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
       formRef={formRef}
       className="p-10"
     >
-      <Row gutter={[30, 20]}>
+      <Row gutter={[30, 20]} className="h-[65vh] overflow-auto">
         <Col span={12}>
           <ProFormSelect
             name="route_start"
@@ -159,13 +259,62 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
             />
           </Col>
         )}
-        {/* <Col span={12}>
-          <ProFormMoney
-            name="price_static"
-            label="Giá mặc định"
-            // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+        <Col span={24}>
+          <Tabular
+            ref={tableRef}
+            columns={columns}
+            rowKey={(e) => e.id}
+            headerTitle={
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-medium">Điểm dừng của chuyến</h1>
+                <AddBreakPointModal handleReload={reloadTable} />
+                <Popconfirm
+                  title="Xóa"
+                  description="Bạn có chắc muốn xóa?"
+                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                  onConfirm={handleMultiDelete}
+                >
+                  <span
+                    className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200`}
+                  >
+                    <DeleteOutlined />
+                  </span>
+                </Popconfirm>
+              </div>
+            }
+            request={async (params) => {
+              const { current, pageSize, ...rest } = params;
+              setLoading(true);
+              const _params = {
+                ...rest,
+                per_size: pageSize,
+                page: current,
+                trip_id: data.id
+              };
+
+              const res = await getBreakpointList(_params);
+              setLoading(false);
+              return {
+                data: res.data.data,
+                success: true,
+                total: res.data.total
+              };
+            }}
+            scroll={{ y: 300 }}
+            loading={loading}
+            options={false}
+            search={false}
           />
-        </Col> */}
+        </Col>
+        {configModal.type === ModalType.EDIT && (
+          <EditBreakPointModal
+            handleReload={() => tableRef.current.reload()}
+            visible
+            onClose={onCloseModal}
+            data={configModal.data}
+            trip={data}
+          />
+        )}
       </Row>
     </ModalForm>
   );

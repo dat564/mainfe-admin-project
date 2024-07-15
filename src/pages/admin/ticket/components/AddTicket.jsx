@@ -12,6 +12,7 @@ import { TICKET_STATUS_OPTIONS, NOTIFY_MESSAGE, ROLES } from 'constants';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { getUserList, getTripList } from 'services';
+import { getBreakpointList } from 'services/breakpoint';
 import { createPayment } from 'services/payment';
 import { convertDatetimeToServer } from 'utils/date';
 
@@ -29,6 +30,14 @@ const AddTicket = ({ handleReload }) => {
   const handleGetCustomer = async () => {
     const { data } = await getUserList({ role: ROLES.USER });
     return data.map((item) => ({
+      label: item.name,
+      value: item.id
+    }));
+  };
+
+  const handleGetBreakPoint = async () => {
+    const { _data } = await getBreakpointList();
+    return _data.map((item) => ({
       label: item.name,
       value: item.id
     }));
@@ -68,18 +77,26 @@ const AddTicket = ({ handleReload }) => {
     >
       <Row gutter={[30, 20]} className="mb-5">
         <Col span={12}>
-          <ProFormText
-            name="name"
-            label="Giá vé"
+          <ProFormText name="code" label="Mã vé" className="p-4" />
+        </Col>
+        <Col span={12}>
+          <ProFormDigit name="position_on_car" label="Số ghế" disabled />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="break_point"
+            label="Điểm dừng"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            className="p-4"
+            request={handleGetBreakPoint}
           />
         </Col>
         <Col span={12}>
-          <ProFormDigit
-            name="position_on_car"
-            label="Số ghế"
+          <ProFormText
+            name="price_of_breakpoint"
+            disabled
+            label="Giá vé"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            className="p-4"
           />
         </Col>
         <Col span={12}>
@@ -93,7 +110,6 @@ const AddTicket = ({ handleReload }) => {
         <Col span={12}>
           <ProFormDateTimePicker
             name="purchase_time"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             label="Thời gian mua"
             fieldProps={{
               format: 'DD/MM/YYYY HH:mm:ss'
@@ -101,23 +117,19 @@ const AddTicket = ({ handleReload }) => {
           />
         </Col>
         <Col span={12}>
-          <ProFormSelect
-            name="trip_id"
-            request={handleGetTrip}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            label="Chuyến"
-          />
+          <ProFormSelect disabled name="trip_id" request={handleGetTrip} label="Chuyến" />
         </Col>
         <Col span={12}>
-          <ProFormSelect
-            name="customer_id"
-            request={handleGetCustomer}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            label="Khách hàng"
-          />
+          <ProFormSelect name="customer_id" request={handleGetCustomer} label="Khách hàng" />
         </Col>
         <Col span={12}>
-          <ProFormSwitch name="on_voucher" label="Áp dụng voucher" />
+          <ProFormSwitch
+            name="on_voucher"
+            label="Áp dụng voucher"
+            style={{
+              backgroundColor: 'red'
+            }}
+          />
         </Col>
       </Row>
     </ModalForm>

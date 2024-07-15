@@ -124,7 +124,7 @@ const RatingPage = () => {
             }, 1000);
           }
         }}
-        headerTitle={<h1 className="text-xl font-medium ">Quản lý đánh giá</h1>}
+        headerTitle={<h1 className="text-xl font-medium ">Đánh giá</h1>}
       />
     </div>
   );

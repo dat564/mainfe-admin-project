@@ -1,15 +1,11 @@
-import { DeleteOutlined, EditOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
-import { Dropdown, Popconfirm } from 'antd';
+import { EditOutlined, SettingOutlined } from '@ant-design/icons';
+import { Dropdown } from 'antd';
 import Setting from 'components/svgs/Setting';
 import Tabular from 'components/Tabular';
-import AddBreakPointModal from 'pages/admin/trip/components/AddBreakPointModal';
-import EditBreakPointModal from 'pages/admin/trip/components/EditBreakPointModal';
 import EditTicketModal from 'pages/admin/trip/components/EditTicketModal';
 import MultiEditTicketModal from 'pages/admin/trip/components/MultiEditTicketModal';
 import React from 'react';
 import { getTicketList } from 'services';
-import { getBreakpointList } from 'services/breakpoint';
-import { multiDeleteBreakpoint } from 'services/breakpoint';
 import { convertDatetimeToServer } from 'utils/date';
 
 const ModalType = {
@@ -24,11 +20,11 @@ const items = [
   }
 ];
 
-const Step3 = ({ trip }) => {
+const Step4 = ({ trip }) => {
   const [loading, setLoading] = React.useState(false);
   const tableRef = React.useRef();
 
-  const { getSelectedRowKeys, setSelectedRowKeys, reload: reloadTable } = tableRef.current || {};
+  const { getSelectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
   const [configModal, setConfigModal] = React.useState({
     data: null,
@@ -43,18 +39,9 @@ const Step3 = ({ trip }) => {
     setConfigModal({ data, type });
   };
 
-  const handleMultiDelete = async () => {
-    const selectedRowKeys = getSelectedRowKeys();
-    if (selectedRowKeys.length === 0) return;
-    try {
-      setLoading(true);
-      await multiDeleteBreakpoint({ ids: selectedRowKeys });
-      setSelectedRowKeys([]);
-      reloadTable();
-    } catch (error) {
-      console.log({ error });
-    }
-    setLoading(false);
+  const handleAfterMultiEdit = () => {
+    setSelectedRowKeys([]);
+    tableRef.current.reload();
   };
 
   const columns = [
@@ -94,16 +81,57 @@ const Step3 = ({ trip }) => {
       )
     },
     {
-      title: 'Điểm dừng',
-      dataIndex: 'name',
+      title: 'Tìm kiếm',
+      dataIndex: 'name_or_code',
+      hideInTable: true,
+      key: 'name_or_code',
+      renderFormCol: false
+    },
+    {
+      title: 'Mã vé',
+      dataIndex: 'code',
       search: false,
-      key: 'name'
+      key: 'code'
     },
     {
       title: 'Giá vé',
       dataIndex: 'price',
+      key: 'price',
+      search: false
+    },
+    {
+      title: 'Số ghế',
+      dataIndex: 'position_on_car',
+      key: 'position_on_car',
       search: false,
-      key: 'price'
+      render: (_, record) => record?.position_on_car + 1
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      search: false,
+      valueEnum: {
+        0: { text: 'Chưa khởi hành', status: 'Processing' },
+        1: { text: 'Đang chạy', status: 'Success' },
+        2: { text: 'Đã kết thúc', status: 'Error' }
+      }
+    },
+    {
+      title: 'Điểm xuất phát',
+      dataIndex: 'route_start',
+      key: 'route_start',
+      search: false,
+      valueType: 'select',
+      render: (_, record) => record?.trip?.route_start
+    },
+    {
+      title: 'Điểm đến',
+      dataIndex: 'route_end',
+      key: 'route_end',
+      search: false,
+      valueType: 'select',
+      render: (_, record) => record?.trip?.route_end
     }
   ];
 
@@ -115,34 +143,30 @@ const Step3 = ({ trip }) => {
         rowKey={(e) => e.id}
         headerTitle={
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-medium">Điểm dừng của chuyến {trip.code}</h1>
-            <AddBreakPointModal handleReload={reloadTable} trip={trip} />
-            <Popconfirm
-              title="Xóa"
-              description="Bạn có chắc muốn xóa?"
-              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-              onConfirm={handleMultiDelete}
+            <h1 className="text-xl font-medium">Vé của chuyến</h1>
+
+            <span
+              className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200`}
+              onClick={() => onOpenModal(ModalType.MULTI_EDIT)}
             >
-              <span
-                className={`flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200`}
-              >
-                <DeleteOutlined />
-              </span>
-            </Popconfirm>
+              <EditOutlined />
+            </span>
           </div>
         }
         request={async (params) => {
-          if (!trip?.id) return { data: [], success: true, total: 0 };
-          const { current, pageSize, ...rest } = params;
+          const { current, pageSize, purchase_time, ...rest } = params;
+          const [startTime, endTime] = purchase_time || [];
           setLoading(true);
           const _params = {
             ...rest,
             per_size: pageSize,
             page: current,
-            trip_id: trip.id
+            start_time: convertDatetimeToServer(startTime),
+            end_time: convertDatetimeToServer(endTime),
+            trip_id: trip?.id
           };
 
-          const res = await getBreakpointList(_params);
+          const res = await getTicketList(_params);
           setLoading(false);
           return {
             data: res.data.data,
@@ -150,22 +174,30 @@ const Step3 = ({ trip }) => {
             total: res.data.total
           };
         }}
-        params={[trip.id]}
         scroll={{ y: 300 }}
         loading={loading}
-        // options={false}
+        options={false}
       />
       {configModal.type === ModalType.EDIT && (
-        <EditBreakPointModal
+        <EditTicketModal
           handleReload={() => tableRef.current.reload()}
           visible
           onClose={onCloseModal}
           data={configModal.data}
-          trip={trip}
+        />
+      )}
+
+      {configModal.type === ModalType.MULTI_EDIT && (
+        <MultiEditTicketModal
+          handleReload={() => tableRef.current.reload()}
+          visible
+          selectedRowKeys={getSelectedRowKeys()}
+          onClose={onCloseModal}
+          handleAfterMultiEdit={handleAfterMultiEdit}
         />
       )}
     </>
   );
 };
 
-export default Step3;
+export default Step4;

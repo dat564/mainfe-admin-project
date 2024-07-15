@@ -3,6 +3,7 @@ import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import Tabular from 'components/Tabular';
 import { getBillList } from 'services/bill';
+import { billLabel } from 'constants/bill';
 
 const BillPage = () => {
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ const BillPage = () => {
       title: 'Trạng thái',
       dataIndex: 'status',
       search: false,
+      valueEnum: billLabel,
       key: 'status'
     },
     {

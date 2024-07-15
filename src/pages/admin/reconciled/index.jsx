@@ -106,14 +106,6 @@ const TransportCompanyPaymentPage = () => {
       key: 'reconciled_amount'
     },
     {
-      title: "Mặc định",
-      dataIndex: "is_default",
-      key: "is_default",
-      render: (_, record) => <ProFormSwitch disabled fieldProps={{
-        value: record.is_active
-      }} />
-    },
-    {
       title: 'Tìm kiếm',
       dataIndex: 'search',
       hideInTable: true,

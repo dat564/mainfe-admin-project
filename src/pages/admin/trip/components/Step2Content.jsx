@@ -139,11 +139,11 @@ const Step2Content = ({ timeRange }) => {
         <ProFormMoney
           name="price_static"
           label="Giá mặc định"
-          // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
         />
       </Col>
 
-      <Col span={24}>
+      {/* <Col span={24}>
         <ProFormList
           name="users"
           label="Các điểm dừng"
@@ -171,7 +171,7 @@ const Step2Content = ({ timeRange }) => {
             <ProFormMoney name="price" label="Giá" width={550} />
           </ProFormGroup>
         </ProFormList>
-      </Col>
+      </Col> */}
     </Row>
   );
 };

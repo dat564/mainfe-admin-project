@@ -15,12 +15,11 @@ import { toast } from 'react-toastify';
 import { getUserList } from 'services';
 import { getTripList } from 'services';
 import { updateTicket } from 'services';
+import { getBreakpointList } from 'services/breakpoint';
 import { convertDatetimeToServer } from 'utils/date';
 
 const EditTicket = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
-
-  console.log({ data });
 
   const handleGetTrip = async () => {
     const { data } = await getTripList();
@@ -33,6 +32,14 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
   const handleGetCustomer = async () => {
     const { data } = await getUserList({ role: ROLES.USER });
     return data.map((item) => ({
+      label: item.name,
+      value: item.id
+    }));
+  };
+
+  const handleGetBreakPoint = async () => {
+    const { _data } = await getBreakpointList({ trip_id: data?.trip?.trip_id });
+    return _data.map((item) => ({
       label: item.name,
       value: item.id
     }));
@@ -73,15 +80,27 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
     >
       <Row gutter={[30, 20]} className="mb-5">
         <Col span={12}>
+          <ProFormText name="code" label="Mã vé" className="p-4" />
+        </Col>
+        <Col span={12}>
+          <ProFormDigit name="position_on_car" label="Số ghế" disabled />
+        </Col>
+        <Col span={12}>
+          <ProFormSelect
+            name="break_point"
+            label="Điểm dừng"
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            request={handleGetBreakPoint}
+          />
+        </Col>
+        <Col span={12}>
           <ProFormText
-            name="price"
+            name="price_of_breakpoint"
+            disabled
             label="Giá vé"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             className="p-4"
           />
-        </Col>
-        <Col span={12}>
-          <ProFormDigit name="position_on_car" label="Số ghế" disabled />
         </Col>
         <Col span={12}>
           <ProFormSelect

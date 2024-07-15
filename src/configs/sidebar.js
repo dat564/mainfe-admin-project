@@ -138,7 +138,7 @@ export const sideBar = [
   },
   {
     key: 'rating-admin',
-    title: 'Quản lý đánh giá',
+    title: 'Xem đánh giá',
     icon: <TableOutlined />,
     to: '/rating-admin',
     component: <BillPage />,

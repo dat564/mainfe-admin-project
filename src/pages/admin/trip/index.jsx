@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { DeleteOutlined, FolderAddOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { formatTime } from 'utils/utils';
-import { Button, Popconfirm } from 'antd';
+import { Button, Form, Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
 import EditTrip from './components/EditTrip';
 import requireAuthentication from 'hoc/requireAuthentication';
@@ -17,6 +17,9 @@ import { operatorColumnRender } from 'utils/columns';
 import { getDriverList } from 'services';
 import { convertDateAndFormat } from 'utils/date';
 import TicketDetailModal from 'pages/admin/trip/components/TicketDetailModal';
+import { convertDatetimeByDayjs } from 'utils/date';
+import { convertDateToServer } from 'utils/date';
+import { convertDatetimeToServer } from 'utils/date';
 
 const ModalType = {
   ADD: 'ADD',
@@ -31,7 +34,9 @@ const TripPage = () => {
     data: null,
     type: null
   });
+  const [totalTrip, setTotaltrip] = useState(0);
   const tableRef = useRef();
+  const [searchForm] = Form.useForm();
 
   const { getSelectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
@@ -62,6 +67,14 @@ const TripPage = () => {
     } catch (error) {
       console.log({ error });
     }
+  };
+
+  const searchToday = async () => {
+    const today = convertDateToServer(new Date());
+    searchForm.setFieldsValue({
+      timeRange: [today, today]
+    });
+    tableRef.current.reload();
   };
 
   const openModal = (type, data) => {
@@ -134,6 +147,16 @@ const TripPage = () => {
       valueType: 'select',
       request: handleGetDriverList,
       render: (_, record) => record?.driver?.user?.name
+    },
+    {
+      title: 'Khoảng thời gian',
+      dataIndex: 'timeRange',
+      key: 'timeRange',
+      hideInTable: true,
+      valueType: 'dateTimeRange',
+      fieldProps: {
+        format: 'DD/MM/YYYY HH:mm:ss'
+      }
     }
   ];
 
@@ -170,17 +193,23 @@ const TripPage = () => {
             transport_company_id: transport_company?.id,
             per_size: params.pageSize,
             page: params.current,
-            start_time: params?.dateRange && params.dateRange[0],
-            end_time: params?.dateRange && params.dateRange[1]
+            departure_time: convertDatetimeToServer(params?.timeRange?.[0]),
+            scheduled_end_time: convertDatetimeToServer(params?.timeRange?.[1])
           };
+
+          delete _params.timeRange;
 
           const res = await getTripList(_params);
           setLoading(false);
+          setTotaltrip(res.data.total);
           return {
             data: res.data.data,
             success: true,
             total: res.data.total
           };
+        }}
+        form={{
+          form: searchForm
         }}
         options={{
           reload: () => {
@@ -193,7 +222,7 @@ const TripPage = () => {
         }}
         headerTitle={
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-medium ">Quản lý chuyến</h1>
+            <h1 className="text-xl font-medium ">Quản lý chuyến ({totalTrip})</h1>
             <span
               className="flex items-center justify-center p-3 transition-all bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer hover:bg-gray-200"
               onClick={() => openModal(ModalType.ADD)}
@@ -212,6 +241,9 @@ const TripPage = () => {
                 <DeleteOutlined />
               </span>
             </Popconfirm>
+            <Button>Chuyến hôm nay</Button>
+            <Button>Chuyến tuần này</Button>
+            <Button>Chuyến tháng này</Button>
           </div>
         }
       />

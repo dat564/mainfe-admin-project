@@ -2,13 +2,10 @@ import { DashboardOutlined } from '@ant-design/icons';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bar, Pie, getElementAtEvent } from 'react-chartjs-2';
 import React, { useRef } from 'react';
-import { useEffect } from 'react';
-import { getDataChart } from 'services';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
-// import { getDashboardCard } from "services/fee";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -24,12 +21,11 @@ export const options = {
     }
   },
   scales: {
+    x: {
+      stacked: true
+    },
     y: {
-      beginAtZero: true,
-      suggestedMax: 100,
-      ticks: {
-        stepSize: 10 // Bước giữa các giá trị trên trục y
-      }
+      stacked: true
     }
   }
 };
@@ -140,48 +136,16 @@ const DashBoard = () => {
             }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium">Students</h4>
+              <h4 className="text-lg font-medium">Tài xế</h4>
               <div className="px-3 py-2 bg-[#624bff] bg-opacity-30 text-lg rounded text-[#624bff]">
                 <DashboardOutlined />
               </div>
             </div>
             <span className="block mb-1 text-4xl font-bold">{cardData?.total_students}</span>
-            <span className="text-[#637381] flex items-center gap-3">
-              <span
-                className="p-2 text-sm font-medium text-white bg-red-500 rounded cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/tuition', {
-                    state: {
-                      defaultSearch: {
-                        status_fee: '0'
-                      }
-                    }
-                  });
-                }}
-              >
-                Debt: {cardData?.students_debt_fees}
-              </span>
-              <span
-                className="p-2 text-sm font-medium text-white bg-green-500 rounded cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/tuition', {
-                    state: {
-                      defaultSearch: {
-                        status_fee: '1'
-                      }
-                    }
-                  });
-                }}
-              >
-                Sufficient: {cardData?.students_sufficient_fees}
-              </span>
-            </span>
           </div>
           <div className="h-[170px] bg-white p-5 rounded text-black ">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium">Classes</h4>
+              <h4 className="text-lg font-medium">Chuyến</h4>
               <div className="px-3 py-2 bg-[#624bff] bg-opacity-30 text-lg rounded text-[#624bff]">
                 <DashboardOutlined />
               </div>
@@ -195,7 +159,7 @@ const DashBoard = () => {
             }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium">Fees</h4>
+              <h4 className="text-lg font-medium">Đơn hàng</h4>
               <div className="px-3 py-2 bg-[#624bff] bg-opacity-30 text-lg rounded text-[#624bff]">
                 <DashboardOutlined />
               </div>
@@ -209,7 +173,7 @@ const DashBoard = () => {
             }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium">Majors</h4>
+              <h4 className="text-lg font-medium">Đánh giá</h4>
               <div className="px-3 py-2 bg-[#624bff] bg-opacity-30 text-lg rounded text-[#624bff]">
                 <DashboardOutlined />
               </div>
@@ -219,12 +183,7 @@ const DashBoard = () => {
         </div>
       </div>
       <div className="flex gap-16 px-8">
-        <div className="w-[1000px] chart bg-white p-10">
-          <Bar options={options} data={data} ref={chartRef} onClick={onClick} />
-        </div>
-        <div className="w-[500px] bg-white p-10">
-          <Pie data={dataPieChart} options={pieChartOptions} />
-        </div>
+        <Bar options={options} data={data} ref={chartRef} onClick={onClick} />
       </div>
     </div>
   );

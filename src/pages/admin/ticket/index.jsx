@@ -16,6 +16,7 @@ import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { convertDatetimeToServer } from 'utils/date';
 import { convertDateAndFormat } from 'utils/date';
+import { TICKET_STATUS_ENUM } from 'constants';
 
 const TicketPage = () => {
   const [loading, setLoading] = useState(false);
@@ -98,11 +99,7 @@ const TicketPage = () => {
       dataIndex: 'status',
       key: 'status',
       search: false,
-      valueEnum: {
-        0: { text: 'Chưa khởi hành', status: 'Processing' },
-        1: { text: 'Đang chạy', status: 'Success' },
-        2: { text: 'Đã kết thúc', status: 'Error' }
-      }
+      options: TICKET_STATUS_ENUM
     },
     {
       title: 'Thời gian mua',
