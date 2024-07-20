@@ -27,3 +27,10 @@ export const multiDeleteTrip = (data) => {
     data
   });
 };
+
+export const getTripProfit = (params) => {
+  return request(`/trip/profit`, {
+    method: 'GET',
+    params
+  });
+};

@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Avatar, Button, Col, Form, Input, Progress, Row, Spin, Tag, Tooltip, Typography } from 'antd';
+import { Avatar, Button, Col, Form, Input, Row, Spin, Typography } from 'antd';
 import { LinkOutlined, UserOutlined } from '@ant-design/icons';
 import { ProForm, ProFormDatePicker, ProFormRadio, ProFormText } from '@ant-design/pro-form';
-// import { getFileView } from "@/services/file";
-// import { getImageUrl } from "@/utils/utils";
 import styles from './EditUserInfo.module.less';
 import rules from './components/rules.validate';
 import { getUserList } from 'services';
@@ -14,8 +12,9 @@ import { updateUser } from 'services';
 import { uploadImage } from 'services/image';
 import { dispatch } from 'redux/store';
 import { updateInfo } from 'redux/slices/authSlice';
-import { formatCurrency } from 'utils/utils';
 import { replaceImage } from 'services/image';
+import requireAuthentication from 'hoc/requireAuthentication';
+import { ROLES } from 'constants';
 
 const { Title } = Typography;
 
@@ -43,11 +42,8 @@ const EditUserInfo = function () {
   const [avatarLink, setAvatarLink] = useState('');
   const [fileList, setFileList] = useState([]);
   const [isHasImage, setIsHasImage] = useState(false);
-  const [studentData, setStudentData] = useState();
   const [form] = Form.useForm();
   const user = useSelector((state) => state.auth.userInfo);
-  const [visibleHistory, setVisibleHistory] = useState(false);
-  const studentIdRef = useRef();
   const [imageName, setImageName] = useState('');
   const fileInputRef = useRef(null);
 
@@ -76,11 +72,11 @@ const EditUserInfo = function () {
   }
 
   useEffect(() => {
-    if(!user.id) return;
-    getUserList({id: user.id})
+    if (!user.id) return;
+    getUserList({ id: user.id })
       .then((res) => {
         const [data] = res.data.data || [];
-        console.log({data})
+        console.log({ data });
         if (data?.img_url) {
           const _imageName = data.img_url.split('/').pop().split('.')[0];
           setImageName(_imageName);
@@ -277,4 +273,4 @@ const EditUserInfo = function () {
   );
 };
 
-export default EditUserInfo;
+export default requireAuthentication(EditUserInfo, [ROLES.ADMIN, ROLES.TRANSPORT_COMPANY]);

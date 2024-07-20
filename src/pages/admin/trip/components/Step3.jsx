@@ -10,6 +10,7 @@ import React from 'react';
 import { getTicketList } from 'services';
 import { getBreakpointList } from 'services/breakpoint';
 import { multiDeleteBreakpoint } from 'services/breakpoint';
+import { convertDateAndFormat } from 'utils/date';
 import { convertDatetimeToServer } from 'utils/date';
 
 const ModalType = {
@@ -94,7 +95,7 @@ const Step3 = ({ trip }) => {
       )
     },
     {
-      title: 'Điểm dừng',
+      title: 'Tỉnh thành',
       dataIndex: 'name',
       search: false,
       key: 'name'
@@ -104,6 +105,19 @@ const Step3 = ({ trip }) => {
       dataIndex: 'price',
       search: false,
       key: 'price'
+    },
+    {
+      title: 'Điểm trả',
+      dataIndex: 'end_point',
+      search: false,
+      key: 'end_point'
+    },
+    {
+      title: 'Thời gian đến',
+      dataIndex: 'scheduled_end_time',
+      search: false,
+      key: 'scheduled_end_time',
+      render: (text) => convertDateAndFormat(text)
     }
   ];
 

@@ -77,10 +77,14 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
                   )}
                   <Button
                     type="primary"
-                    onClick={() => {
+                    onClick={async () => {
                       if (current === 1) {
                         handleCreateTrip();
                       } else {
+                        if (!timeRange.length) {
+                          toast.error('Vui lòng chọn thời gian chạy');
+                          return;
+                        }
                         setCurrent((prev) => prev + 1);
                       }
                     }}

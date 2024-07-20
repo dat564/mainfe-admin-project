@@ -3,6 +3,7 @@ import { ROLES } from 'constants';
 import Accounts from 'pages/admin/accounts';
 import Car from 'pages/admin/car';
 import Dashboard from 'pages/admin/dashboard';
+import DashBoardTransportCompany from 'pages/transportCompany/dashboard';
 import Payment from 'pages/admin/payment';
 import Ticket from 'pages/admin/ticket';
 import VourcherPage from 'pages/admin/vourcher';
@@ -23,6 +24,14 @@ export const sideBar = [
     to: '/',
     component: <Dashboard />,
     roles: [ROLES.ADMIN]
+  },
+  {
+    key: 'dashboard',
+    title: 'Dashboard',
+    icon: <DashboardOutlined />,
+    to: '/transport_company',
+    component: <DashBoardTransportCompany />,
+    roles: [ROLES.TRANSPORT_COMPANY]
   },
   {
     key: 'accounts',

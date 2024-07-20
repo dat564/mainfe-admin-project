@@ -1,138 +1,95 @@
 import { DashboardOutlined } from '@ant-design/icons';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import { Bar, Pie, getElementAtEvent } from 'react-chartjs-2';
-import React, { useRef } from 'react';
+import { Bar } from 'react-chartjs-2';
+import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
+import { getTripProfit } from 'services';
+import { useSelector } from 'react-redux';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top'
-    },
-    title: {
-      display: true,
-      text: 'Tuition payment rate by class'
-    }
-  },
-  scales: {
-    x: {
-      stacked: true
-    },
-    y: {
-      stacked: true
-    }
-  }
-};
-
-export const pieChartOptions = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top'
-    },
-    title: {
-      display: true,
-      text: 'Tuition payment rate among classes'
-    }
-  }
-};
-
-const DashBoard = () => {
+const Dashboard = () => {
   const [labels, setLabels] = useState();
   const [dataSets, setDataSets] = useState([]);
-  const [idsClass, setIdsClass] = useState([]);
-  const [dataSetsPieChart, setDataSetsPieChart] = useState([]);
   const [cardData, setCardData] = useState();
   const navigate = useNavigate();
+  const userInfo = useSelector((state) => state.auth.userInfo);
   const chartRef = useRef();
-
-  const dynamicColors = dataSetsPieChart.map(
-    () =>
-      `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
-        Math.random() * 256
-      )}, 0.2)`
-  );
-
-  const onClick = (event) => {
-    const ele = getElementAtEvent(chartRef.current, event);
-    if (!ele.length) return;
-    const search = {
-      status_fee: '0',
-      class_id: idsClass[ele[0].index]
-    };
-    navigate('/tuition', {
-      state: {
-        defaultSearch: search
-      }
-    });
-  };
 
   const data = {
     labels,
     datasets: [
       {
-        label: 'Tuition payment rate',
+        label: 'Tổng tiền',
         data: dataSets,
         backgroundColor: 'rgba(255, 99, 132, 0.5)'
-      }
-    ]
-  };
-
-  const dataPieChart = {
-    labels,
-    datasets: [
+      },
       {
-        label: 'Tuition payment rate',
+        label: 'Tổng tiền thu được',
         data: dataSets,
-        backgroundColor: dynamicColors,
-        borderColor: dynamicColors.map((color) => color.replace('0.2', '1')), // Tạo đường viền cho màu sắc tương ứng,
-        borderWidth: 1
+        backgroundColor: 'rgba(54, 162, 235, 0.5)'
+      },
+      {
+        label: 'Số tiền thua lỗ',
+        data: dataSets,
+        backgroundColor: 'rgba(255, 206, 86, 0.5)'
       }
     ]
   };
 
-  // useEffect(() => {
-  //   getDashboardCard()
-  //     .then((res) => {
-  //       console.log({ res });
-  //       setCardData(res.data);
-  //     })
-  //     .catch((err) => console.log(err));
-  //   getDataChart()
-  //     .then((res) => {
-  //       const data = res.data;
-  //       setLabels(data.map((item) => item.class_name));
-  //       setIdsClass(data.map((item) => item.class_id));
-  //       setDataSets(data.map((item) => item.fee_completion_percentage));
-  //       setDataSetsPieChart(() => {
-  //         const sum = data.reduce(
-  //           (result, cur) => result + cur.fee_completion_percentage,
-  //           0
-  //         );
-  //         const res = data.map(
-  //           (item) => (item.fee_completion_percentage / sum) * 100
-  //         );
-  //         return res;
-  //       });
-  //     })
-  //     .catch((err) => console.log(err));
-  // }, []);
+  const config = {
+    type: 'bar',
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top'
+        },
+        title: {
+          display: true,
+          text: 'Chart.js Bar Chart'
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    getTripProfit(userInfo.role === ROLES.TRANSPORT_COMPANY ? { period: 'week' } : {}).then((res) => {
+      const labels = res.data.map((item) => item.company_name);
+      const dataSets = labels.reduce(
+        (acc, cur) => {
+          const current = res.data.find((item) => item.company_name === cur);
+
+          acc['total_max_profit'].push(current.total_max_profit);
+          acc['total_actual_profit'].push(current.total_actual_profit);
+          acc['total_loss'].push(-Number(current.total_loss));
+
+          return acc;
+        },
+        {
+          total_max_profit: [],
+          total_actual_profit: [],
+          total_loss: []
+        }
+      );
+      setDataSets(dataSets);
+      setLabels(labels);
+    });
+  }, []);
 
   return (
-    <div className="w-full min-h-[100vh]">
+    <div className="w-full min-h-[100vh] overflow-auto">
       <div className="bg-[#624BFF] h-52 px-8 pt-[62px] text-white mb-24">
         <h3 className="text-2xl font-medium mb-7">Dashboard</h3>
         <div className="grid grid-cols-4 gap-6">
           <div
             className="h-[170px] bg-white p-5 rounded text-black cursor-pointer"
             onClick={() => {
-              navigate('/students');
+              navigate('/drivers');
             }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -155,7 +112,7 @@ const DashBoard = () => {
           <div
             className="h-[170px] bg-white p-5 rounded text-black cursor-pointer"
             onClick={() => {
-              navigate('/fee');
+              navigate('/bill');
             }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -169,7 +126,7 @@ const DashBoard = () => {
           <div
             className="h-[170px] bg-white p-5 rounded text-black cursor-pointer"
             onClick={() => {
-              navigate('/majors');
+              navigate('/rating');
             }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -183,10 +140,34 @@ const DashBoard = () => {
         </div>
       </div>
       <div className="flex gap-16 px-8">
-        <Bar options={options} data={data} ref={chartRef} onClick={onClick} />
+        <Bar
+          options={config}
+          data={{
+            labels,
+            datasets: [
+              {
+                label: 'Tổng tiền',
+                data: dataSets['total_max_profit'],
+                backgroundColor: 'rgba(255, 99, 132, 0.5)'
+              },
+              {
+                label: 'Tổng tiền thu được',
+                data: dataSets['total_actual_profit'],
+                backgroundColor: 'rgba(54, 162, 235, 0.5)'
+              },
+              {
+                label: 'Số tiền thua lỗ',
+                data: dataSets['total_loss'],
+                backgroundColor: 'rgba(255, 206, 86, 0.5)'
+              }
+            ]
+          }}
+          ref={chartRef}
+          // onClick={onClick}
+        />
       </div>
     </div>
   );
 };
 
-export default requireAuthentication(DashBoard, [ROLES.ADMIN]);
+export default requireAuthentication(Dashboard, [ROLES.ADMIN]);

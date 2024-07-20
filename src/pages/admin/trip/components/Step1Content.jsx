@@ -29,6 +29,10 @@ const Step1Content = ({ setTimeRange }) => {
           ]}
           fieldProps={{
             onChange: (value) => {
+              if (!value) {
+                setTimeRange([]);
+                return;
+              }
               setTimeRange([
                 dayjs(value[0]).format('DD/MM/YYYY HH:mm:ss'),
                 dayjs(value[1]).format('DD/MM/YYYY HH:mm:ss')

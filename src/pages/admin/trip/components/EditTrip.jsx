@@ -22,6 +22,7 @@ import { getUserList } from 'services';
 import { getBreakpointList } from 'services/breakpoint';
 import { multiDeleteBreakpoint } from 'services/breakpoint';
 import { getCompanyPaymentList } from 'services/companyPayment';
+import { convertDateAndFormat } from 'utils/date';
 import { convertDatetimeToServer } from 'utils/date';
 import { convertDatetime } from 'utils/date';
 
@@ -38,8 +39,8 @@ const items = [
 
 const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }) => {
   const formRef = useRef();
-  const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(false);
-  const [isStaticEndPoint, setIsStaticEndPoint] = React.useState(false);
+  const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(data.static_start_point);
+  const [isStaticEndPoint, setIsStaticEndPoint] = React.useState(data.static_end_point);
 
   const [loading, setLoading] = React.useState(false);
   const tableRef = React.useRef();
@@ -120,6 +121,19 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
       dataIndex: 'price',
       search: false,
       key: 'price'
+    },
+    {
+      title: 'Điểm trả',
+      dataIndex: 'end_point',
+      search: false,
+      key: 'end_point'
+    },
+    {
+      title: 'Thời gian đến',
+      dataIndex: 'scheduled_end_time',
+      search: false,
+      key: 'scheduled_end_time',
+      render: (text) => convertDateAndFormat(text)
     }
   ];
 
@@ -171,6 +185,7 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
           };
           await updateTrip([body]);
           handleReload();
+          onClose();
           toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
           return true;
         } catch (err) {}
@@ -243,10 +258,22 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
           />
         </Col>
         <Col span={12}>
-          <ProFormText name="start_point" showSearch label="Điểm xuất phát" disabled={!isStaticStartPoint} />
+          <ProFormText
+            name="start_point"
+            showSearch
+            label="Điểm xuất phát"
+            disabled={!isStaticStartPoint}
+            rules={[{ required: isStaticStartPoint, message: 'Vui lòng nhập trường này' }]}
+          />
         </Col>
         <Col span={12}>
-          <ProFormText name="end_point" showSearch label="Điểm đến" disabled={!isStaticEndPoint} />
+          <ProFormText
+            name="end_point"
+            showSearch
+            label="Điểm đến"
+            disabled={!isStaticEndPoint}
+            rules={[{ required: isStaticEndPoint, message: 'Vui lòng nhập trường này' }]}
+          />
         </Col>
         {isTempUpdate && (
           <Col span={12}>
@@ -267,7 +294,7 @@ const EditTrip = ({ handleReload, data, visible, onClose, isTempUpdate = false }
             headerTitle={
               <div className="flex items-center gap-3">
                 <h1 className="text-xl font-medium">Điểm dừng của chuyến</h1>
-                <AddBreakPointModal handleReload={reloadTable} />
+                <AddBreakPointModal handleReload={reloadTable} trip={data} />
                 <Popconfirm
                   title="Xóa"
                   description="Bạn có chắc muốn xóa?"

@@ -33,7 +33,7 @@ const AdminLayout = () => {
   return (
     isAuthenticated && (
       <>
-        <div className="flex h-[100vh] overflow-hidden">
+        <div className="flex min-h-[100vh] overflow-x-hidden">
           <Sidebar hideSideBar={hideSideBar} />
           <div className={`flex-1 transition-all ${hideSideBar ? 'xl:ml-0' : 'xl:ml-[250px]'} bg-[#F1F5F9]`}>
             <Header toggleSideBar={toggleSideBar}></Header>

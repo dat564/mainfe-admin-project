@@ -7,7 +7,7 @@ const requireAuthentication = (WrappedComponent, requiredRole = null) => {
   const HOC = (props) => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     const userInfo = useSelector((state) => state.auth.userInfo);
-    const isAdmin = userInfo?.role === ROLES.ADMIN || true;
+    const isAdmin = userInfo?.role === ROLES.ADMIN;
     const navigate = useNavigate();
 
     if (!isAuthenticated) {
@@ -16,11 +16,11 @@ const requireAuthentication = (WrappedComponent, requiredRole = null) => {
       return <p>Bạn chưa đăng nhập.</p>;
     }
 
-    // if (!isAdmin && requiredRole && !requiredRole.includes(userInfo?.role)) {
-    //   // Nếu không có quyền truy cập, hiển thị thông báo hoặc chuyển hướng đến trang không có quyền truy cập
-    //   navigate('/');
-    //   return <p>Bạn không có quyền truy cập vào trang này.</p>;
-    // }
+    if (!isAdmin && requiredRole && !requiredRole.includes(userInfo?.role)) {
+      // Nếu không có quyền truy cập, hiển thị thông báo hoặc chuyển hướng đến trang không có quyền truy cập
+      navigate('/');
+      return <p>Bạn không có quyền truy cập vào trang này.</p>;
+    }
 
     // Nếu đã đăng nhập và có quyền truy cập, render WrappedComponent
     return <WrappedComponent {...props} />;
