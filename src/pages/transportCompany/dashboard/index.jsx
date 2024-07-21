@@ -168,4 +168,4 @@ const DashBoardTransportCompany = () => {
   );
 };
 
-export default requireAuthentication(DashBoardTransportCompany, [ROLES.ADMIN]);
+export default requireAuthentication(DashBoardTransportCompany, [ROLES.TRANSPORT_COMPANY]);

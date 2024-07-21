@@ -16,7 +16,7 @@ const requireAuthentication = (WrappedComponent, requiredRole = null) => {
       return <p>Bạn chưa đăng nhập.</p>;
     }
 
-    if (!isAdmin && requiredRole && !requiredRole.includes(userInfo?.role)) {
+    if (requiredRole && !requiredRole.includes(userInfo?.role)) {
       // Nếu không có quyền truy cập, hiển thị thông báo hoặc chuyển hướng đến trang không có quyền truy cập
       navigate('/');
       return <p>Bạn không có quyền truy cập vào trang này.</p>;

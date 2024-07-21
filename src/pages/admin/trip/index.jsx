@@ -20,6 +20,7 @@ import TicketDetailModal from 'pages/admin/trip/components/TicketDetailModal';
 import { convertDatetimeByDayjs } from 'utils/date';
 import { convertDateToServer } from 'utils/date';
 import { convertDatetimeToServer } from 'utils/date';
+import moment from 'moment';
 
 const ModalType = {
   ADD: 'ADD',
@@ -37,6 +38,7 @@ const TripPage = () => {
   const [totalTrip, setTotaltrip] = useState(0);
   const tableRef = useRef();
   const [searchForm] = Form.useForm();
+  const [dateRange, setDateRange] = useState([]);
 
   const { getSelectedRowKeys, setSelectedRowKeys } = tableRef.current || {};
 
@@ -67,14 +69,6 @@ const TripPage = () => {
     } catch (error) {
       console.log({ error });
     }
-  };
-
-  const searchToday = async () => {
-    const today = convertDateToServer(new Date());
-    searchForm.setFieldsValue({
-      timeRange: [today, today]
-    });
-    tableRef.current.reload();
   };
 
   const openModal = (type, data) => {
@@ -179,6 +173,30 @@ const TripPage = () => {
     }
   };
 
+  // lấy giờ đầu tiên và giờ cuối cùng của ngày hiện tại
+  function handleSearchTripToday() {
+    const startOfDay = moment().startOf('day');
+    const endOfDay = moment().endOf('day');
+
+    setDateRange([startOfDay, endOfDay]);
+  }
+
+  // lấy giờ đầu tiên và giờ cuối cùng của tuần hiện tại
+  function handleSearchTripThisWeek() {
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    setDateRange([startOfWeek, endOfWeek]);
+  }
+
+  // lấy giờ đầu tiên và giờ cuối cùng của tháng hiện tại
+  function handleSearchTripThisMonth() {
+    const startOfMonth = moment().startOf('month');
+    const endOfMonth = moment().endOf('month');
+
+    setDateRange([startOfMonth, endOfMonth]);
+  }
+
   return (
     <div className="min-h-[100vh] px-5 mt-10">
       <Tabular
@@ -187,14 +205,21 @@ const TripPage = () => {
         columns={columns}
         rowKey={(e) => e.id}
         request={async (params) => {
+          const { dateRange } = params;
+          console.log({ dateRange, params });
           setLoading(true);
+          delete params.dateRange;
           const _params = {
             ...params,
             transport_company_id: transport_company?.id,
             per_size: params.pageSize,
             page: params.current,
-            departure_time: convertDatetimeToServer(params?.timeRange?.[0]),
-            scheduled_end_time: convertDatetimeToServer(params?.timeRange?.[1])
+            departure_time:
+              convertDatetimeToServer(params?.timeRange?.[0]) ||
+              convertDatetimeToServer(dateRange?.[0]?.format('DD/MM/YYYY HH:mm:ss')),
+            scheduled_end_time:
+              convertDatetimeToServer(params?.timeRange?.[1]) ||
+              convertDatetimeToServer(dateRange?.[1]?.format('DD/MM/YYYY HH:mm:ss'))
           };
 
           delete _params.timeRange;
@@ -220,6 +245,9 @@ const TripPage = () => {
             }, 1000);
           }
         }}
+        params={{
+          dateRange
+        }}
         headerTitle={
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-medium ">Quản lý chuyến ({totalTrip})</h1>
@@ -241,9 +269,9 @@ const TripPage = () => {
                 <DeleteOutlined />
               </span>
             </Popconfirm>
-            <Button>Chuyến hôm nay</Button>
-            <Button>Chuyến tuần này</Button>
-            <Button>Chuyến tháng này</Button>
+            <Button onClick={handleSearchTripToday}>Chuyến hôm nay</Button>
+            <Button onClick={handleSearchTripThisWeek}>Chuyến tuần này</Button>
+            <Button onClick={handleSearchTripThisMonth}>Chuyến tháng này</Button>
           </div>
         }
       />
@@ -265,4 +293,4 @@ const TripPage = () => {
   );
 };
 
-export default requireAuthentication(TripPage, [ROLES.ADMIN]);
+export default requireAuthentication(TripPage, [ROLES.TRANSPORT_COMPANY]);

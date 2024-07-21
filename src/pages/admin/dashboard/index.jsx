@@ -8,6 +8,9 @@ import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import { getTripProfit } from 'services';
 import { useSelector } from 'react-redux';
+import { Button, Col, Row } from 'antd';
+import { ProForm, ProFormDatePicker, ProFormDateRangePicker } from '@ant-design/pro-components';
+import { convertDateToServer } from 'utils/date';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -57,8 +60,8 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
-    getTripProfit(userInfo.role === ROLES.TRANSPORT_COMPANY ? { period: 'week' } : {}).then((res) => {
+  const handleGetTripProfit = (params) => {
+    getTripProfit(params).then((res) => {
       const labels = res.data.map((item) => item.company_name);
       const dataSets = labels.reduce(
         (acc, cur) => {
@@ -79,10 +82,25 @@ const Dashboard = () => {
       setDataSets(dataSets);
       setLabels(labels);
     });
-  }, []);
+  };
+
+  const handleSearch = (values) => {
+    const { date_range } = values;
+    if (!date_range) return;
+    const params = {
+      period: 'custom',
+      start_date: convertDateToServer(date_range[0]),
+      end_date: convertDateToServer(date_range[1])
+    };
+    handleGetTripProfit(params);
+  };
+
+  useEffect(() => {
+    handleGetTripProfit(userInfo.role === ROLES.TRANSPORT_COMPANY ? { period: 'week' } : {});
+  }, [userInfo.role]);
 
   return (
-    <div className="w-full min-h-[100vh] overflow-auto">
+    <div className="flex-1 min-h-[100vh] overflow-auto">
       <div className="bg-[#624BFF] h-52 px-8 pt-[62px] text-white mb-24">
         <h3 className="text-2xl font-medium mb-7">Dashboard</h3>
         <div className="grid grid-cols-4 gap-6">
@@ -139,7 +157,20 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="flex gap-16 px-8">
+      <div className="ml-5">
+        <ProForm submitter={false} className="flex items-end gap-5" onFinish={handleSearch}>
+          <ProFormDateRangePicker
+            name="date_range"
+            label="Khoảng thời gian"
+            fieldProps={{
+              format: 'DD/MM/YYYY'
+            }}
+            width={'md'}
+          />
+          <Button type="primary" htmlType="submit" key="submit">
+            Lọc
+          </Button>
+        </ProForm>
         <Bar
           options={config}
           data={{
