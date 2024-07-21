@@ -15,11 +15,8 @@ import { NOTIFY_MESSAGE } from 'constants';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { getDriverList } from 'services';
-import { convertDateAndFormat } from 'utils/date';
+import { convertDateAndFormat, convertDatetimeToServer } from 'utils/date';
 import TicketDetailModal from 'pages/admin/trip/components/TicketDetailModal';
-import { convertDatetimeByDayjs } from 'utils/date';
-import { convertDateToServer } from 'utils/date';
-import { convertDatetimeToServer } from 'utils/date';
 import moment from 'moment';
 
 const ModalType = {

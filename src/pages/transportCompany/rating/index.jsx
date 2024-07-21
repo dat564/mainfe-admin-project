@@ -130,4 +130,4 @@ const RatingPage = () => {
   );
 };
 
-export default requireAuthentication(RatingPage, [ROLES.TRANSPORT_COMPANY]);
+export default requireAuthentication(RatingPage, [ROLES.ADMIN, ROLES.TRANSPORT_COMPANY]);
