@@ -13,7 +13,7 @@ import Step3 from 'pages/admin/trip/components/Step3';
 const AddModal = ({ handleReload, handleCancel, open }) => {
   const formRef = useRef();
   const [loading, setLoading] = useState(false);
-  const [tripCreated, setTripCreated] = useState([]);
+  const [tripCreated, setTripCreated] = useState();
   const [current, setCurrent] = useState(0);
   const [timeRange, setTimeRange] = useState([]);
 

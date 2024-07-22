@@ -2,6 +2,7 @@ import { EditOutlined, SettingOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
 import Setting from 'components/svgs/Setting';
 import Tabular from 'components/Tabular';
+import { TICKET_STATUS_ENUM } from 'constants';
 import EditTicketModal from 'pages/admin/trip/components/EditTicketModal';
 import MultiEditTicketModal from 'pages/admin/trip/components/MultiEditTicketModal';
 import React from 'react';
@@ -111,11 +112,7 @@ const Step4 = ({ trip }) => {
       dataIndex: 'status',
       key: 'status',
       search: false,
-      valueEnum: {
-        0: { text: 'Chưa khởi hành', status: 'Processing' },
-        1: { text: 'Đang chạy', status: 'Success' },
-        2: { text: 'Đã kết thúc', status: 'Error' }
-      }
+      options: TICKET_STATUS_ENUM
     },
     {
       title: 'Điểm xuất phát',
