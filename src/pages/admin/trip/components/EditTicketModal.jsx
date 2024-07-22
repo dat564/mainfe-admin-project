@@ -44,8 +44,7 @@ const EditTicketModal = ({ handleReload, data, visible, onClose }) => {
       width="70%"
       open={visible}
       initialValues={{
-        ...data,
-        position_on_car: data?.position_on_car + 1
+        ...data
       }}
       autoFocusFirstInput
       modalProps={{
