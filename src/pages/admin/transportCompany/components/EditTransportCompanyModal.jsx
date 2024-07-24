@@ -31,16 +31,16 @@ const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
 
   useEffect(() => {
     if (!data && !formRef.current) return;
-    if (data?.images) {
+    if (data?.img_url) {
       setPreviewImageModal((prev) => ({
         ...prev,
-        image: image_url + data?.images
+        image: image_url + data?.img_url
       }));
       setFileList([
         {
           name: 'image.png',
           status: 'done',
-          url: image_url + data?.images
+          url: image_url + data?.img_url
         }
       ]);
     }
@@ -71,7 +71,7 @@ const EditTransportCompanyModal = ({ show, data, onClose, reloadTable }) => {
         const _data = {
           ...values,
           id: data?.user?.id,
-          img_url: uploadedImage || null
+          img_url: uploadedImage || data.img_url
         };
         const transportData = {
           name: values.transport_name,

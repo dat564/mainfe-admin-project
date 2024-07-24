@@ -22,6 +22,7 @@ const items = [
 ];
 
 const Step4 = ({ trip }) => {
+  console.log({ trip });
   const [loading, setLoading] = React.useState(false);
   const tableRef = React.useRef();
 
@@ -108,11 +109,10 @@ const Step4 = ({ trip }) => {
       render: (_, record) => record?.position_on_car + 1
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      search: false,
-      options: TICKET_STATUS_ENUM
+      title: 'Điểm thưởng',
+      dataIndex: 'regular_point',
+      key: 'regular_point',
+      search: false
     },
     {
       title: 'Điểm xuất phát',

@@ -4,13 +4,14 @@ import { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { updateVouchers } from 'services/vourcher';
+import { convertDateToServer } from 'utils/date';
 
 const EditVoucherModal = ({ show, data, onClose, reloadTable }) => {
   const formRef = useRef();
 
   return (
     <ModalForm
-      title="Sửa nhà xe"
+      title="Sửa phiếu giảm giá"
       width="70%"
       open={show}
       initialValues={data}
@@ -24,7 +25,8 @@ const EditVoucherModal = ({ show, data, onClose, reloadTable }) => {
           await updateVouchers([
             {
               ...values,
-              id: data.id
+              id: data.id,
+              expired_at: convertDateToServer(values.expired_at)
             }
           ]);
           onClose();
@@ -57,12 +59,22 @@ const EditVoucherModal = ({ show, data, onClose, reloadTable }) => {
             name="regular_point_need"
             label="Điểm thưởng cần có"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            fieldProps={{
+              formatter: (value) => {
+                if (value === undefined || value === null) return '';
+                return new Intl.NumberFormat('vi-VN').format(value);
+              },
+              parser: (value) => value.replace(/\./g, '') // Xóa bỏ dấu chấm khi phân tích ngược giá trị nhập
+            }}
           />
         </Col>
         <Col span={12}>
           <ProFormDatePicker
             name="expired_at"
             label="Thời gian hết hạn"
+            fieldProps={{
+              format: 'DD/MM/YYYY'
+            }}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>

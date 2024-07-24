@@ -12,6 +12,7 @@ import Tabular from 'components/Tabular';
 import { operatorColumnRender } from 'utils/columns';
 import { multipleDeleteUserById } from 'services';
 import { image_url } from 'configs/images';
+import { NOTIFY_MESSAGE } from 'constants';
 
 const MODAL_TYPE = {
   ADD: 'ADD',
@@ -29,12 +30,10 @@ const TransportCompanyPage = () => {
     try {
       setLoading(true);
       await multipleDeleteUserById({ ids: [recordId] });
-      toast.success('Delete successfully!');
-      reloadTable();
+      toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
       setSelectedRowKeys([]);
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
+      reloadTable();
+    } catch (error) {}
     setLoading(false);
   }
 
@@ -117,11 +116,10 @@ const TransportCompanyPage = () => {
         return;
       }
       await multipleDeleteUserById({ ids: getSelectedRowKeys() });
+      setSelectedRowKeys([]);
       reloadTable();
-      toast.success('Delete successfully!');
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
+      toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
+    } catch (error) {}
   };
 
   return (
@@ -162,8 +160,8 @@ const TransportCompanyPage = () => {
             <h1 className="mb-2 text-xl font-medium ">Quản lý nhà xe</h1>
             <AddTransportCompanyModal reloadTable={reloadTable} />
             <Popconfirm
-              title="Delete"
-              description="Are you sure to delete?"
+              title="Xóa"
+              description="Bạn có chắc chắn muốn xóa?"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
               onConfirm={handleMultiDelete}
             >

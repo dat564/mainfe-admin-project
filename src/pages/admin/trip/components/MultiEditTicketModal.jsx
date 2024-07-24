@@ -1,4 +1,4 @@
-import { ModalForm, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { TICKET_STATUS } from 'constants';
 import { TICKET_STATUS_OPTIONS } from 'constants';
@@ -53,12 +53,16 @@ const MultiEditTicketModal = ({ handleReload, visible, onClose, handleAfterMulti
           />
         </Col>
         <Col span={12}>
-          <ProFormSelect
-            name="status"
-            label="Trạng thái"
-            initialValue={TICKET_STATUS.EMPTY}
-            options={TICKET_STATUS_OPTIONS}
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+          <ProFormDigit
+            name="regular_point"
+            label="Điểm thưởng"
+            fieldProps={{
+              formatter: (value) => {
+                if (value === undefined || value === null) return '';
+                return new Intl.NumberFormat('vi-VN').format(value);
+              },
+              parser: (value) => value.replace(/\./g, '') // Xóa bỏ dấu chấm khi phân tích ngược giá trị nhập
+            }}
           />
         </Col>
 

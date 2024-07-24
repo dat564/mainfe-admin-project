@@ -12,13 +12,13 @@ import { useSelector } from 'react-redux';
 import AddCarModal from 'pages/admin/car/components/AddCarModal';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
+import { deleteCar } from 'services';
 
 const CarPage = () => {
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
-  const userInfo = useSelector((state) => state.auth.userInfo) || {};
 
   const tableRef = useRef();
 
@@ -27,7 +27,7 @@ const CarPage = () => {
   async function handleDelete(recordId) {
     try {
       setLoading(true);
-      await multipleDeleteUserById({ ids: [recordId] });
+      await deleteCar({ ids: [recordId] });
       toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
       setSelectedRowKeys([]);
       tableRef.current.reload();
@@ -103,7 +103,7 @@ const CarPage = () => {
         toast.error('Vui lòng chọn ít nhất 1 bản ghi để xóa');
         return;
       }
-      await multipleDeleteUserById({ ids: getSelectedRowKeys() });
+      await deleteCar({ ids: getSelectedRowKeys() });
       handleReload();
       toast.success('Xóa thành công!');
     } catch (error) {

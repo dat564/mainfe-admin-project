@@ -1,10 +1,11 @@
 import { FolderAddOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDatePicker, ProFormDigit, ProFormMoney, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
-import { NOTIFY_MESSAGE } from 'constants';
+import exp, { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { createVouchers } from 'services/vourcher';
+import { convertDateToServer } from 'utils/date';
 
 const AddVoucherModal = ({ reloadTable }) => {
   const formRef = useRef();
@@ -27,7 +28,8 @@ const AddVoucherModal = ({ reloadTable }) => {
         try {
           await createVouchers([
             {
-              ...values
+              ...values,
+              expired_at: convertDateToServer(values.expired_at)
             }
           ]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
@@ -61,12 +63,22 @@ const AddVoucherModal = ({ reloadTable }) => {
             name="regular_point_need"
             label="Điểm thưởng cần có"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            fieldProps={{
+              formatter: (value) => {
+                if (value === undefined || value === null) return '';
+                return new Intl.NumberFormat('vi-VN').format(value);
+              },
+              parser: (value) => value.replace(/\./g, '') // Xóa bỏ dấu chấm khi phân tích ngược giá trị nhập
+            }}
           />
         </Col>
         <Col span={12}>
           <ProFormDatePicker
             name="expired_at"
             label="Thời gian hết hạn"
+            fieldProps={{
+              format: 'DD/MM/YYYY'
+            }}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>

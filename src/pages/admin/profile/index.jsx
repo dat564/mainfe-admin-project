@@ -147,7 +147,7 @@ const EditUserInfo = function () {
       }
 
       if (uploadedImage) {
-        _data.img_url = uploadedImage.imageUrl;
+        _data.img_url = uploadedImage;
       }
       if (uploadImage?.imageUrl) {
         dispatch(updateInfo({ img_url: uploadedImage.imageUrl }));

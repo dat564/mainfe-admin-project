@@ -42,21 +42,17 @@ const AddTransportCompanyModal = ({ reloadTable }) => {
   );
 
   const handleImageUpload = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', file.originFileObj); // Đính kèm file gốc vào form data
+    const formData = new FormData();
+    formData.append('image', file.originFileObj); // Đính kèm file gốc vào form data
 
-      // Thêm các thông tin khác cần thiết vào form data nếu có
+    // Thêm các thông tin khác cần thiết vào form data nếu có
 
-      // Gửi yêu cầu POST đến API bằng Axios
-      const resImage = await uploadImage(formData);
+    // Gửi yêu cầu POST đến API bằng Axios
+    const resImage = await uploadImage(formData);
 
-      // Xử lý kết quả trả về từ API
-      const result = resImage.data.data;
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    // Xử lý kết quả trả về từ API
+    const result = resImage.data.data;
+    return result;
   };
 
   return (
@@ -70,7 +66,14 @@ const AddTransportCompanyModal = ({ reloadTable }) => {
       }
       autoFocusFirstInput
       modalProps={{
-        onCancel: () => true,
+        onCancel: () => {
+          // set lại các giá trị về ban đầu khi đóng modal
+          setFileList([]);
+          setPreviewImage('');
+          setPreviewTitle('');
+          setPreviewOpen(false);
+          return true;
+        },
         destroyOnClose: true
       }}
       onFinish={async (values) => {
@@ -87,6 +90,11 @@ const AddTransportCompanyModal = ({ reloadTable }) => {
           });
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           reloadTable && reloadTable();
+          // set lại các giá trị về ban đầu khi đóng modal
+          setFileList([]);
+          setPreviewImage('');
+          setPreviewTitle('');
+          setPreviewOpen(false);
           return true;
         } catch (err) {
           toast.error(err.response.data.message);
@@ -121,14 +129,26 @@ const AddTransportCompanyModal = ({ reloadTable }) => {
           <ProFormText
             name="phone"
             label="Di động"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[
+              { required: true, message: 'Vui lòng nhập trường này' },
+              {
+                pattern: new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/),
+                message: 'Số điện thoại không hợp lệ'
+              }
+            ]}
           ></ProFormText>
         </Col>
         <Col span={12}>
           <ProFormText
             name="email"
             label="Email"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[
+              { required: true, message: 'Vui lòng nhập trường này' },
+              {
+                type: 'email',
+                message: 'Email không hợp lệ'
+              }
+            ]}
           ></ProFormText>
         </Col>
         <Col span={12}>

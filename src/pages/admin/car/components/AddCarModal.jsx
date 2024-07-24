@@ -8,8 +8,15 @@ import { toast } from 'react-toastify';
 import { createCar } from 'services';
 
 const AddCarModal = ({ companyId, handleReload }) => {
-  const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, handleImageUpload } =
-    useUploadImage();
+  const {
+    previewImageModal,
+    fileList,
+    handlePreview,
+    handleChange,
+    handleCancelPreview,
+    handleImageUpload,
+    setFileList
+  } = useUploadImage();
 
   const uploadButton = (
     <div>
@@ -28,7 +35,10 @@ const AddCarModal = ({ companyId, handleReload }) => {
         </span>
       }
       modalProps={{
-        onCancel: () => true,
+        onCancel: () => {
+          setFileList([]);
+          return true;
+        },
         destroyOnClose: true
       }}
       onFinish={async (values) => {
@@ -38,7 +48,8 @@ const AddCarModal = ({ companyId, handleReload }) => {
             uploadedImage = await handleImageUpload(fileList[0]); // Chuyển đổi và upload ảnh khi nhấn nút "Submit"
           }
 
-          await createCar([{ ...values, transport_company_id: companyId, img_url: uploadedImage || null }]);
+          await createCar([{ ...values, transport_company_id: companyId, images: uploadedImage || null }]);
+          setFileList([]);
           handleReload();
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           return true;

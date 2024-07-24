@@ -7,20 +7,16 @@ import {
   ProFormText
 } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
-import { ROLES } from 'constants';
 import { TICKET_STATUS_OPTIONS } from 'constants';
 import { NOTIFY_MESSAGE } from 'constants';
 import React, { useRef } from 'react';
 import { toast } from 'react-toastify';
-import { getUserList } from 'services';
 import { getTripList } from 'services';
 import { updateTicket } from 'services';
 import { convertDatetimeToServer } from 'utils/date';
 
 const EditTicketModal = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
-
-  console.log({ data });
 
   const handleGetTrip = async () => {
     const { data } = await getTripList();
@@ -30,21 +26,14 @@ const EditTicketModal = ({ handleReload, data, visible, onClose }) => {
     }));
   };
 
-  const handleGetCustomer = async () => {
-    const { data } = await getUserList({ role: ROLES.USER });
-    return data.map((item) => ({
-      label: item.name,
-      value: item.id
-    }));
-  };
-
   return (
     <ModalForm
       title="Sửa vé"
       width="70%"
       open={visible}
       initialValues={{
-        ...data
+        ...data,
+        position_on_car: Number(data?.position_on_car) + 1
       }}
       autoFocusFirstInput
       modalProps={{
@@ -57,29 +46,20 @@ const EditTicketModal = ({ handleReload, data, visible, onClose }) => {
             {
               ...values,
               id: data.id,
-              purchase_time: convertDatetimeToServer(values.purchase_time)
+              purchase_time: convertDatetimeToServer(values.purchase_time),
+              position_on_car: values.position_on_car - 1
             }
           ]);
           toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);
           onClose();
           handleReload();
           return true;
-        } catch (err) {
-          toast.error(err.response.data.message);
-        }
+        } catch (err) {}
       }}
       formRef={formRef}
       className="px-10 py-5"
     >
       <Row gutter={[30, 20]} className="mb-5">
-        <Col span={12}>
-          <ProFormText
-            name="price"
-            label="Giá vé"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            className="p-4"
-          />
-        </Col>
         <Col span={12}>
           <ProFormDigit name="position_on_car" label="Số ghế" disabled />
         </Col>
@@ -87,6 +67,7 @@ const EditTicketModal = ({ handleReload, data, visible, onClose }) => {
           <ProFormSelect
             name="status"
             label="Trạng thái"
+            disabled
             options={TICKET_STATUS_OPTIONS}
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
@@ -94,6 +75,20 @@ const EditTicketModal = ({ handleReload, data, visible, onClose }) => {
 
         <Col span={12}>
           <ProFormSelect disabled name="trip_id" request={handleGetTrip} label="Chuyến" />
+        </Col>
+
+        <Col span={12}>
+          <ProFormDigit
+            name="regular_point"
+            label="Điểm thưởng"
+            fieldProps={{
+              formatter: (value) => {
+                if (value === undefined || value === null) return '';
+                return new Intl.NumberFormat('vi-VN').format(value);
+              },
+              parser: (value) => value.replace(/\./g, '') // Xóa bỏ dấu chấm khi phân tích ngược giá trị nhập
+            }}
+          />
         </Col>
 
         <Col span={12}>

@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { updateCar } from 'services';
 
 const EditCarModal = ({ companyId, handleReload, visible, onClose, data }) => {
+  console.log({ data });
   const formRef = useRef();
 
   const {

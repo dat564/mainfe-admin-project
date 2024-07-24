@@ -1,53 +1,26 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormDatePicker, ProFormRadio, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
-import { ROLES } from 'constants';
+import { image_url } from 'configs/images';
 import { NOTIFY_MESSAGE, GENDER_OPTIONS } from 'constants';
-import React, { useRef, useState } from 'react';
+import useUploadImage from 'hooks/useUploadImage';
+import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { getTransportCompany } from 'services';
 import { updateUser } from 'services';
-import { uploadImage } from 'services/image';
-
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
 
 const EditDriverModal = ({ show, data, onClose, handleReload }) => {
+  console.log({ data });
   const formRef = useRef();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewTitle, setPreviewTitle] = useState('');
-  const [fileList, setFileList] = useState([]);
-
-  const handleGetTransportCompany = async () => {
-    try {
-      const res = await getTransportCompany();
-      const data = res.data.data;
-      return data.map((item) => ({
-        label: item.name,
-        value: item.id
-      }));
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
-  };
-
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const {
+    previewImageModal,
+    fileList,
+    handlePreview,
+    handleChange,
+    handleCancelPreview,
+    handleImageUpload,
+    setPreviewImageModal,
+    setFileList
+  } = useUploadImage();
 
   const uploadButton = (
     <div>
@@ -56,23 +29,25 @@ const EditDriverModal = ({ show, data, onClose, handleReload }) => {
     </div>
   );
 
-  const handleImageUpload = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', file.originFileObj); // Đính kèm file gốc vào form data
-
-      // Thêm các thông tin khác cần thiết vào form data nếu có
-
-      // Gửi yêu cầu POST đến API bằng Axios
-      const resImage = await uploadImage(formData);
-
-      // Xử lý kết quả trả về từ API
-      const result = resImage.data;
-      return result;
-    } catch (error) {
-      throw error;
+  useEffect(() => {
+    if (!data && !formRef.current) return;
+    if (data?.img_url) {
+      setPreviewImageModal((prev) => ({
+        ...prev,
+        image: image_url + data?.img_url
+      }));
+      setFileList([
+        {
+          name: 'image.png',
+          status: 'done',
+          url: image_url + data?.img_url
+        }
+      ]);
     }
-  };
+    formRef.current.setFieldsValue({
+      ...data
+    });
+  }, [data, setFileList, setPreviewImageModal]);
 
   return (
     <ModalForm
@@ -94,7 +69,7 @@ const EditDriverModal = ({ show, data, onClose, handleReload }) => {
           }
 
           if (uploadedImage) {
-            _data.img_url = uploadedImage.imageUrl;
+            _data.img_url = uploadedImage;
           }
 
           await updateUser(_data);
@@ -168,8 +143,8 @@ const EditDriverModal = ({ show, data, onClose, handleReload }) => {
           <ProFormRadio.Group name="gender" label="Giới tính" options={GENDER_OPTIONS} />
         </Col>
       </Row>
-      <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={() => setPreviewOpen(false)}>
-        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      <Modal open={previewImageModal.open} title={previewImageModal.title} footer={null} onCancel={handleCancelPreview}>
+        <img alt="example" style={{ width: '100%' }} src={previewImageModal.image} />
       </Modal>
     </ModalForm>
   );

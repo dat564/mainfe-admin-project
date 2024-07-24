@@ -126,14 +126,26 @@ const AddDriverModal = ({ handleReload }) => {
           <ProFormText
             name="phone"
             label="Di động"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[
+              { required: true, message: 'Vui lòng nhập trường này' },
+              {
+                pattern: new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/),
+                message: 'Số điện thoại không hợp lệ'
+              }
+            ]}
           ></ProFormText>
         </Col>
         <Col span={12}>
           <ProFormText
             name="email"
             label="Email"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[
+              { required: true, message: 'Vui lòng nhập trường này' },
+              {
+                type: 'email',
+                message: 'Email không hợp lệ'
+              }
+            ]}
           ></ProFormText>
         </Col>
         <Col span={12}>

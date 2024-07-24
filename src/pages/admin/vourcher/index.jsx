@@ -11,6 +11,8 @@ import { operatorColumnRender } from 'utils/columns';
 import AddVoucherModal from 'pages/admin/vourcher/components/AddVoucherModal';
 import EditVoucherModal from 'pages/admin/vourcher/components/EditVoucherModal';
 import { getVoucherList, multiDeleteVoucher } from 'services/vourcher';
+import { convertDateAndFormat } from 'utils/date';
+import moment from 'moment';
 
 const VoucherPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -79,7 +81,8 @@ const VoucherPage = () => {
       title: 'Thời gian hết hạn',
       dataIndex: 'expired_at',
       search: false,
-      key: 'expired_at'
+      key: 'expired_at',
+      render: (text, record) => moment(record.expired_at).format('DD/MM/YYYY')
     }
   ];
 
