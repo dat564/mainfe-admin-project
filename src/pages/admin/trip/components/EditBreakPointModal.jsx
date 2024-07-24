@@ -76,16 +76,50 @@ const EditBreakPointModal = ({ trip, visible, handleReload, onClose, data }) => 
               // disable những thời gian ngoài khoản departure_time và scheduled_end_time
               disabledDate: (current) => {
                 if (!trip?.departure_time || !trip?.scheduled_end_time) return false;
-                return (
-                  current &&
-                  (current < moment(convertDatetime(trip.departure_time)) ||
-                    current > moment(convertDatetime(trip.scheduled_end_time)))
-                );
+
+                const departureTime = moment(convertDatetime(trip.departure_time)).startOf('day');
+                const scheduledEndTime = moment(convertDatetime(trip.scheduled_end_time)).endOf('day');
+
+                return current && (current < departureTime || current > scheduledEndTime);
+              },
+              disabledTime: (current) => {
+                if (!current) return false;
+
+                const departureTime = moment(convertDatetime(trip.departure_time));
+                const scheduledEndTime = moment(convertDatetime(trip.scheduled_end_time));
+
+                if (current.isSame(departureTime, 'day')) {
+                  return {
+                    disabledHours: () => [...Array(departureTime.hours()).keys()],
+                    disabledMinutes: (hour) =>
+                      hour === departureTime.hours() ? [...Array(departureTime.minutes()).keys()] : [],
+                    disabledSeconds: (hour, minute) =>
+                      hour === departureTime.hours() && minute === departureTime.minutes()
+                        ? [...Array(departureTime.seconds()).keys()]
+                        : []
+                  };
+                }
+
+                if (current.isSame(scheduledEndTime, 'day')) {
+                  return {
+                    disabledHours: () => [...Array(24).keys()].filter((h) => h > scheduledEndTime.hours()),
+                    disabledMinutes: (hour) =>
+                      hour === scheduledEndTime.hours()
+                        ? [...Array(60).keys()].filter((m) => m > scheduledEndTime.minutes())
+                        : [],
+                    disabledSeconds: (hour, minute) =>
+                      hour === scheduledEndTime.hours() && minute === scheduledEndTime.minutes()
+                        ? [...Array(60).keys()].filter((s) => s > scheduledEndTime.seconds())
+                        : []
+                  };
+                }
+
+                return false;
               },
               format: 'DD/MM/YYYY HH:mm:ss'
             }}
             label="Thời gian đến"
-          />
+          ></ProFormDateTimePicker>
         </Col>
         {trip?.static_end_point && (
           <Col span={12}>
