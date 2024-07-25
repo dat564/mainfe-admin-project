@@ -114,7 +114,7 @@ const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
           />
         </Col>
         <Col span={12}>
-          <ProFormSwitch name="is_active" label="Kích hoạt" />
+          <ProFormSwitch name="is_default" label="Kích hoạt" />
         </Col>
         <Col span={12}>
           <h1 className="mb-2">Ảnh</h1>

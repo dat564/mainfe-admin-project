@@ -152,7 +152,7 @@ const AddTemplateTrip = () => {
         <Col span={12}>
           <ProFormSwitch
             name="static_start_point"
-            label="Đón tận nơi"
+            label="Đón cố định"
             fieldProps={{
               onChange: (value) => {
                 setIsStaticStartPoint(value);
@@ -166,7 +166,7 @@ const AddTemplateTrip = () => {
         <Col span={12}>
           <ProFormSwitch
             name="static_end_point"
-            label="Trả tận nơi"
+            label="Trả cố định"
             fieldProps={{
               onChange: (value) => {
                 setIsStaticEndPoint(value);

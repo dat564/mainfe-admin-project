@@ -78,6 +78,7 @@ const AddPaymentModal = ({ handleReload }) => {
             }
           ]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+          setFileList([]);
           handleReload();
           return true;
         } catch (err) {

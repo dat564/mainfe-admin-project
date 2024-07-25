@@ -45,14 +45,6 @@ const MultiEditTicketModal = ({ handleReload, visible, onClose, handleAfterMulti
     >
       <Row gutter={[30, 20]} className="mb-5">
         <Col span={12}>
-          <ProFormText
-            name="price"
-            label="Giá vé"
-            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
-            className="p-4"
-          />
-        </Col>
-        <Col span={12}>
           <ProFormDigit
             name="regular_point"
             label="Điểm thưởng"

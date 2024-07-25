@@ -34,6 +34,7 @@ const AddPaymentModal = ({ handleReload }) => {
             }
           ]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+
           handleReload();
           return true;
         } catch (err) {
