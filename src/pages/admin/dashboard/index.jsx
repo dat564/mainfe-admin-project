@@ -176,7 +176,7 @@ const Dashboard = () => {
               Lọc
             </Button>
           </ProForm>
-          <div className="h-[540px] w-[max-content] p-10 bg-white chart">
+          <div className="h-[540px]  min-w-[1080px] w-[max-content] p-10 bg-white chart">
             <Bar
               options={config}
               data={{
