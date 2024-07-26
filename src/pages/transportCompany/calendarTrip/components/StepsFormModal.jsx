@@ -9,8 +9,10 @@ import { createCalendarTrip } from 'services';
 import { useSelector } from 'react-redux';
 import { updateCalendarTrip } from 'services';
 import { convertDateToServer } from 'utils/date';
+import { convertDatetime } from 'utils/date';
 
 const StepsFormModal = ({ handleReload, handleCancel, open, data }) => {
+  console.log({ data });
   const formRef = useRef();
   const stepFormRef = useRef();
   const [current, setCurrent] = useState(0);
@@ -31,7 +33,10 @@ const StepsFormModal = ({ handleReload, handleCancel, open, data }) => {
         <StepsForm
           formRef={formRef}
           current={current}
-          initialValues={data}
+          initialValues={{
+            ...data,
+            dateRange: [convertDatetime(data?.start_time), convertDatetime(data?.end_time)]
+          }}
           autoFocusFirstInput
           onFinish={async (values) => {
             if (!templateId) {

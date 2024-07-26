@@ -9,17 +9,16 @@ import {
 } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { ROLES } from 'constants';
+import moment from 'moment';
 import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { createTrip } from 'services';
 import { getCarList } from 'services';
 import { getUserList } from 'services';
 import { getCityList } from 'services/cities';
-import { getCompanyPaymentList } from 'services/companyPayment';
 import { convertDatetimeToServer } from 'utils/date';
 
-const AddTemplateTrip = () => {
+const AddTemplateTrip = ({ handleReload }) => {
   const formRef = useRef();
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
   const [isStaticStartPoint, setIsStaticStartPoint] = React.useState(false);
@@ -32,18 +31,6 @@ const AddTemplateTrip = () => {
       });
       const { data } = res?.data;
       return data.map((item) => ({ label: item.name, value: item?.driver?.id }));
-    } catch (error) {
-      console.log({ error });
-    }
-  };
-
-  const handleGetCompanyPaymentList = async () => {
-    try {
-      const res = await getCompanyPaymentList({
-        transport_company_id: transport_company?.id
-      });
-      const { data } = res?.data;
-      return data.map((item) => ({ label: item.name_bank, value: item.id }));
     } catch (error) {
       console.log({ error });
     }
@@ -94,13 +81,14 @@ const AddTemplateTrip = () => {
             ...values,
             departure_time: convertDatetimeToServer(values.timeRage[0]),
             scheduled_end_time: convertDatetimeToServer(values.timeRage[1]),
-            is_template: true
+            is_template: true,
+            static_start_point: isStaticStartPoint,
+            static_end_point: isStaticEndPoint
           };
           await createTrip([obj]);
+          handleReload && handleReload();
           return true;
-        } catch (err) {
-          toast.error(err.response.data.message);
-        }
+        } catch (err) {}
       }}
       formRef={formRef}
       className="p-10"
@@ -129,7 +117,8 @@ const AddTemplateTrip = () => {
             name="timeRage"
             label="Thời gian xuất phát và kết thúc"
             fieldProps={{
-              format: 'DD/MM/YYYY HH:mm:ss'
+              format: 'DD/MM/YYYY HH:mm:ss',
+              disabledDate: (current) => current && current < moment().startOf('day')
             }}
             rules={[
               {
@@ -189,12 +178,12 @@ const AddTemplateTrip = () => {
           <ProFormMoney
             name="price_static"
             label="Giá mặc định"
-            // rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
+            rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
         <Col span={12}>
           <ProFormSelect
-            name="carId"
+            name="transport_company_car_id"
             label="Xe"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
             request={handleGetCarByTransportCompanyId}

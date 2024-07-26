@@ -13,6 +13,18 @@ export function convertDatetime(inputStr) {
   return momentObj;
 }
 
+// export function convertDatetimeByDayjs(inputStr) {
+//   if (!inputStr) return;
+
+//   // Sử dụng dayjs để phân tích chuỗi đầu vào
+//   var dayjsObj = dayjs(inputStr, 'YYYY-MM-DD HH:mm:ss');
+
+//   // Thêm 7 giờ vào thời gian
+//   dayjsObj = dayjsObj.add(7, 'hour');
+
+//   return dayjsObj;
+// }
+
 export function convertDateAndFormat(inputStr, format = 'DD/MM/YYYY HH:mm:ss') {
   if (!inputStr) return;
   // Sử dụng Moment.js để phân tích chuỗi đầu vào

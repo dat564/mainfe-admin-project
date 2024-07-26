@@ -104,8 +104,8 @@ const Dashboard = () => {
   }, [userInfo.role]);
 
   return (
-    <div className="flex-1 min-h-[100vh] overflow-auto">
-      <div className="bg-[#624BFF] h-52 px-8 pt-[62px] text-white mb-24">
+    <div className="flex-1 overflow-hidden">
+      <div className="bg-[#624BFF] h-52 px-8 pt-[62px] text-white mb-20">
         <h3 className="text-2xl font-medium mb-7">Dashboard</h3>
         <div className="grid grid-cols-4 gap-6">
           <div
@@ -162,21 +162,21 @@ const Dashboard = () => {
         </div>
       </div>
       <Spin spinning={loading}>
-        <div className="flex gap-16 px-8">
-          <div className="w-full h-[500px] p-5 bg-white chart">
-            <ProForm submitter={false} className="flex items-end gap-5" onFinish={handleSearch}>
-              <ProFormDateRangePicker
-                name="date_range"
-                label="Khoảng thời gian"
-                fieldProps={{
-                  format: 'DD/MM/YYYY'
-                }}
-                width={'md'}
-              />
-              <Button type="primary" htmlType="submit" key="submit">
-                Lọc
-              </Button>
-            </ProForm>
+        <div className="px-8">
+          <ProForm submitter={false} className="flex items-end gap-5" onFinish={handleSearch}>
+            <ProFormDateRangePicker
+              name="date_range"
+              label="Khoảng thời gian"
+              fieldProps={{
+                format: 'DD/MM/YYYY'
+              }}
+              width={'md'}
+            />
+            <Button type="primary" htmlType="submit" key="submit">
+              Lọc
+            </Button>
+          </ProForm>
+          <div className="h-[540px] w-[max-content] p-10 bg-white chart">
             <Bar
               options={config}
               data={{

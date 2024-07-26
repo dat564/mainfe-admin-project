@@ -12,6 +12,7 @@ import { convertDateAndFormat } from 'utils/date';
 
 const AddTemplateCalendarTripModal = ({ handleReload }) => {
   const formRef = useRef();
+  const actionRef = useRef();
   const columns = [
     {
       title: 'Tuyến đi',
@@ -116,6 +117,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
         </Col>
         <Col span={24}>
           <ProTable
+            actionRef={actionRef}
             loading={loading}
             columns={columns}
             rowKey={(record) => record.id}
@@ -124,7 +126,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
               <div>
                 <div className="flex items-center w-full gap-4">
                   <h1 className="text-xl font-medium">Các chuyến hiện tại</h1>
-                  <AddTemplateTrip />
+                  <AddTemplateTrip handleReload={() => actionRef?.current?.reload()} />
                 </div>
               </div>
             }

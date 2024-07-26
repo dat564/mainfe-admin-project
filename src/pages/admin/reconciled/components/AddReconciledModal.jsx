@@ -98,12 +98,6 @@ const AddReconciledModal = ({ handleReload, visible, handleCancel, data }) => {
             }}
           />
         </Col>
-        <Col span={12}>
-          <ProFormSwitch
-            label="Mặc định"
-            name="is_default"
-          />
-        </Col>
         <Col span={24}>
           <Tabular ref={tableRef} columns={columns} dataSource={trips} search={false} bordered rowKey={(e) => e.id} />
         </Col>

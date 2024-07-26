@@ -1,6 +1,7 @@
 import { ProFormDateRangePicker, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import React from 'react';
+import { convertDatetime } from 'utils/date';
 
 const Step1 = ({ data }) => {
   return (
@@ -18,9 +19,9 @@ const Step1 = ({ data }) => {
         <ProFormDateRangePicker
           name="dateRange"
           fieldProps={{
-            initialValue: [data?.start_time, data?.end_time],
             format: 'DD/MM/YYYY'
           }}
+          initialValue={[convertDatetime(data?.start_time), convertDatetime(data?.end_time)]}
           label="Ngày bắt đầu và kết thúc"
           rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
         />

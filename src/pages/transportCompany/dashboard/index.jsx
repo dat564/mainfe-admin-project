@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import { getTripProfit } from 'services';
-import { Spin } from 'antd';
+import { Button, Space, Spin } from 'antd';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -16,6 +16,7 @@ const DashBoardTransportCompany = () => {
   const [dataSets, setDataSets] = useState([]);
   const [cardData, setCardData] = useState();
   const [loading, setLoading] = useState(false);
+  const [period, setPeriod] = useState('week');
   const navigate = useNavigate();
   const chartRef = useRef();
 
@@ -59,33 +60,36 @@ const DashBoardTransportCompany = () => {
 
   useEffect(() => {
     setLoading(true);
-    getTripProfit({ period: 'week' }).then((res) => {
-      const labels = Object.keys(res.data.report_data);
-      const dataSets = labels.reduce(
-        (acc, cur) => {
-          const current = res.data.report_data[cur];
+    getTripProfit({ period })
+      .then((res) => {
+        const labels = Object.keys(res.data.report_data);
+        const dataSets = labels.reduce(
+          (acc, cur) => {
+            const current = res.data.report_data[cur];
 
-          acc['total_max_profit'].push(current.total_max_profit);
-          acc['total_actual_profit'].push(current.total_actual_profit);
-          acc['total_loss'].push(-Number(current.total_loss));
+            acc['total_max_profit'].push(current.total_max_profit);
+            acc['total_actual_profit'].push(current.total_actual_profit);
+            acc['total_loss'].push(-Number(current.total_loss));
 
-          return acc;
-        },
-        {
-          total_max_profit: [],
-          total_actual_profit: [],
-          total_loss: []
-        }
-      );
-      setCardData(res.data);
-      setLabels(labels);
-      setDataSets(dataSets);
-    });
-    setLoading(false);
-  }, []);
+            return acc;
+          },
+          {
+            total_max_profit: [],
+            total_actual_profit: [],
+            total_loss: []
+          }
+        );
+        setCardData(res.data);
+        setLabels(labels);
+        setDataSets(dataSets);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [period]);
 
   return (
-    <div className="w-full min-h-[100vh] overflow-auto">
+    <div className="w-full overflow-hidden">
       <div className="bg-[#624BFF] h-52 px-8 pt-[62px] text-white mb-20">
         <h3 className="text-2xl font-medium mb-7">Dashboard</h3>
         <div className="grid grid-cols-4 gap-6">
@@ -143,8 +147,34 @@ const DashBoardTransportCompany = () => {
         </div>
       </div>
       <Spin spinning={loading}>
-        <div className="flex gap-16 px-8">
-          <div className="w-full p-10 bg-white chart">
+        <div className="px-8">
+          <Space className="">
+            <Button
+              type="primary"
+              onClick={() => {
+                setPeriod('week');
+              }}
+            >
+              Theo tuần
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setPeriod('month');
+              }}
+            >
+              Theo tháng
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setPeriod('year');
+              }}
+            >
+              Theo năm
+            </Button>
+          </Space>
+          <div className="h-[580px] min-w-[1080px] w-[max-content] p-10 bg-white chart">
             <Bar
               options={config}
               data={{

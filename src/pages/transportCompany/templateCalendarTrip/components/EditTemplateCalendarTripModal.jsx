@@ -1,26 +1,26 @@
 import { ModalForm, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import { NOTIFY_MESSAGE } from 'constants';
+import AddTemplateTrip from 'pages/transportCompany/templateCalendarTrip/components/AddTemplateTrip';
 import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getTripList } from 'services';
 import { updateTemplateCalendarTrip } from 'services/templateCalendarTrip';
-import { formatTime } from 'utils';
 import { convertDateAndFormat } from 'utils/date';
 
 const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
+  const actionRef = useRef();
   const columns = [
     {
-      title: 'Điểm đi',
-      dataIndex: 'start_point',
-      key: 'start_point'
+      title: 'Tuyến đi',
+      dataIndex: 'route_start',
+      key: 'route_start'
     },
     {
-      title: 'Điểm đến',
-      dataIndex: 'end_point',
-      key: 'end_point'
+      title: 'Tuyến đến',
+      dataIndex: 'route_end',
+      key: 'route_end'
     },
     {
       title: 'Thời gian đi',
@@ -83,9 +83,19 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
         </Col>
         <Col span={24}>
           <ProTable
+            actionRef={actionRef}
             columns={columns}
             loading={loading}
             bordered
+            search={false}
+            headerTitle={
+              <div>
+                <div className="flex items-center w-full gap-4">
+                  <h1 className="text-xl font-medium">Các chuyến hiện tại</h1>
+                  <AddTemplateTrip handleReload={() => actionRef?.current?.reload()} />
+                </div>
+              </div>
+            }
             request={async (params) => {
               setLoading(true);
               const _params = {
@@ -105,7 +115,6 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
               };
             }}
             rowKey={(e) => e.id}
-            search={true}
             rowSelection={{ selectedRowKeys, onChange: onSelectChange }}
           />
         </Col>

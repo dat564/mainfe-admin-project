@@ -1,4 +1,4 @@
-import { FolderAddOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
 import { ROLES } from 'constants';
@@ -11,6 +11,7 @@ import { createCompanyPayment } from 'services/companyPayment';
 import { getPaymentList } from 'services/payment';
 
 const EditCalendarTripModal = ({ handleReload, data, visible, onClose }) => {
+  console.log({ dât: data });
   const formRef = useRef();
   const {
     previewImageModal,
