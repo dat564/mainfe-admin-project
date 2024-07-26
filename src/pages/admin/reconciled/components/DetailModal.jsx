@@ -3,12 +3,19 @@ import Tabular from 'components/Tabular';
 import React, { useMemo, useRef, useState } from 'react';
 import { getDetailReconciled } from 'services/reconciled';
 
-const DetailModal = ({ visible, handleCancel, data }) => {
+const DetailModal = ({ visible, handleCancel, data, isSubmit = true }) => {
   const tableRef = useRef();
   const [loading, setLoading] = useState(false);
   const transport_company = useMemo(() => data?.transport_company, [data]);
 
   const columns = [
+    {
+      title: 'Các Chuyến',
+      dataIndex: 'trips',
+      search: false,
+      key: 'trips',
+      render: (_, record) => record?.trips?.map((trip) => trip.code).join(', ')
+    },
     {
       title: 'Số tiền chưa đối soát',
       dataIndex: 'unreconciled_amount',
@@ -21,6 +28,7 @@ const DetailModal = ({ visible, handleCancel, data }) => {
       search: false,
       key: 'total_reconciled_amount'
     },
+
     {
       title: 'Tìm kiếm',
       dataIndex: 'search',
@@ -30,7 +38,7 @@ const DetailModal = ({ visible, handleCancel, data }) => {
   ];
 
   return (
-    <Modal width={'70%'} open={visible} onCancel={handleCancel} title="Chi tiết đối soát của nhà xe">
+    <Modal width={'70%'} open={visible} onCancel={handleCancel} footer={false} title="Chi tiết đối soát của nhà xe">
       <Tabular
         ref={tableRef}
         columns={columns}

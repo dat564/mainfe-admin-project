@@ -123,9 +123,6 @@ const EditTicket = ({ handleReload, data, visible, onClose }) => {
           <ProFormSelect disabled name="trip_id" request={handleGetTrip} label="Chuyến" />
         </Col>
         <Col span={12}>
-          <ProFormSelect name="customer_id" request={handleGetCustomer} label="Khách hàng" />
-        </Col>
-        <Col span={12}>
           <ProFormSwitch
             name="on_voucher"
             label="Áp dụng voucher"

@@ -148,11 +148,14 @@ const DashBoardTransportCompany = () => {
       </div>
       <Spin spinning={loading}>
         <div className="px-8">
-          <Space className="">
+          <Space className="mb-3">
             <Button
               type="primary"
               onClick={() => {
                 setPeriod('week');
+              }}
+              style={{
+                backgroundColor: period === 'week' ? '#4096ff' : ''
               }}
             >
               Theo tuần
@@ -162,6 +165,9 @@ const DashBoardTransportCompany = () => {
               onClick={() => {
                 setPeriod('month');
               }}
+              style={{
+                backgroundColor: period === 'month' ? '#4096ff' : ''
+              }}
             >
               Theo tháng
             </Button>
@@ -170,11 +176,14 @@ const DashBoardTransportCompany = () => {
               onClick={() => {
                 setPeriod('year');
               }}
+              style={{
+                backgroundColor: period === 'year' ? '#4096ff' : ''
+              }}
             >
               Theo năm
             </Button>
           </Space>
-          <div className="h-[580px] min-w-[1080px] w-[max-content] p-10 bg-white chart">
+          <div className="h-[570px] min-w-[1080px] w-[max-content] p-10 bg-white chart">
             <Bar
               options={config}
               data={{

@@ -7,6 +7,13 @@ export const getTripList = (params) => {
   });
 };
 
+export const getTripListV2 = (params) => {
+  return request('/trip/v2', {
+    method: 'GET',
+    params
+  });
+};
+
 export const createTrip = (data) => {
   return request('/trip/store', {
     method: 'POST',

@@ -8,7 +8,6 @@ import { SettingOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
 import Setting from 'components/svgs/Setting';
 import DetailModal from 'pages/admin/reconciled/components/DetailModal';
-import { ProFormSwitch } from '@ant-design/pro-components';
 
 const items = [
   {

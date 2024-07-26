@@ -6,6 +6,7 @@ import AddTemplateTrip from 'pages/transportCompany/templateCalendarTrip/compone
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { getTripListV2 } from 'services';
 import { getTripList } from 'services';
 import { createTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import { convertDateAndFormat } from 'utils/date';
@@ -141,7 +142,7 @@ const AddTemplateCalendarTripModal = ({ handleReload }) => {
                 end_time: params?.dateRange && params.dateRange[1]
               };
 
-              const res = await getTripList(_params);
+              const res = await getTripListV2(_params);
               setLoading(false);
               setDataSource(res.data.data);
               return {

@@ -119,9 +119,7 @@ const AddTicket = ({ handleReload }) => {
         <Col span={12}>
           <ProFormSelect disabled name="trip_id" request={handleGetTrip} label="Chuyến" />
         </Col>
-        <Col span={12}>
-          <ProFormSelect name="customer_id" request={handleGetCustomer} label="Khách hàng" />
-        </Col>
+
         <Col span={12}>
           <ProFormSwitch
             name="on_voucher"

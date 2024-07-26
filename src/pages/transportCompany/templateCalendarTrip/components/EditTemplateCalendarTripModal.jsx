@@ -4,7 +4,7 @@ import { NOTIFY_MESSAGE } from 'constants';
 import AddTemplateTrip from 'pages/transportCompany/templateCalendarTrip/components/AddTemplateTrip';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getTripList } from 'services';
+import { getTripListV2 } from 'services';
 import { updateTemplateCalendarTrip } from 'services/templateCalendarTrip';
 import { convertDateAndFormat } from 'utils/date';
 
@@ -106,7 +106,7 @@ const EditTemplateCalendarTripModal = ({ handleReload, data, visible, onClose })
                 end_time: params?.dateRange && params.dateRange[1]
               };
 
-              const res = await getTripList(_params);
+              const res = await getTripListV2(_params);
               setLoading(false);
               return {
                 data: res.data.data,

@@ -62,11 +62,17 @@ const EditCarModal = ({ companyId, handleReload, visible, onClose, data }) => {
       }}
       onFinish={async (values) => {
         try {
+          const _data = { ...values, id: data.id };
           let uploadedImage;
           if (fileList.length > 0 && fileList[0].originFileObj) {
             uploadedImage = await handleImageUpload(fileList[0]); // Chuyển đổi và upload ảnh khi nhấn nút "Submit"
           }
-          await updateCar([{ ...values, id: data.id, images: uploadedImage || null }]);
+
+          if (uploadedImage) {
+            _data.images = uploadedImage;
+          }
+
+          await updateCar([_data]);
           handleReload();
           onClose();
           toast.success(NOTIFY_MESSAGE.UPDATE_SUCCESS);

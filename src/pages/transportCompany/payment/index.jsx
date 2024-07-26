@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { ROLES } from 'constants';
-import { Popconfirm } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { toast } from 'react-toastify';
-import { multipleDeleteUserById } from 'services';
 import { NOTIFY_MESSAGE } from 'constants';
 import requireAuthentication from 'hoc/requireAuthentication';
 import AddPaymentModal from 'pages/transportCompany/payment/components/AddPaymentModal';
@@ -15,9 +14,19 @@ import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { ProFormSwitch } from '@ant-design/pro-components';
 import { multiDeleteCompanyPayment } from 'services';
+import DetailModal from 'pages/admin/reconciled/components/DetailModal';
+
+const ModalType = {
+  DETAIL: 'DETAIL'
+};
 
 const TransportCompanyPaymentPage = () => {
   const [loading, setLoading] = useState(false);
+  const [configModal, setConfigModal] = useState({
+    visible: false,
+    data: null,
+    type: null
+  });
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState();
   const { transport_company } = useSelector((state) => state.auth.userInfo) || {};
@@ -148,6 +157,21 @@ const TransportCompanyPaymentPage = () => {
                 <DeleteOutlined />
               </span>
             </Popconfirm>
+            <Button
+              onClick={() =>
+                setConfigModal({
+                  visible: true,
+                  data: {
+                    transport_company: {
+                      id: transport_company?.id
+                    }
+                  },
+                  type: ModalType.DETAIL
+                })
+              }
+            >
+              Xem chi tiết thông tin đối soát
+            </Button>
           </div>
         }
         loading={loading}
@@ -167,6 +191,21 @@ const TransportCompanyPaymentPage = () => {
           data={selectedRow}
           onClose={onCloseEditModal}
           handleReload={reloadTable}
+        />
+      )}
+      {configModal.visible && configModal.type === ModalType.DETAIL && (
+        <DetailModal
+          handleReload={reloadTable}
+          data={configModal.data}
+          handleCancel={() =>
+            setConfigModal({
+              visible: false,
+              data: null,
+              type: null
+            })
+          }
+          isSubmit={false}
+          visible={configModal.visible}
         />
       )}
     </div>
