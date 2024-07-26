@@ -18,9 +18,6 @@ const AddPaymentModal = ({ handleReload }) => {
           <FolderAddOutlined />
         </span>
       }
-      initialValues={{
-        gender: 0
-      }}
       autoFocusFirstInput
       modalProps={{
         onCancel: () => true,

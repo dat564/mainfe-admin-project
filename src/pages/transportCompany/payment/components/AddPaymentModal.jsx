@@ -1,5 +1,5 @@
 import { FolderAddOutlined, PlusOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
 import { Col, Modal, Row, Upload } from 'antd';
 import { ROLES } from 'constants';
 import { NOTIFY_MESSAGE } from 'constants';
@@ -61,22 +61,22 @@ const AddPaymentModal = ({ handleReload }) => {
       }}
       onFinish={async (values) => {
         try {
-          if (!fileList.length) {
-            toast.error('Vui lòng chọn ảnh');
-            return;
-          }
-          let imageRes;
+          const data = {
+            ...values,
+            transport_company_id: transport_company?.id,
+            is_default: values.is_default || false
+          };
+
+          let uploadedImage;
           if (fileList.length > 0 && fileList[0].originFileObj) {
-            imageRes = await handleImageUpload(fileList[0]); // Chuyển đổi và upload ảnh khi nhấn nút "Submit"
+            uploadedImage = await handleImageUpload(fileList[0]);
           }
 
-          await createCompanyPayment([
-            {
-              ...values,
-              transport_company_id: transport_company?.id,
-              image_qr_code: imageRes?.data?.[0] || null
-            }
-          ]);
+          if (uploadedImage) {
+            data.image_qr_code = uploadedImage;
+          }
+
+          await createCompanyPayment([data]);
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
           setFileList([]);
           handleReload();
@@ -93,12 +93,12 @@ const AddPaymentModal = ({ handleReload }) => {
           <ProFormText
             name="name_bank"
             showSearch
-            label="Tên số tài khoản"
+            label="Tên ngân hàng"
             rules={[{ required: true, message: 'Vui lòng nhập trường này' }]}
           />
         </Col>
         <Col span={12}>
-          <ProFormText
+          <ProFormDigit
             name="number_bank"
             showSearch
             label="Số tài khoản"

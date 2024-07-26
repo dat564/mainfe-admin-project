@@ -11,6 +11,7 @@ const Tabular = forwardRef(
       loading = false,
       rowSelectionType = 'checkbox',
       customOnSelectChange,
+      isHasCheckbox = true,
       ...restProps
     },
     ref
@@ -55,7 +56,7 @@ const Tabular = forwardRef(
         columns={tableColumns}
         bordered
         rowClassName="cursor-pointer"
-        rowSelection={{ selectedRowKeys, onChange: onSelectChange, type: rowSelectionType }}
+        rowSelection={isHasCheckbox && { selectedRowKeys, onChange: onSelectChange, type: rowSelectionType }}
         pagination={{
           pageSize: 10
         }}

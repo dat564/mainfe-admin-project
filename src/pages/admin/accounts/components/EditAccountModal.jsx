@@ -88,7 +88,7 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
       const resImage = await uploadImage(formData);
 
       // Xử lý kết quả trả về từ API
-      const result = resImage.data;
+      const result = resImage.data.data;
       return result;
     } catch (error) {
       throw error;
@@ -115,7 +115,7 @@ const EditAccountModal = ({ show, data, onClose, handleReload }) => {
           }
 
           if (uploadedImage) {
-            _data.img_url = uploadedImage.imageUrl;
+            _data.img_url = uploadedImage;
           }
 
           await updateUser(_data);

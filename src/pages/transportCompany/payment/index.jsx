@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import Setting from 'components/svgs/Setting';
 import { operatorColumnRender } from 'utils/columns';
 import { ProFormSwitch } from '@ant-design/pro-components';
+import { multiDeleteCompanyPayment } from 'services';
 
 const TransportCompanyPaymentPage = () => {
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ const TransportCompanyPaymentPage = () => {
   async function handleDelete(recordId) {
     try {
       setLoading(true);
-      await multipleDeleteUserById({ ids: [recordId] });
+      await multiDeleteCompanyPayment({ ids: [recordId] });
       setSelectedRowKeys([]);
       toast.success(NOTIFY_MESSAGE.DELETE_SUCCESS);
       reloadTable();
@@ -103,7 +104,7 @@ const TransportCompanyPaymentPage = () => {
         toast.error('Vui lòng chọn ít nhất một bản ghi để xóa!');
         return;
       }
-      await multipleDeleteUserById({ ids: getSelectedRowKeys() });
+      await multiDeleteCompanyPayment({ ids: getSelectedRowKeys() });
       reloadTable();
       toast.success('Xóa thành công!');
     } catch (error) {

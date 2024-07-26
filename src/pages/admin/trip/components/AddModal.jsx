@@ -26,7 +26,9 @@ const AddModal = ({ handleReload, handleCancel, open }) => {
         ...values,
         departure_time: convertDatetimeToServer(timeRange[0]),
         scheduled_end_time: convertDatetimeToServer(timeRange[1]),
-        transport_company_car_id: values.carId
+        transport_company_car_id: values.carId,
+        static_start_point: values.staticStartPoint || false,
+        static_end_point: values.staticEndPoint || false
       };
 
       delete bodyData.timeRange;

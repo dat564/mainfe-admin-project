@@ -12,6 +12,7 @@ import { getPaymentList } from 'services/payment';
 
 const EditPaymentModal = ({ handleReload, data, visible, onClose }) => {
   const formRef = useRef();
+  console.log({ data });
   const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, setFileList } =
     useUploadImage();
 

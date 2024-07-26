@@ -92,7 +92,10 @@ const AddAccountModal = ({ handleReload }) => {
       }}
       autoFocusFirstInput
       modalProps={{
-        onCancel: () => true,
+        onCancel: () => {
+          setFileList([]);
+          return true;
+        },
         destroyOnClose: true
       }}
       onFinish={async (values) => {
@@ -107,6 +110,7 @@ const AddAccountModal = ({ handleReload }) => {
             img_url: uploadedImage || null
           });
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+          setFileList([]);
           handleReload();
           return true;
         } catch (err) {

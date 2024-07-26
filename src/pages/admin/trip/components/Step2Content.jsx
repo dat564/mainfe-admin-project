@@ -39,7 +39,6 @@ const Step2Content = ({ timeRange }) => {
   const handleGetCityList = async () => {
     try {
       const res = await getCityList();
-      console.log({ res });
       const { results } = res?.data;
       return results.map((item) => ({ label: item.province_name, value: item.province_name }));
     } catch (error) {}

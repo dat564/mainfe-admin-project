@@ -1,35 +1,29 @@
-import { ModalForm, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
-import { Col, Row } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { ModalForm, ProFormDigit, ProFormText } from '@ant-design/pro-components';
+import { Col, Modal, Row, Upload } from 'antd';
 import Tabular from 'components/Tabular';
+import { image_url } from 'configs/images';
 import { NOTIFY_MESSAGE } from 'constants';
-import React, { useMemo, useRef } from 'react';
+import useUploadImage from 'hooks/useUploadImage';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { getDriverList } from 'services';
 import { createReconciled } from 'services/reconciled';
 import { formatTime } from 'utils';
 
-const AddReconciledModal = ({ handleReload, visible, handleCancel, data }) => {
-  console.log({ data });
+const AddReconciledModal = ({ handleReload, visible, handleCancel, data, isHasCheckbox }) => {
   const transport_company = useMemo(() => data?.transport_company, [data]);
-  const trips = useMemo(() => data?.trips, [data]);
+  const transport_company_payment = useMemo(
+    () => transport_company?.transport_company_payment?.[0],
+    [transport_company]
+  );
 
-  console.log({ trips });
-  console.log('transport_company', transport_company);
+  const trips = useMemo(() => data?.trips, [data]);
+  console.log('trips', trips);
+  const { previewImageModal, fileList, handlePreview, handleChange, handleCancelPreview, setFileList } =
+    useUploadImage();
+
   const formRef = useRef();
   const tableRef = useRef();
-
-  const handleGetDriverList = async () => {
-    try {
-      const res = await getDriverList({
-        transport_company_id: transport_company?.id
-      });
-      const { data } = res?.data;
-      console.log({ driver: data });
-      return data.map((item) => ({ label: item.name, value: item.id }));
-    } catch (error) {
-      console.log({ error });
-    }
-  };
 
   const columns = [
     {
@@ -63,6 +57,26 @@ const AddReconciledModal = ({ handleReload, visible, handleCancel, data }) => {
     }
   ];
 
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  );
+
+  useEffect(() => {
+    if (!transport_company_payment && !formRef.current) return;
+    if (transport_company_payment?.image_qr_code) {
+      setFileList([
+        {
+          name: 'image.png',
+          status: 'done',
+          url: image_url + transport_company_payment?.image_qr_code
+        }
+      ]);
+    }
+  }, [transport_company_payment, setFileList]);
+
   return (
     <ModalForm
       title="Thêm đối soát"
@@ -81,7 +95,7 @@ const AddReconciledModal = ({ handleReload, visible, handleCancel, data }) => {
           }
         ]);
         toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
-        handleReload();
+        handleReload && handleReload();
         handleCancel();
         return true;
       }}
@@ -89,6 +103,18 @@ const AddReconciledModal = ({ handleReload, visible, handleCancel, data }) => {
       className="px-10 py-5"
     >
       <Row gutter={[30, 20]}>
+        <Col span={12}>
+          <Upload
+            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+            listType="picture-card"
+            fileList={fileList}
+            onPreview={handlePreview}
+            onChange={handleChange}
+            beforeUpload={() => false} // Ngăn người dùng chọn nhiều file
+          >
+            {fileList.length >= 1 ? null : uploadButton}
+          </Upload>
+        </Col>
         <Col span={12}>
           <ProFormText
             disabled
@@ -98,10 +124,39 @@ const AddReconciledModal = ({ handleReload, visible, handleCancel, data }) => {
             }}
           />
         </Col>
+        <Col span={12}>
+          <ProFormText
+            disabled
+            label="Tên tài khoản"
+            fieldProps={{
+              value: transport_company_payment?.name_bank
+            }}
+          />
+        </Col>
+        <Col span={12}>
+          <ProFormDigit
+            disabled
+            label="Số tài khoản"
+            fieldProps={{
+              value: transport_company_payment?.number_bank
+            }}
+          />
+        </Col>
         <Col span={24}>
-          <Tabular ref={tableRef} columns={columns} dataSource={trips} search={false} bordered rowKey={(e) => e.id} />
+          <Tabular
+            ref={tableRef}
+            columns={columns}
+            dataSource={trips}
+            search={false}
+            bordered
+            rowKey={(e) => e.id}
+            isHasCheckbox={!!transport_company_payment}
+          />
         </Col>
       </Row>
+      <Modal open={previewImageModal.open} title={previewImageModal.title} footer={null} onCancel={handleCancelPreview}>
+        <img alt="example" style={{ width: '100%' }} src={previewImageModal.image} />
+      </Modal>
     </ModalForm>
   );
 };

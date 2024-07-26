@@ -8,8 +8,8 @@ import requireAuthentication from 'hoc/requireAuthentication';
 import { ROLES } from 'constants';
 import { getTripProfit } from 'services';
 import { useSelector } from 'react-redux';
-import { Button, Card, Col, Row, Spin } from 'antd';
-import { ProForm, ProFormDatePicker, ProFormDateRangePicker } from '@ant-design/pro-components';
+import { Button, Spin } from 'antd';
+import { ProForm, ProFormDateRangePicker } from '@ant-design/pro-components';
 import { convertDateToServer } from 'utils/date';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
@@ -163,7 +163,7 @@ const Dashboard = () => {
       </div>
       <Spin spinning={loading}>
         <div className="px-8">
-          <ProForm submitter={false} className="flex items-end gap-5" onFinish={handleSearch}>
+          <ProForm submitter={false} className="flex items-end gap-5 mb-3" onFinish={handleSearch}>
             <ProFormDateRangePicker
               name="date_range"
               label="Khoảng thời gian"
@@ -176,7 +176,7 @@ const Dashboard = () => {
               Lọc
             </Button>
           </ProForm>
-          <div className="h-[540px]  min-w-[1080px] w-[max-content] p-10 bg-white chart">
+          <div className="h-[530px]  min-w-[1080px] w-[max-content] p-10 bg-white chart">
             <Bar
               options={config}
               data={{

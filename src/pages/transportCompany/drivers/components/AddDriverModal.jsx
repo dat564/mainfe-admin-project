@@ -76,7 +76,10 @@ const AddDriverModal = ({ handleReload }) => {
       }}
       autoFocusFirstInput
       modalProps={{
-        onCancel: () => true,
+        onCancel: () => {
+          setFileList([]);
+          return true;
+        },
         destroyOnClose: true
       }}
       onFinish={async (values) => {
@@ -93,6 +96,7 @@ const AddDriverModal = ({ handleReload }) => {
             transport_company_id: transport_company.id
           });
           toast.success(NOTIFY_MESSAGE.ADD_SUCCESS);
+          setFileList([]);
           handleReload();
           return true;
         } catch (err) {}
